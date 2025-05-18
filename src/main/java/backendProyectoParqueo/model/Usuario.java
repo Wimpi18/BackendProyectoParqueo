@@ -17,7 +17,7 @@ public class Usuario {
     private UUID id;
 
     @Column(name="ci", nullable=false, unique=true)
-    private int ci;
+    private String ci;
 
     @Column(name="username", nullable=false, unique=true)
     private String username;
@@ -25,11 +25,11 @@ public class Usuario {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "nombreCompleto", nullable=false)
+    @Column(name = "nombreCompleto")
     private String nombreCompleto;
 
     @Column(name = "nroCelular")
-    private int nroCelular;
+    private String nroCelular;
 
     public UUID getId() {
         return id;
@@ -39,11 +39,11 @@ public class Usuario {
         this.id = id;
     }
 
-    public int getCi() {
+    public String getCi() {
         return ci;
     }
 
-    public void setCi(int ci) {
+    public void setCi(String ci) {
         this.ci = ci;
     }
 
@@ -71,11 +71,11 @@ public class Usuario {
         this.nombreCompleto = nombreCompleto;
     }
 
-    public int getNroCelular() {
+    public String getNroCelular() {
         return nroCelular;
     }
 
-    public void setNroCelular(int nroCelular) {
+    public void setNroCelular(String nroCelular) {
         this.nroCelular = nroCelular;
     }
 

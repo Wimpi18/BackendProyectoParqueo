@@ -1,8 +1,8 @@
 package backendProyectoParqueo.model;
 
 public enum TipoCliente {
-    ADMINISTRATIVO,
-    DOCENTE_COMPLETO,
-    DOCENTE_HORARIO
+    Administrativo,
+    Docente_a_dedicacion_exclusiva,
+    Docente_a_tiempo_horario
 }
 
