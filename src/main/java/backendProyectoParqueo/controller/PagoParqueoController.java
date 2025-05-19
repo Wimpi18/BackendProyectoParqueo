@@ -10,22 +10,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.model.PagoParqueo;
-import backendProyectoParqueo.repository.PagoParqueoRepository;
+import backendProyectoParqueo.service.PagoParqueoService;
 
 @RestController
 @RequestMapping("/api/pago-parqueo")
 public class PagoParqueoController {
 
+    private final PagoParqueoService pagoParqueoService;
+
     @Autowired
-    private PagoParqueoRepository pagoParqueoRepository;
+    public PagoParqueoController(PagoParqueoService pagoParqueoService) {
+        this.pagoParqueoService = pagoParqueoService;
+    }
 
     @GetMapping
     public List<PagoParqueo> getAllPagoParqueos() {
-        return pagoParqueoRepository.findAll();
+        return pagoParqueoService.findAll();
     }
 
     @PostMapping("/crear")
-    public PagoParqueo createPagoParqueo(@RequestBody PagoParqueo pagoParqueo) {
-        return pagoParqueoRepository.save(pagoParqueo);
+    public int createPagoParqueo(@RequestBody PagoParqueo pagoParqueo) {
+        return 0;
     }
 }
