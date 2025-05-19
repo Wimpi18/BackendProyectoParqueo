@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tarifa", uniqueConstraints = { // Nombre de la tabla en minúsculas
-    // Los nombres de columna en UniqueConstraint deben coincidir con los de la BD
+@Table(name = "tarifa", uniqueConstraints = { 
     @UniqueConstraint(columnNames = {"tipo_vehiculo", "tipo_cliente", "fecha_inicio"})
 })
 public class Tarifa {
@@ -23,13 +22,13 @@ public class Tarifa {
     @Column(name = "tipo_cliente", nullable = false)
     private TipoCliente tipoCliente;
 
-    @Column(name = "monto", nullable = false) // tipo 'numeric' en BD
+    @Column(name = "monto", nullable = false) 
     private BigDecimal monto;
 
-    @Column(name = "fecha_inicio", nullable = false) // Mapea a 'fecha_inicio'
-    private LocalDate fechaInicio; // El nombre de la propiedad Java puede seguir siendo camelCase
+    @Column(name = "fecha_inicio", nullable = false)
+    private LocalDate fechaInicio; 
 
-    // Constructores (sin cambios)
+    // Constructores
     public Tarifa() {
     }
 
@@ -40,7 +39,7 @@ public class Tarifa {
         this.fechaInicio = fechaInicio;
     }
 
-    // Getters y Setters (sin cambios en su lógica, pero los nombres de las propiedades son importantes para JPA)
+    // Getters y Setters 
     public Integer getId() {
         return id;
     }
@@ -88,7 +87,7 @@ public class Tarifa {
                 ", tipoVehiculo=" + tipoVehiculo +
                 ", tipoCliente=" + tipoCliente +
                 ", monto=" + monto +
-                ", fechaInicio=" + fechaInicio + // Java sigue usando camelCase para el nombre de la propiedad
+                ", fechaInicio=" + fechaInicio + 
                 '}';
     }
 }
