@@ -1,0 +1,93 @@
+package backendProyectoParqueo.controller;
+
+import backendProyectoParqueo.model.Tarifa;
+import backendProyectoParqueo.repository.TarifaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@CrossOrigin(origins = "*") 
+@RestController
+@RequestMapping("/api/tarifas") // Endpoint base para las tarifas
+public class TarifaController {
+
+    @Autowired
+    private TarifaRepository tarifaRepository;
+
+    // Obtener todas las tarifas
+    @GetMapping
+    public ResponseEntity<List<Tarifa>> getAllTarifas() {
+        List<Tarifa> tarifas = tarifaRepository.findAll();
+        if (tarifas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(tarifas);
+    }
+
+    // Obtener una tarifa por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Tarifa> getTarifaById(@PathVariable Integer id) {
+        Optional<Tarifa> tarifaData = tarifaRepository.findById(id);
+        if (tarifaData.isPresent()) {
+            return ResponseEntity.ok(tarifaData.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Crear una nueva tarifa
+    @PostMapping
+    public ResponseEntity<Tarifa> createTarifa(@RequestBody Tarifa tarifa) {
+        try {
+
+            Tarifa nuevaTarifa = tarifaRepository.save(new Tarifa(
+                    tarifa.getTipoVehiculo(),
+                    tarifa.getTipoCliente(),
+                    tarifa.getMonto(),
+                    tarifa.getFechaInicio()
+            ));
+            return new ResponseEntity<>(nuevaTarifa, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Actualizar una tarifa existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Tarifa> updateTarifa(@PathVariable Integer id, @RequestBody Tarifa tarifaDetails) {
+        Optional<Tarifa> tarifaData = tarifaRepository.findById(id);
+
+        if (tarifaData.isPresent()) {
+            Tarifa tarifaExistente = tarifaData.get();
+            tarifaExistente.setTipoVehiculo(tarifaDetails.getTipoVehiculo());
+            tarifaExistente.setTipoCliente(tarifaDetails.getTipoCliente());
+            tarifaExistente.setMonto(tarifaDetails.getMonto());
+            tarifaExistente.setFechaInicio(tarifaDetails.getFechaInicio());
+            try {
+                return new ResponseEntity<>(tarifaRepository.save(tarifaExistente), HttpStatus.OK);
+            } catch (Exception e) {
+                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // O un error más específico
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Eliminar una tarifa
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteTarifa(@PathVariable Integer id) {
+        try {
+            if (!tarifaRepository.existsById(id)) {
+                return ResponseEntity.notFound().build();
+            }
+            tarifaRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+}
