@@ -1,14 +1,19 @@
 package backendProyectoParqueo.controller;
 
-import backendProyectoParqueo.model.Usuario;
-import backendProyectoParqueo.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import backendProyectoParqueo.model.Usuario;
+import backendProyectoParqueo.repository.UsuarioRepository;
+
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/usuario")
 public class UsuarioController {
 
     @Autowired
@@ -24,5 +29,3 @@ public class UsuarioController {
         return usuarioRepository.save(usuario);
     }
 }
-
-
