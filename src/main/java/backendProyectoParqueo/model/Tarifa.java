@@ -4,31 +4,32 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tarifa", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"tipovehiculo", "tipocliente", "fechainicio"})
+@Table(name = "tarifa", uniqueConstraints = { // Nombre de la tabla en minúsculas
+    // Los nombres de columna en UniqueConstraint deben coincidir con los de la BD
+    @UniqueConstraint(columnNames = {"tipo_vehiculo", "tipo_cliente", "fecha_inicio"})
 })
 public class Tarifa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id") // Coincide con 'id'
     private Integer id;
 
-    @Enumerated(EnumType.STRING) 
-    @Column(name = "tipovehiculo", nullable = false)
-    private TipoVehiculo tipoVehiculo; 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_vehiculo", nullable = false)
+    private TipoVehiculo tipoVehiculo;
 
-    @Enumerated(EnumType.STRING) 
-    @Column(name = "tipocliente", nullable = false)
-    private TipoCliente tipoCliente; 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_cliente", nullable = false)
+    private TipoCliente tipoCliente;
 
-    @Column(name = "monto", nullable = false) 
+    @Column(name = "monto", nullable = false) // tipo 'numeric' en BD
     private BigDecimal monto;
 
-    @Column(name = "fechainicio", nullable = false)
-    private LocalDate fechaInicio;
+    @Column(name = "fecha_inicio", nullable = false) // Mapea a 'fecha_inicio'
+    private LocalDate fechaInicio; // El nombre de la propiedad Java puede seguir siendo camelCase
 
-    // Constructores
+    // Constructores (sin cambios)
     public Tarifa() {
     }
 
@@ -39,7 +40,7 @@ public class Tarifa {
         this.fechaInicio = fechaInicio;
     }
 
-    // Getters y Setters
+    // Getters y Setters (sin cambios en su lógica, pero los nombres de las propiedades son importantes para JPA)
     public Integer getId() {
         return id;
     }
@@ -87,7 +88,7 @@ public class Tarifa {
                 ", tipoVehiculo=" + tipoVehiculo +
                 ", tipoCliente=" + tipoCliente +
                 ", monto=" + monto +
-                ", fechaInicio=" + fechaInicio +
+                ", fechaInicio=" + fechaInicio + // Java sigue usando camelCase para el nombre de la propiedad
                 '}';
     }
 }
