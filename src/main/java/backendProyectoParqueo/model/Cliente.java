@@ -19,6 +19,11 @@ public class Cliente {
     @Column(name = "id", columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private Usuario usuario;
+
     @Column(name = "entidad", nullable = true)
     private String entidad;
 
@@ -47,6 +52,15 @@ public class Cliente {
     public void setId(UUID id) {
         this.id = id;
     }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
 
     public String getEntidad() {
         return entidad;

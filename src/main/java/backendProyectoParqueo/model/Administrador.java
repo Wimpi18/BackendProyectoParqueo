@@ -1,20 +1,34 @@
 package backendProyectoParqueo.model;
- import jakarta.persistence.*;
- import java.util.UUID;
 
- @Entity
- @Table (name = "administrador")
+import jakarta.persistence.*;
+import java.util.UUID;
+
+@Entity
+@Table(name = "administrador")
 public class Administrador {
+
     @Id
-     @GeneratedValue
-    @Column(name = "id", columnDefinition = "uuid", updatable = false, nullable = false)
+    @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
 
-     public UUID getId() {
-         return id;
-     }
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private Usuario usuario;
 
-     public void setId(UUID id) {
-         this.id = id;
-     }
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 }
