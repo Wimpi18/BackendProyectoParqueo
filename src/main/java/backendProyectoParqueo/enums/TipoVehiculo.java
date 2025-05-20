@@ -1,4 +1,4 @@
-package backendProyectoParqueo.model;
+package backendProyectoParqueo.enums;
 
 public enum TipoVehiculo {
     Auto,
