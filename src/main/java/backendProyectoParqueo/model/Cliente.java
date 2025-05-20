@@ -1,7 +1,20 @@
 package backendProyectoParqueo.model;
 
-import jakarta.persistence.*;
 import java.util.UUID;
+
+import backendProyectoParqueo.model.enums.TipoCliente;
+import backendProyectoParqueo.utils.TipoClienteConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cliente")
@@ -12,16 +25,20 @@ public class Cliente {
     @Column(name = "id", columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private Usuario usuario;
+
     @Column(name = "entidad", nullable = true)
     private String entidad;
 
     @Column(name = "foto", nullable = false)
     private byte[] foto;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TipoClienteConverter.class)
     @Column(name = "tipo", nullable = false)
     private TipoCliente tipo;
-
 
     public Cliente() {
     }
@@ -32,7 +49,6 @@ public class Cliente {
         this.tipo = tipo;
     }
 
-
     public UUID getId() {
         return id;
     }
@@ -40,6 +56,15 @@ public class Cliente {
     public void setId(UUID id) {
         this.id = id;
     }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
 
     public String getEntidad() {
         return entidad;

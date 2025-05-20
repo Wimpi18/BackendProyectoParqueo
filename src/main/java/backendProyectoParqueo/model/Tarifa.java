@@ -1,7 +1,10 @@
 package backendProyectoParqueo.model;
+import backendProyectoParqueo.model.enums.TipoCliente;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+
 
 @Entity
 @Table(name = "tarifa", uniqueConstraints = { 

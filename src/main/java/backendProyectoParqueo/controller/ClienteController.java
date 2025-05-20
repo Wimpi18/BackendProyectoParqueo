@@ -1,28 +1,35 @@
 package backendProyectoParqueo.controller;
 
-import backendProyectoParqueo.model.Cajero;
-import backendProyectoParqueo.model.Cliente;
-import backendProyectoParqueo.repository.ClienteRepository;
-import backendProyectoParqueo.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import backendProyectoParqueo.model.Cliente;
+import backendProyectoParqueo.service.ClienteService;
 
 @RestController
 @RequestMapping("/api/cliente")
 public class ClienteController {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteService clienteService;
 
-    @GetMapping("/getCliente")
+    @Autowired
+    public ClienteController(ClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
+
+    @GetMapping()
     public List<Cliente> getAllCliente() {
-        return clienteRepository.findAll();
+        return clienteService.findAll();
     }
 
     @PostMapping
     public Cliente createCliente(@RequestBody Cliente cliente) {
-        return clienteRepository.save(cliente);
+        return clienteService.save(cliente);
     }
 }
