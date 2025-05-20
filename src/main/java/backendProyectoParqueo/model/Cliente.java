@@ -2,7 +2,9 @@ package backendProyectoParqueo.model;
 
 import java.util.UUID;
 
+import backendProyectoParqueo.utils.TipoClienteConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,10 +27,9 @@ public class Cliente {
     @Column(name = "foto", nullable = false)
     private byte[] foto;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TipoClienteConverter.class)
     @Column(name = "tipo", nullable = false)
     private TipoCliente tipo;
-
 
     public Cliente() {
     }
@@ -38,7 +39,6 @@ public class Cliente {
         this.foto = foto;
         this.tipo = tipo;
     }
-
 
     public UUID getId() {
         return id;
