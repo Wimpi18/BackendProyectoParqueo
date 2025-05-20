@@ -17,4 +17,8 @@ public class PagoParqueoService {
     public List<PagoParqueo> findAll() {
         return pagoParqueoRepository.findAll();
     }
+
+    public PagoParqueo create(PagoParqueo entity){
+        return pagoParqueoRepository.save(entity);
+    }
 }

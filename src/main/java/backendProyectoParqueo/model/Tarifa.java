@@ -1,48 +1,63 @@
 package backendProyectoParqueo.model;
-import backendProyectoParqueo.model.enums.TipoCliente;
-import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
+import org.hibernate.annotations.Check;
 
+import backendProyectoParqueo.enums.TipoVehiculo;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "tarifa", uniqueConstraints = { 
-    @UniqueConstraint(columnNames = {"tipo_vehiculo", "tipo_cliente", "fecha_inicio"})
-})
+@Table(name = "tarifa", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "tipo_vehiculo", "tipo_cliente", "fecha_inicio" }) })
+// Revisar que el TipoCliente.java contenga los mismo valores en sus enums
+@Check(constraints = "tipo_cliente IN ('Administrativo', 'Docente a dedicación exclusiva', 'Docente a tiempo horario')")
 public class Tarifa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id") // Coincide con 'id'
     private Integer id;
+
+    @OneToMany(mappedBy = "tarifa")
+    private List<PagoParqueo> pagoParqueos;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_vehiculo", nullable = false)
     private TipoVehiculo tipoVehiculo;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_cliente", nullable = false)
-    private TipoCliente tipoCliente;
+    private String tipoCliente;
 
-    @Column(name = "monto", nullable = false) 
+    @Column(name = "monto", nullable = false)
     private BigDecimal monto;
 
     @Column(name = "fecha_inicio", nullable = false)
-    private LocalDate fechaInicio; 
+
+    private LocalDate fechaInicio;
 
     // Constructores
     public Tarifa() {
     }
 
-    public Tarifa(TipoVehiculo tipoVehiculo, TipoCliente tipoCliente, BigDecimal monto, LocalDate fechaInicio) {
+    public Tarifa(TipoVehiculo tipoVehiculo, String tipoCliente, BigDecimal monto, LocalDate fechaInicio) {
         this.tipoVehiculo = tipoVehiculo;
         this.tipoCliente = tipoCliente;
         this.monto = monto;
         this.fechaInicio = fechaInicio;
     }
 
-    // Getters y Setters 
+    // Getters y Setters
     public Integer getId() {
         return id;
     }
@@ -59,11 +74,11 @@ public class Tarifa {
         this.tipoVehiculo = tipoVehiculo;
     }
 
-    public TipoCliente getTipoCliente() {
+    public String getTipoCliente() {
         return tipoCliente;
     }
 
-    public void setTipoCliente(TipoCliente tipoCliente) {
+    public void setTipoCliente(String tipoCliente) {
         this.tipoCliente = tipoCliente;
     }
 
@@ -83,6 +98,14 @@ public class Tarifa {
         this.fechaInicio = fechaInicio;
     }
 
+    public List<PagoParqueo> getPagoParqueos() {
+        return pagoParqueos;
+    }
+
+    public void setPagoParqueos(List<PagoParqueo> pagoParqueos) {
+        this.pagoParqueos = pagoParqueos;
+    }
+
     @Override
     public String toString() {
         return "Tarifa{" +
@@ -90,7 +113,7 @@ public class Tarifa {
                 ", tipoVehiculo=" + tipoVehiculo +
                 ", tipoCliente=" + tipoCliente +
                 ", monto=" + monto +
-                ", fechaInicio=" + fechaInicio + 
+                ", fechaInicio=" + fechaInicio +
                 '}';
     }
 }

@@ -32,7 +32,8 @@ public class PagoParqueoController {
     }
 
     @PostMapping()
-    public int createPagoParqueo(@RequestBody PagoParqueo pagoParqueo) {
-        return 0;
+    public ResponseEntity<ApiResponse<PagoParqueo>> createPagoParqueo(@RequestBody PagoParqueo pagoParqueo) {
+        return ApiResponseUtil.success("El pago del parqueo fue realizado correctamente",
+                pagoParqueoService.create(pagoParqueo));
     }
 }
