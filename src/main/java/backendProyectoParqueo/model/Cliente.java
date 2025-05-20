@@ -2,13 +2,10 @@ package backendProyectoParqueo.model;
 
 import java.util.UUID;
 
-import backendProyectoParqueo.model.enums.TipoCliente;
-import backendProyectoParqueo.utils.TipoClienteConverter;
+import org.hibernate.annotations.Check;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -18,6 +15,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cliente")
+// Revisar que el TipoCliente.java contenga los mismo valores en sus enums
+@Check(constraints = "tipo IN ('Administrativo', 'Docente a dedicación exclusiva', 'Docente a tiempo horario')")
 public class Cliente {
 
     @Id
@@ -36,14 +35,13 @@ public class Cliente {
     @Column(name = "foto", nullable = false)
     private byte[] foto;
 
-    @Convert(converter = TipoClienteConverter.class)
     @Column(name = "tipo", nullable = false)
-    private TipoCliente tipo;
+    private String tipo;
 
     public Cliente() {
     }
 
-    public Cliente(String entidad, byte[] foto, TipoCliente tipo) {
+    public Cliente(String entidad, byte[] foto, String tipo) {
         this.entidad = entidad;
         this.foto = foto;
         this.tipo = tipo;
@@ -65,7 +63,6 @@ public class Cliente {
         this.usuario = usuario;
     }
 
-
     public String getEntidad() {
         return entidad;
     }
@@ -82,11 +79,11 @@ public class Cliente {
         this.foto = foto;
     }
 
-    public TipoCliente getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoCliente tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 }
