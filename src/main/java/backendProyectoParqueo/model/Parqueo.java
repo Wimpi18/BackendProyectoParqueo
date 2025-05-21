@@ -3,6 +3,8 @@ package backendProyectoParqueo.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,6 +40,7 @@ public class Parqueo {
     private Vehiculo vehiculo;
 
     @OneToMany(mappedBy = "parqueo")
+    @JsonIgnore
     private List<PagoParqueo> pagoParqueos;
 
     @Enumerated(EnumType.STRING)

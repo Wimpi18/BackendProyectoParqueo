@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.hibernate.annotations.Check;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import backendProyectoParqueo.enums.TipoVehiculo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +32,7 @@ public class Tarifa {
     private Integer id;
 
     @OneToMany(mappedBy = "tarifa")
+    @JsonIgnore
     private List<PagoParqueo> pagoParqueos;
 
     @Enumerated(EnumType.STRING)
