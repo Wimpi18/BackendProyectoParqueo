@@ -2,6 +2,7 @@ package backendProyectoParqueo.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import backendProyectoParqueo.enums.TipoVehiculo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,11 +14,12 @@ import lombok.NoArgsConstructor;
 public class VehiculoDTO {
     private Long id;
     private String placa;
-    private String tipo;
-    // private byte[] fotoDelantera;
-    // private byte[] fotoTrasera;
+    private TipoVehiculo tipo;
+    private byte[] fotoDelantera;
+    private byte[] fotoTrasera;
 
-    public VehiculoDTO(String placa) {
+    public VehiculoDTO(String placa, TipoVehiculo tipo) {
         this.placa = placa;
+        this.tipo = tipo;
     }
 }

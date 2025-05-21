@@ -1,5 +1,7 @@
 package backendProyectoParqueo.model;
 
+import backendProyectoParqueo.enums.TipoVehiculo;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,9 +30,4 @@ public class Vehiculo {
 
     @Column(name = "foto_trasera", nullable = false)
     private byte[] fotoTrasera;
-
-    public enum TipoVehiculo {
-        Auto,
-        Moto
-    }
 }

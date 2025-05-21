@@ -15,7 +15,7 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Long> {
     boolean existsByPlaca(String placa);
 
     @Query("""
-                SELECT new backendProyectoParqueo.dto.VehiculoDTO(v.placa)
+                SELECT new backendProyectoParqueo.dto.VehiculoDTO(v.placa, v.tipo)
                 FROM Vehiculo v
                 JOIN Parqueo p ON p.vehiculo.id = v.id AND p.estado != 'Inactivo'
                 JOIN Cliente c ON c.id = p.cliente.id
