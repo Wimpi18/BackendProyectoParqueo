@@ -13,12 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import backendProyectoParqueo.dto.ClienteDTO;
 import backendProyectoParqueo.model.Vehiculo;
 import backendProyectoParqueo.service.VehiculoService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/vehiculos")
+@RequestMapping("/api/vehiculo")
 @RequiredArgsConstructor
 public class VehiculoController {
 
@@ -27,6 +28,11 @@ public class VehiculoController {
     @GetMapping
     public ResponseEntity<List<Vehiculo>> listarVehiculos() {
         return ResponseEntity.ok(vehiculoService.listarTodos());
+    }
+
+    @GetMapping("/activos")
+    public ResponseEntity<List<Object>> listarVehiculosActivos(@RequestBody ClienteDTO request) {
+        return ResponseEntity.ok(vehiculoService.obtenerVehiculosActivosPorClienteId(request.getId()));
     }
 
     @PostMapping

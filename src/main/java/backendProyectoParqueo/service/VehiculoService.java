@@ -2,6 +2,7 @@ package backendProyectoParqueo.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,16 @@ import lombok.RequiredArgsConstructor;
 public class VehiculoService {
 
     @Autowired
-    private final VehiculoRepository vehiculoRepository;
+    private VehiculoRepository vehiculoRepository;
 
     private final ParqueoRepository parqueoRepository;
 
     public List<Vehiculo> listarTodos() {
         return vehiculoRepository.findAll();
+    }
+
+    public List<Object> obtenerVehiculosActivosPorClienteId(UUID id) {
+        return vehiculoRepository.obtenerVehiculosActivosPorClienteId(id);
     }
 
     public Vehiculo crearVehiculo(Vehiculo vehiculo) {
