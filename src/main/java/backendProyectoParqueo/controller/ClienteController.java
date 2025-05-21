@@ -1,35 +1,38 @@
 package backendProyectoParqueo.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import backendProyectoParqueo.model.Cliente;
+import backendProyectoParqueo.dto.ApiResponse;
+import backendProyectoParqueo.dto.ClienteDTO;
 import backendProyectoParqueo.service.ClienteService;
+import backendProyectoParqueo.util.ApiResponseUtil;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/cliente")
 public class ClienteController {
 
-    private final ClienteService clienteService;
-
     @Autowired
-    public ClienteController(ClienteService clienteService) {
-        this.clienteService = clienteService;
+    private ClienteService clienteService;
+
+    @PostMapping("/registrar")
+    public ResponseEntity<ApiResponse<Void>> registrarCliente(@Valid @RequestBody ClienteDTO dto) {
+        try {
+            clienteService.registrarCliente(dto);
+            return ApiResponseUtil.successMessage("Cliente registrado exitosamente.");
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al registrar cliente", ex);
+        }
     }
 
-    @GetMapping()
-    public List<Cliente> getAllCliente() {
-        return clienteService.findAll();
-    }
-
-    @PostMapping
-    public Cliente createCliente(@RequestBody Cliente cliente) {
-        return clienteService.save(cliente);
-    }
 }
