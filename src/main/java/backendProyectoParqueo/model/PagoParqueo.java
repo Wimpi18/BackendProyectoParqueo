@@ -31,8 +31,9 @@ public class PagoParqueo {
     @JoinColumn(name = "id_tarifa", nullable = false)
     private Tarifa tarifa;
 
-    @Column(name = "id_parqueo", nullable = false)
-    private int idParqueo;
+    @ManyToOne
+    @JoinColumn(name = "id_parqueo", nullable = false)
+    private Parqueo parqueo;
 
     @Column(name = "id_cajero", columnDefinition = "UUID")
     private UUID idCajero;
@@ -79,12 +80,12 @@ public class PagoParqueo {
         this.tarifa = tarifa;
     }
 
-    public int getIdParqueo() {
-        return idParqueo;
+    public Parqueo getIdParqueo() {
+        return parqueo;
     }
 
-    public void setIdParqueo(int idParqueo) {
-        this.idParqueo = idParqueo;
+    public void setIdParqueo(Parqueo parqueo) {
+        this.parqueo = parqueo;
     }
 
     public UUID getIdCajero() {

@@ -1,11 +1,22 @@
 package backendProyectoParqueo.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Entity
 @Data
@@ -25,6 +36,9 @@ public class Parqueo {
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_vehiculo")
     private Vehiculo vehiculo;
+
+    @OneToMany(mappedBy = "parqueo")
+    private List<PagoParqueo> pagoParqueos;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
