@@ -20,7 +20,8 @@ public class UsuarioDTO {
     private String nombreCompleto;
     private String nroCelular;
 
-    public UsuarioDTO(String ci, String nombreCompleto) {
+    public UsuarioDTO(UUID id, String ci, String nombreCompleto) {
+        this.id = id;
         this.ci = ci;
         this.nombreCompleto = nombreCompleto;
     }

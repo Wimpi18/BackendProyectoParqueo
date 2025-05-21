@@ -1,5 +1,7 @@
 package backendProyectoParqueo.dto;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -7,7 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,8 +19,8 @@ public class ClienteDTO extends UsuarioDTO {
     private byte[] foto;
     private String tipo;
 
-    public ClienteDTO(String ci, String nombreCompleto, String tipo) {
-        super(ci, nombreCompleto);
+    public ClienteDTO(UUID id, String ci, String nombreCompleto, String tipo) {
+        super(id, ci, nombreCompleto);
         this.tipo = tipo;
     }
 }
