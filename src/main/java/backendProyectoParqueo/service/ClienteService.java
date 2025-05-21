@@ -19,6 +19,10 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
+    public List<Object> findAllClientesNoInactivos() {
+        return clienteRepository.findAllClientesNoInactivos();
+    }
+
     public Cliente save(@RequestBody Cliente cliente) {
         return clienteRepository.save(cliente);
     }

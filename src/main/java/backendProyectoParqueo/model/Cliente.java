@@ -1,5 +1,6 @@
 package backendProyectoParqueo.model;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.Check;
@@ -10,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -28,6 +30,9 @@ public class Cliente {
     @MapsId
     @JoinColumn(name = "id")
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Parqueo> parqueos;
 
     @Column(name = "entidad", nullable = true)
     private String entidad;
@@ -85,5 +90,9 @@ public class Cliente {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public List<Parqueo> getParqueos() {
+        return parqueos;
     }
 }
