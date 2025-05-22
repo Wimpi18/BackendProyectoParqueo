@@ -18,7 +18,7 @@ import backendProyectoParqueo.service.ParqueoService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/parqueo")
+@RequestMapping("parqueo")
 @RequiredArgsConstructor
 public class ParqueoController {
 

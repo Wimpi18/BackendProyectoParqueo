@@ -17,7 +17,7 @@ import backendProyectoParqueo.service.PagoParqueoService;
 import backendProyectoParqueo.util.ApiResponseUtil;
 
 @RestController
-@RequestMapping("/api/pago-parqueo")
+@RequestMapping("pago-parqueo")
 public class PagoParqueoController {
 
     private final PagoParqueoService pagoParqueoService;

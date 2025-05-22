@@ -13,7 +13,7 @@ import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
 
 @RestController
-@RequestMapping("/api/usuario")
+@RequestMapping("usuario")
 public class UsuarioController {
 
     @Autowired

@@ -13,7 +13,7 @@ import backendProyectoParqueo.model.Administrador;
 import backendProyectoParqueo.repository.AdministradorRepository;
 
 @RestController
-@RequestMapping("/api/administrador")
+@RequestMapping("administrador")
 public class AdministradorController {
 
     @Autowired

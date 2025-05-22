@@ -16,7 +16,7 @@ import backendProyectoParqueo.service.ClienteService;
 import backendProyectoParqueo.util.ApiResponseUtil;
 
 @RestController
-@RequestMapping("/api/cliente")
+@RequestMapping("cliente")
 public class ClienteController {
 
     private final ClienteService clienteService;

@@ -13,7 +13,7 @@ import backendProyectoParqueo.model.Cajero;
 import backendProyectoParqueo.repository.CajeroRepository;
 
 @RestController
-@RequestMapping("/api/cajero")
+@RequestMapping("cajero")
 public class CajeroController {
 
     @Autowired

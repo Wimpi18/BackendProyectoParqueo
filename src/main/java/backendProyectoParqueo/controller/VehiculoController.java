@@ -19,7 +19,7 @@ import backendProyectoParqueo.service.VehiculoService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/vehiculo")
+@RequestMapping("vehiculo")
 @RequiredArgsConstructor
 public class VehiculoController {
 

@@ -24,7 +24,7 @@ import backendProyectoParqueo.util.ApiResponseUtil;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/tarifa") // Endpoint base para las tarifas
+@RequestMapping("tarifa") // Endpoint base para las tarifas
 @RequiredArgsConstructor
 public class TarifaController {
 
