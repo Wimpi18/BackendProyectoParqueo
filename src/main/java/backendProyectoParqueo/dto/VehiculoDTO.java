@@ -13,12 +13,14 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VehiculoDTO {
     private Long id;
+    private Long idParqueo;
     private String placa;
     private TipoVehiculo tipo;
     private byte[] fotoDelantera;
     private byte[] fotoTrasera;
 
-    public VehiculoDTO(String placa, TipoVehiculo tipo) {
+    public VehiculoDTO(Long idParqueo, String placa, TipoVehiculo tipo) {
+        this.idParqueo = idParqueo;
         this.placa = placa;
         this.tipo = tipo;
     }
