@@ -1,9 +1,10 @@
 package backendProyectoParqueo.repository;
 
-import backendProyectoParqueo.model.Cajero;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.UUID;
+import backendProyectoParqueo.model.Cajero;
 
 public interface CajeroRepository extends JpaRepository<Cajero, UUID> {
 }

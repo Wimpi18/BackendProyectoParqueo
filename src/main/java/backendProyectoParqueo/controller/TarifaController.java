@@ -45,9 +45,11 @@ public class TarifaController {
 
     @GetMapping("/vigente")
     public ResponseEntity<ApiResponse<Tarifa>> findTarifaVigente(@RequestBody TarifaDTO tarifaDTO) {
-        String message = "Última tarifa vigente para " + tarifaDTO.getTipoCliente() + " y " + tarifaDTO.getTipoVehiculo();
+        String message = "Última tarifa vigente para " + tarifaDTO.getTipoCliente() + " y "
+                + tarifaDTO.getTipoVehiculo();
         return ApiResponseUtil.success(message,
-                tarifaService.findTarifaByTipoClienteYVehiculo(tarifaDTO.getTipoCliente(), tarifaDTO.getTipoVehiculo()));
+                tarifaService.findTarifaByTipoClienteYVehiculo(tarifaDTO.getTipoCliente(),
+                        tarifaDTO.getTipoVehiculo()));
     }
 
     // Obtener una tarifa por ID

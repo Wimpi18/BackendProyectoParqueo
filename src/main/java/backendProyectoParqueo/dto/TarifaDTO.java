@@ -19,5 +19,5 @@ public class TarifaDTO {
     private TipoVehiculo tipoVehiculo;
     private String tipoCliente;
     private BigDecimal monto;
-    private LocalDate fechaInicio;    
+    private LocalDate fechaInicio;
 }

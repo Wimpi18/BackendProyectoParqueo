@@ -12,12 +12,27 @@ public class ErrorDetail {
     }
 
     // Getters y setters
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
+    public String getMessage() {
+        return message;
+    }
 
-    public String getField() { return field; }
-    public void setField(String field) { this.field = field; }
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-    public String getDetails() { return details; }
-    public void setDetails(String details) { this.details = details; }
+    public String getField() {
+        return field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
 }

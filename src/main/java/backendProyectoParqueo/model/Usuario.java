@@ -16,10 +16,10 @@ public class Usuario {
     @Column(name = "id", columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name="ci", nullable=false, unique=true)
+    @Column(name = "ci", nullable = false, unique = true)
     private String ci;
 
-    @Column(name="username", nullable=false, unique=true)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Column(name = "password", nullable = false)
