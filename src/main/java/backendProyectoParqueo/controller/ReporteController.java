@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/reportes") // Usar un path base versionado es una buena práctica
+@RequestMapping("/reporte") // Usar un path base versionado es una buena práctica
 public class ReporteController {
 
     private final ReporteService reporteService;
