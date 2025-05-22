@@ -34,7 +34,7 @@ public class PagoParqueoService {
             if (ultimoMesPagado == null || fechaInicio.isAfter(ultimoMesPagado)) {
                 return fechaInicio;
             } else {
-                return ultimoMesPagado;
+                return ultimoMesPagado.plusMonths(1);
             }
         }
 
