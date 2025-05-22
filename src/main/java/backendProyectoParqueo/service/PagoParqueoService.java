@@ -1,5 +1,6 @@
 package backendProyectoParqueo.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,19 @@ public class PagoParqueoService {
     }
 
     public Object getFechaCorrespondienteDePagoParqueo(UUID clienteId, Long parqueoId) {
-        return pagoParqueoRepository.obtenerUltimoPago(clienteId, parqueoId);
+        Object result = pagoParqueoRepository.obtenerUltimoPago(clienteId, parqueoId);
+
+        if (result instanceof Object[] row) {
+            LocalDate fechaInicio = LocalDate.parse(row[0].toString());
+            LocalDate ultimoMesPagado = row[1] != null ? LocalDate.parse(row[1].toString()) : null;
+
+            if (ultimoMesPagado == null || fechaInicio.isAfter(ultimoMesPagado)) {
+                return fechaInicio;
+            } else {
+                return ultimoMesPagado;
+            }
+        }
+
+        return null;
     }
 }
