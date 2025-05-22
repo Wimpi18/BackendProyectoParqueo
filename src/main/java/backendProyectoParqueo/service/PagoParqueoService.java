@@ -11,8 +11,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.repository.PagoParqueoRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class PagoParqueoService {
 
     @Autowired
@@ -22,6 +24,7 @@ public class PagoParqueoService {
         return pagoParqueoRepository.findAll();
     }
 
+    // @Transactional
     public PagoParqueo create(PagoParqueo entity) {
         return pagoParqueoRepository.save(entity);
     }

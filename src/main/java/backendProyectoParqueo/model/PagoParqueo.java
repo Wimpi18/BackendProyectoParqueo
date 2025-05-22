@@ -5,9 +5,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
-import backendProyectoParqueo.validation.ValidMeses;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,8 +17,10 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.Data;
 
-@Entity()
+@Entity
+@Data
 @Table(name = "pago_parqueo")
 public class PagoParqueo {
     @Id()
@@ -35,8 +35,9 @@ public class PagoParqueo {
     @JoinColumn(name = "id_parqueo", nullable = false)
     private Parqueo parqueo;
 
-    @Column(name = "id_cajero", columnDefinition = "UUID")
-    private UUID idCajero;
+    @ManyToOne
+    @JoinColumn(name = "id_cajero", columnDefinition = "UUID")
+    private Cajero cajero;
 
     @Column(name = "monto_pagado", columnDefinition = "numeric", nullable = false)
     @Min(value = 1, message = "El monto a pagar debe ser mayor o igual a 1 Bs.")
@@ -47,11 +48,11 @@ public class PagoParqueo {
     private Timestamp fechaHoraPago = Timestamp.from(Instant.now());
 
     @Column(nullable = false)
-    @ValidMeses(message = "Debe ingresar al menos un mes válido")
+    // @ValidMeses(message = "Debe ingresar al menos un mes válido")
     private Date[] meses;
 
     @Column(name = "nro_espacio_pagado", columnDefinition = "smallint")
-    private int nroEspacioPagado;
+    private Integer nroEspacioPagado;
 
     // Métodos de persistencia
     @PrePersist
@@ -61,70 +62,5 @@ public class PagoParqueo {
             ZonedDateTime fechaHoraBolivia = ZonedDateTime.now(zonaBolivia);
             this.fechaHoraPago = Timestamp.valueOf(fechaHoraBolivia.toLocalDateTime());
         }
-    }
-
-    // Métodos getters y setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Tarifa getTarifa() {
-        return tarifa;
-    }
-
-    public void setTarifa(Tarifa tarifa) {
-        this.tarifa = tarifa;
-    }
-
-    public Parqueo getIdParqueo() {
-        return parqueo;
-    }
-
-    public void setIdParqueo(Parqueo parqueo) {
-        this.parqueo = parqueo;
-    }
-
-    public UUID getIdCajero() {
-        return idCajero;
-    }
-
-    public void setIdCajero(UUID idCajero) {
-        this.idCajero = idCajero;
-    }
-
-    public double getMontoPagado() {
-        return montoPagado;
-    }
-
-    public void setMontoPagado(double montoPagado) {
-        this.montoPagado = montoPagado;
-    }
-
-    public Timestamp getFechaHoraPago() {
-        return fechaHoraPago;
-    }
-
-    public void setFechaHoraPago(Timestamp fechaHoraPago) {
-        this.fechaHoraPago = fechaHoraPago;
-    }
-
-    public Date[] getMeses() {
-        return meses;
-    }
-
-    public void setMeses(Date[] meses) {
-        this.meses = meses;
-    }
-
-    public int getNroEspacioPagado() {
-        return nroEspacioPagado;
-    }
-
-    public void setNroEspacioPagado(int nroEspacioPagado) {
-        this.nroEspacioPagado = nroEspacioPagado;
     }
 }

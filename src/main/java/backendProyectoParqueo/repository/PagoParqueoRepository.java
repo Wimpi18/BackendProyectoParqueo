@@ -25,4 +25,6 @@ public interface PagoParqueoRepository extends JpaRepository<PagoParqueo, Long> 
     Object obtenerUltimoPago(
             @Param("clienteId") UUID clienteId,
             @Param("parqueoId") Long parqueoId);
+
+    
 }
