@@ -47,5 +47,4 @@ public class VehiculoService {
 
         vehiculoRepository.deleteById(id);
     }
-
 }
