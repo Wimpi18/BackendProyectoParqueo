@@ -8,4 +8,6 @@ import backendProyectoParqueo.model.Parqueo;
 
 public interface ParqueoRepository extends JpaRepository<Parqueo, Long> {
     List<Parqueo> findByVehiculo_Id(Long id);
+
+    List<Parqueo> findByEstado(Parqueo.EstadoParqueo estado);
 }

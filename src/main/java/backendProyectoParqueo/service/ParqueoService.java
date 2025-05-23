@@ -2,6 +2,8 @@ package backendProyectoParqueo.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -32,4 +34,19 @@ public class ParqueoService {
         }
         parqueoRepository.deleteById(id);
     }
+
+    public Short obtenerPrimerPuestoLibre() {
+        int maxPuestos = 100;
+        List<Parqueo> activos = parqueoRepository.findByEstado(Parqueo.EstadoParqueo.Activo);
+        Set<Short> ocupados = activos.stream()
+                .map(Parqueo::getNroEspacio)
+                .collect(Collectors.toSet());
+
+        for (short i = 1; i <= maxPuestos; i++) {
+            if (!ocupados.contains(i))
+                return i;
+        }
+        return null;
+    }
+
 }
