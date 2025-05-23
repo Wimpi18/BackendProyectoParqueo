@@ -1,7 +1,9 @@
 package backendProyectoParqueo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,18 +37,23 @@ public class ParqueoService {
         parqueoRepository.deleteById(id);
     }
 
-    public Short obtenerPrimerPuestoLibre() {
-        int maxPuestos = 100;
-        List<Parqueo> activos = parqueoRepository.findByEstado(Parqueo.EstadoParqueo.Activo);
-        Set<Short> ocupados = activos.stream()
+    public List<Short> obtenerPuestosLibres() {
+        int totalEspacios = 113;
+
+        List<Parqueo> ocupados = parqueoRepository.findByEstado(Parqueo.EstadoParqueo.Activo);
+        Set<Short> espaciosOcupados = ocupados.stream()
                 .map(Parqueo::getNroEspacio)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        for (short i = 1; i <= maxPuestos; i++) {
-            if (!ocupados.contains(i))
-                return i;
+        List<Short> disponibles = new ArrayList<>();
+        for (short i = 1; i <= totalEspacios; i++) {
+            if (!espaciosOcupados.contains(i)) {
+                disponibles.add(i);
+            }
         }
-        return null;
+
+        return disponibles;
     }
 
 }
