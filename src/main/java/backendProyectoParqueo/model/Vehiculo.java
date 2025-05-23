@@ -33,4 +33,13 @@ public class Vehiculo {
         Auto,
         Moto
     }
+
+    @Column(length = 50, nullable = false)
+    private String marca;
+
+    @Column(length = 50, nullable = false)
+    private String modelo;
+
+    @Column(length = 30, nullable = false)
+    private String color;
 }

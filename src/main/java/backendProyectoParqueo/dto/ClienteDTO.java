@@ -1,5 +1,7 @@
 package backendProyectoParqueo.dto;
 
+import java.util.List;
+
 import backendProyectoParqueo.model.TipoCliente;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,4 +37,8 @@ public class ClienteDTO {
 
     @NotBlank(message = "Foto de usuario es obligatoria")
     private String fotoUsuarioBase64;
+
+    @Size(min = 1, message = "Debe registrar al menos un vehículo")
+    @NotNull(message = "La lista de vehículos no puede ser nula")
+    private List<VehiculoDTO> vehiculos;
 }

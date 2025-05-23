@@ -24,11 +24,6 @@ public class ParqueoController {
 
     private final ParqueoService parqueoService;
 
-    @GetMapping
-    public ResponseEntity<List<Parqueo>> listarParqueos() {
-        return ResponseEntity.ok(parqueoService.listarTodos());
-    }
-
     @PostMapping
     public ResponseEntity<?> crearParqueo(@RequestBody Parqueo parqueo) {
         try {
