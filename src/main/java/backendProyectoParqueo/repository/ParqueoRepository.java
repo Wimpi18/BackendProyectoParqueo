@@ -37,6 +37,6 @@ public interface ParqueoRepository extends JpaRepository<Parqueo, Long> {
         Optional<Parqueo> findActivoByClienteIdAndVehiculoPlacaWithDetails(@Param("clienteId") UUID clienteId,
                         @Param("placa") String placa);
 
-        @Query("SELECT p.nroEspacio FROM Parqueo p WHERE p.estado = 'Activo'")
+        @Query("SELECT p.nroEspacio FROM Parqueo p WHERE p.estado = 'Activo' or p.estado = 'Bloqueado'")
         List<Short> findEspaciosOcupados();
 }
