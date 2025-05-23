@@ -29,7 +29,7 @@ public class ClienteDTO {
     @NotBlank(message = "Password es obligatorio")
     private String password;
 
-    @NotBlank(message = "Entidad es obligatoria")
+    // @NotBlank(message = "Entidad es obligatoria")
     private String entidad;
 
     @NotNull(message = "TipoCliente es obligatorio")
@@ -41,4 +41,8 @@ public class ClienteDTO {
     @Size(min = 1, message = "Debe registrar al menos un vehículo")
     @NotNull(message = "La lista de vehículos no puede ser nula")
     private List<VehiculoDTO> vehiculos;
+
+    @Min(value = 1, message = "El número de espacio debe ser válido")
+    private Short nroEspacio;
+
 }

@@ -74,7 +74,7 @@ public class ClienteService {
         // Crear cliente
         Cliente cliente = new Cliente();
         cliente.setUsuario(usuario);
-        cliente.setEntidad(dto.getEntidad());
+        cliente.setEntidad(null);
         cliente.setTipo(dto.getTipoCliente());
         cliente.setFoto(Base64.getDecoder().decode(dto.getFotoUsuarioBase64()));
         clienteRepository.save(cliente);
@@ -94,23 +94,33 @@ public class ClienteService {
 
             // Si el tipoCliente es Administrativo o Docente exclusiva, asignar puesto
             // parqueo
+            Parqueo parqueo = new Parqueo();
+            parqueo.setCliente(cliente);
+            parqueo.setVehiculo(vehiculo);
+            parqueo.setEstado(Parqueo.EstadoParqueo.Activo);
+            parqueo.setFechaInicio(LocalDate.now());
+
             if (dto.getTipoCliente() == TipoCliente.ADMINISTRATIVO
                     || dto.getTipoCliente() == TipoCliente.DOCENTE_EXCLUSIVA) {
 
-                Short puestoLibre = parqueoService.obtenerPrimerPuestoLibre();
-                if (puestoLibre == null) {
-                    throw new IllegalArgumentException("No hay puestos libres para asignar parqueo.");
+                Short espacioSolicitado = dto.getNroEspacio();
+                if (espacioSolicitado == null) {
+                    throw new IllegalArgumentException("Debe seleccionar un espacio de parqueo.");
                 }
 
-                Parqueo parqueo = new Parqueo();
-                parqueo.setCliente(cliente);
-                parqueo.setVehiculo(vehiculo);
-                parqueo.setEstado(Parqueo.EstadoParqueo.Activo);
-                parqueo.setFechaInicio(LocalDate.now());
-                parqueo.setNroEspacio(puestoLibre);
+                boolean ocupado = parqueoRepository.existsByNroEspacioAndEstado(espacioSolicitado,
+                        Parqueo.EstadoParqueo.Activo);
+                if (ocupado) {
+                    throw new IllegalArgumentException("El espacio " + espacioSolicitado + " ya fue ocupado.");
+                }
 
-                parqueoRepository.save(parqueo);
+                parqueo.setNroEspacio(espacioSolicitado);
+            } else {
+                // DOCENTE_HORARIO: no se asigna número de espacio
+                parqueo.setNroEspacio(null);
             }
+
+            parqueoRepository.save(parqueo);
 
         }
     }
