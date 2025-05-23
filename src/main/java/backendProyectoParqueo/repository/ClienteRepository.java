@@ -13,7 +13,7 @@ import backendProyectoParqueo.model.Cliente;
 public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
     @Query("""
-                SELECT new backendProyectoParqueo.dto.ClienteDTO(u.id, u.ci, u.nombreCompleto, c.tipo)
+                SELECT new backendProyectoParqueo.dto.ClienteDTO(u.id, u.ci, u.nombre, u.apellido, c.tipo)
                 FROM Cliente c
                 JOIN Usuario u ON u.id = c.id
                 JOIN Parqueo p ON p.cliente.id = c.id
