@@ -9,7 +9,7 @@ import jakarta.validation.constraints.*;
 
 @Data
 @NoArgsConstructor
-public class ClienteDTO {
+public class RegistroClienteDTO {
     @NotBlank(message = "CI es obligatorio")
     private String ci;
 
@@ -40,7 +40,7 @@ public class ClienteDTO {
 
     @Size(min = 1, message = "Debe registrar al menos un vehículo")
     @NotNull(message = "La lista de vehículos no puede ser nula")
-    private List<VehiculoDTO> vehiculos;
+    private List<RegistroVehiculoDTO> vehiculos;
 
     @Min(value = 1, message = "El número de espacio debe ser válido")
     private Short nroEspacio;

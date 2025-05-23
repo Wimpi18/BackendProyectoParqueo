@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import backendProyectoParqueo.dto.ApiResponse;
-import backendProyectoParqueo.dto.ClienteDTO;
+import backendProyectoParqueo.dto.RegistroClienteDTO;
 import backendProyectoParqueo.service.ClienteService;
 import backendProyectoParqueo.util.ApiResponseUtil;
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @PostMapping("/registrar")
-    public ResponseEntity<ApiResponse<Void>> registrarCliente(@Valid @RequestBody ClienteDTO dto) {
+    public ResponseEntity<ApiResponse<Void>> registrarCliente(@Valid @RequestBody RegistroClienteDTO dto) {
         try {
             clienteService.registrarCliente(dto);
             return ApiResponseUtil.successMessage("Cliente registrado exitosamente.");

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class VehiculoDTO {
+public class RegistroVehiculoDTO {
 
     @NotBlank(message = "Placa es obligatoria")
     @Size(max = 10, message = "Placa debe tener máximo 10 caracteres")

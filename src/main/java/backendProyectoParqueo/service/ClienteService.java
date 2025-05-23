@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import backendProyectoParqueo.dto.ClienteDTO;
-import backendProyectoParqueo.dto.VehiculoDTO;
+import backendProyectoParqueo.dto.RegistroClienteDTO;
+import backendProyectoParqueo.dto.RegistroVehiculoDTO;
 import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.TipoCliente;
@@ -42,7 +42,7 @@ public class ClienteService {
     private ParqueoService parqueoService;
 
     @Transactional
-    public void registrarCliente(ClienteDTO dto) throws IOException {
+    public void registrarCliente(RegistroClienteDTO dto) throws IOException {
         // Validar que CI o correo no existan
         if (usuarioRepository.existsByCi(dto.getCi()) || usuarioRepository.existsByCorreo(dto.getCorreo())) {
             throw new IllegalArgumentException("CI o correo ya están registrados.");
@@ -50,7 +50,7 @@ public class ClienteService {
 
         // Validar placas duplicadas en la lista de vehículos enviada
         Set<String> placas = new HashSet<>();
-        for (VehiculoDTO v : dto.getVehiculos()) {
+        for (RegistroVehiculoDTO v : dto.getVehiculos()) {
             if (!placas.add(v.getPlaca())) {
                 throw new IllegalArgumentException("Placas duplicadas en la lista enviada.");
             }
@@ -80,7 +80,7 @@ public class ClienteService {
         clienteRepository.save(cliente);
 
         // Registrar vehículos asociados
-        for (VehiculoDTO vDto : dto.getVehiculos()) {
+        for (RegistroVehiculoDTO vDto : dto.getVehiculos()) {
             Vehiculo vehiculo = new Vehiculo();
             vehiculo.setPlaca(vDto.getPlaca());
             vehiculo.setTipo(vDto.getTipo());
