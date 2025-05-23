@@ -1,9 +1,10 @@
 package backendProyectoParqueo.repository;
 
-import backendProyectoParqueo.model.Administrador;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.UUID;
+import backendProyectoParqueo.model.Administrador;
 
 public interface AdministradorRepository extends JpaRepository<Administrador, UUID> {
 }

@@ -60,7 +60,6 @@ public class ClienteService {
             }
 
         }
-
         Usuario usuario = new Usuario();
         usuario.setCi(dto.getCi());
         usuario.setNombre(dto.getNombre());
@@ -123,6 +122,12 @@ public class ClienteService {
             parqueoRepository.save(parqueo);
 
         }
+    public List<Object> findAllClientesNoInactivos() {
+        return clienteRepository.findAllClientesNoInactivos();
+    }
+
+    public Cliente save(@RequestBody Cliente cliente) {
+        return clienteRepository.save(cliente);
     }
 
 }

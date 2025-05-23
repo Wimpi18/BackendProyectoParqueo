@@ -9,19 +9,16 @@ public class ApiResponseUtil {
 
     public static <T> ResponseEntity<ApiResponse<T>> success(String message, T data) {
         return ResponseEntity.ok(
-            new ApiResponse<>("success", HttpStatus.OK.value(), message, data)
-        );
+                new ApiResponse<>("success", HttpStatus.OK.value(), message, data));
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> created(String message, T data) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            new ApiResponse<>("success", HttpStatus.CREATED.value(), message, data)
-        );
+                new ApiResponse<>("success", HttpStatus.CREATED.value(), message, data));
     }
 
     public static ResponseEntity<ApiResponse<Void>> successMessage(String message) {
         return ResponseEntity.ok(
-            new ApiResponse<>("success", HttpStatus.OK.value(), message, null)
-        );
+                new ApiResponse<>("success", HttpStatus.OK.value(), message, null));
     }
 }

@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
+import backendProyectoParqueo.dto.PagoParqueoDTO;
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.service.PagoParqueoService;
 import backendProyectoParqueo.util.ApiResponseUtil;
 
 @RestController
-@RequestMapping("/api/pago-parqueo")
+@RequestMapping("pago-parqueo")
 public class PagoParqueoController {
 
     private final PagoParqueoService pagoParqueoService;
@@ -31,8 +32,17 @@ public class PagoParqueoController {
         return ApiResponseUtil.success("Todos los pagos realizados al parqueo", pagoParqueoService.findAll());
     }
 
+    @GetMapping("/fecha-correspondiente-pago-parqueo")
+    public ResponseEntity<ApiResponse<Object>> fechaCorrespondienteDePagoParqueo(
+            @RequestBody PagoParqueoDTO pagoParqueoDTO) {
+        return ApiResponseUtil.success("Fecha inicial correspondiente para realizar el pago del parqueo",
+                pagoParqueoService.getFechaCorrespondienteDePagoParqueo(pagoParqueoDTO.getIdCajero(),
+                        pagoParqueoDTO.getIdParqueo()));
+    }
+
     @PostMapping()
-    public int createPagoParqueo(@RequestBody PagoParqueo pagoParqueo) {
-        return 0;
+    public ResponseEntity<ApiResponse<PagoParqueo>> createPagoParqueo(@RequestBody PagoParqueo pagoParqueo) {
+        return ApiResponseUtil.success("El pago del parqueo fue realizado correctamente",
+                pagoParqueoService.create(pagoParqueo));
     }
 }
