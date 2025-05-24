@@ -38,6 +38,13 @@ public class VehiculoController {
                 vehiculoService.obtenerVehiculosActivosPorClienteId(request.getId()));
     }
 
+    @GetMapping("/reporte")
+    public ResponseEntity<ApiResponse<List<Object>>> listarVehiculos(@RequestBody ClienteDTO request) {
+        return ApiResponseUtil.success("Todos los vehículos pertenecientes al cliente",
+                vehiculoService.obtenerVehiculosPorClienteId(request.getId()));
+    }
+
+
     @PostMapping
     public ResponseEntity<?> crearVehiculo(@RequestBody Vehiculo vehiculo) {
         try {

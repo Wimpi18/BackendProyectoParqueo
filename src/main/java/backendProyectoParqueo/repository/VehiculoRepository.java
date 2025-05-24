@@ -3,6 +3,7 @@ package backendProyectoParqueo.repository;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +23,18 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Long> {
                 WHERE c.id = :id
             """)
     List<Object> obtenerVehiculosActivosPorClienteId(@Param("id") UUID id);
+
+    @Query("""
+                SELECT new backendProyectoParqueo.dto.VehiculoDTO(p.id, v.placa, v.tipo, v.marca, v.modelo, v.color)
+                FROM Vehiculo v
+                JOIN Parqueo p ON p.vehiculo.id = v.id
+                JOIN Cliente c ON c.id = p.cliente.id
+                WHERE c.id = :id
+            """)
+    List<Object> obtenerVehiculosPorClienteId(@Param("id") UUID id);
+    
+    
+    Optional<Vehiculo> findByPlaca(String placa);
+
+
 }
