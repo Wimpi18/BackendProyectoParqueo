@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
+
     @Id
     @GeneratedValue
     @Column(name = "id", columnDefinition = "uuid", updatable = false, nullable = false)
@@ -19,17 +20,23 @@ public class Usuario {
     @Column(name = "ci", nullable = false, unique = true)
     private String ci;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
+    @Column(name = "nombre", nullable = false)
+    private String nombre;
+
+    @Column(name = "apellido", nullable = false)
+    private String apellido;
+
+    @Column(name = "correo", nullable = false, unique = true)
+    private String correo;
+
+    @Column(name = "nro_celular", nullable = false)
+    private String nroCelular;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "nombreCompleto")
-    private String nombreCompleto;
-
-    @Column(name = "nroCelular")
-    private String nroCelular;
+    @Column(name = "username", nullable = true, unique = true)
+    private String username;
 
     public UUID getId() {
         return id;
@@ -47,28 +54,28 @@ public class Usuario {
         this.ci = ci;
     }
 
-    public String getUsername() {
-        return username;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getPassword() {
-        return password;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
-    public String getNombreCompleto() {
-        return nombreCompleto;
+    public String getCorreo() {
+        return correo;
     }
 
-    public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
     public String getNroCelular() {
@@ -79,4 +86,19 @@ public class Usuario {
         this.nroCelular = nroCelular;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }
