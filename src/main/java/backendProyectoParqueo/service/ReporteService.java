@@ -1,21 +1,4 @@
-// src/main/java/backendProyectoParqueo/service/ReporteService.java
 package backendProyectoParqueo.service;
-
-import backendProyectoParqueo.dto.DetalleMesEstadoCuentaDTO;
-import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
-import backendProyectoParqueo.dto.VehiculoParqueoActivoDTO;
-import backendProyectoParqueo.model.PagoParqueo;
-import backendProyectoParqueo.model.Parqueo;
-import backendProyectoParqueo.model.Tarifa;
-import backendProyectoParqueo.repository.PagoParqueoRepository;
-import backendProyectoParqueo.repository.ParqueoRepository;
-import backendProyectoParqueo.repository.TarifaRepository; // Necesitas este repo
-import jakarta.persistence.EntityNotFoundException;
-
-import org.hibernate.ObjectNotFoundException; // Para excepciones
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -25,12 +8,25 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashSet; // Necesitas este repo
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.Set; // Para excepciones
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import backendProyectoParqueo.dto.DetalleMesEstadoCuentaDTO;
+import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
+import backendProyectoParqueo.dto.VehiculoParqueoActivoDTO;
+import backendProyectoParqueo.model.PagoParqueo;
+import backendProyectoParqueo.model.Parqueo;
+import backendProyectoParqueo.model.Tarifa;
+import backendProyectoParqueo.repository.PagoParqueoRepository;
+import backendProyectoParqueo.repository.ParqueoRepository;
+import backendProyectoParqueo.repository.TarifaRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ReporteService {
@@ -41,8 +37,8 @@ public class ReporteService {
 
     @Autowired
     public ReporteService(ParqueoRepository parqueoRepository,
-                          PagoParqueoRepository pagoParqueoRepository,
-                          TarifaRepository tarifaRepository) {
+            PagoParqueoRepository pagoParqueoRepository,
+            TarifaRepository tarifaRepository) {
         this.parqueoRepository = parqueoRepository;
         this.pagoParqueoRepository = pagoParqueoRepository;
         this.tarifaRepository = tarifaRepository;
@@ -56,7 +52,8 @@ public class ReporteService {
     @Transactional(readOnly = true)
     public ReporteEstadoCuentaVehiculoDTO getEstadoCuentaVehiculo(UUID clienteId, String placa) {
         Parqueo parqueo = parqueoRepository.findActivoByClienteIdAndVehiculoPlacaWithDetails(clienteId, placa)
-        .orElseThrow(() -> new EntityNotFoundException("Parqueo activo no encontrado para el cliente " + clienteId + " y placa " + placa));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Parqueo activo no encontrado para el cliente " + clienteId + " y placa " + placa));
 
         List<PagoParqueo> pagosDelParqueo = pagoParqueoRepository.findAllByParqueoIdWithTarifa(parqueo.getId());
 
@@ -74,8 +71,10 @@ public class ReporteService {
         for (PagoParqueo pago : pagosDelParqueo) {
             if (pago.getMeses() != null && pago.getMeses().length > 0) {
                 // El monto_pagado en la tabla es el total por ESE pago.
-                // Si el pago cubre varios meses, el monto por mes es monto_pagado / cantidad_de_meses_en_ese_pago
-                BigDecimal montoPorMesEnEstePago = BigDecimal.valueOf(pago.getMontoPagado()).divide(BigDecimal.valueOf(pago.getMeses().length), 2, BigDecimal.ROUND_HALF_UP);
+                // Si el pago cubre varios meses, el monto por mes es monto_pagado /
+                // cantidad_de_meses_en_ese_pago
+                BigDecimal montoPorMesEnEstePago = BigDecimal.valueOf(pago.getMontoPagado())
+                        .divide(BigDecimal.valueOf(pago.getMeses().length), 2, BigDecimal.ROUND_HALF_UP);
 
                 for (Date mesSqlDate : pago.getMeses()) {
                     LocalDate mesLocalDate = mesSqlDate.toLocalDate();
@@ -86,8 +85,7 @@ public class ReporteService {
                             periodoPago.format(periodoFormatter),
                             "Pagado",
                             montoPorMesEnEstePago, // Usar el monto por mes calculado
-                            pago.getFechaHoraPago() != null ? pago.getFechaHoraPago().toLocalDateTime() : null
-                    ));
+                            pago.getFechaHoraPago() != null ? pago.getFechaHoraPago().toLocalDateTime() : null));
                 }
             }
         }
@@ -100,14 +98,13 @@ public class ReporteService {
 
         Tarifa tarifaAplicable = tarifaRepository.obtenerTarifaVigente(
                 parqueo.getCliente().getTipo(),
-                parqueo.getVehiculo().getTipo()
-        );
+                parqueo.getVehiculo().getTipo());
 
         if (tarifaAplicable == null) {
             // Log o advertencia: No se puede calcular monto pendiente si no hay tarifa
             System.err.println("Advertencia: No se encontró tarifa vigente para cliente tipo " +
-                               parqueo.getCliente().getTipo() + " y vehículo tipo " +
-                               parqueo.getVehiculo().getTipo() + ". Los montos pendientes pueden no ser precisos.");
+                    parqueo.getCliente().getTipo() + " y vehículo tipo " +
+                    parqueo.getVehiculo().getTipo() + ". Los montos pendientes pueden no ser precisos.");
         }
 
         YearMonth mesIterador = mesInicioParqueo;
@@ -117,7 +114,8 @@ public class ReporteService {
                 if (tarifaAplicable != null) {
                     montoEsteMesPendiente = tarifaAplicable.getMonto();
                 }
-                // Si no hay tarifa, el monto pendiente será 0, o podrías manejarlo de otra forma
+                // Si no hay tarifa, el monto pendiente será 0, o podrías manejarlo de otra
+                // forma
 
                 detallesMes.add(new DetalleMesEstadoCuentaDTO(
                         mesIterador.format(periodoFormatter),

@@ -7,8 +7,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "usuario")
 public class Usuario {
 
@@ -20,9 +22,11 @@ public class Usuario {
     @Column(name = "ci", nullable = false, unique = true)
     private String ci;
 
+    // Se guardan los nombres
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
+    // Se guardan los apellidos
     @Column(name = "apellido", nullable = false)
     private String apellido;
 
@@ -37,68 +41,4 @@ public class Usuario {
 
     @Column(name = "username", nullable = true, unique = true)
     private String username;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getCi() {
-        return ci;
-    }
-
-    public void setCi(String ci) {
-        this.ci = ci;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getNroCelular() {
-        return nroCelular;
-    }
-
-    public void setNroCelular(String nroCelular) {
-        this.nroCelular = nroCelular;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 }
