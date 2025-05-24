@@ -22,4 +22,13 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Long> {
                 WHERE c.id = :id
             """)
     List<Object> obtenerVehiculosActivosPorClienteId(@Param("id") UUID id);
+
+    @Query("""
+                SELECT new backendProyectoParqueo.dto.VehiculoDTO(p.id, v.placa, v.tipo, v.marca, v.modelo, v.color)
+                FROM Vehiculo v
+                JOIN Parqueo p ON p.vehiculo.id = v.id
+                JOIN Cliente c ON c.id = p.cliente.id
+                WHERE c.id = :id
+            """)
+    List<Object> obtenerVehiculosPorClienteId(@Param("id") UUID id);
 }

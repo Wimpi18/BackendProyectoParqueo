@@ -37,6 +37,16 @@ public class VehiculoService {
         return result;
     }
 
+    public List<Object> obtenerVehiculosPorClienteId(UUID id) {
+        List<Object> result = vehiculoRepository.obtenerVehiculosPorClienteId(id);
+        if (result.isEmpty())
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "El cliente no tiene vehículos asociados a su cuenta");
+
+        return result;
+    }
+
     public Vehiculo crearVehiculo(Vehiculo vehiculo) {
         if (vehiculoRepository.existsByPlaca(vehiculo.getPlaca())) {
             throw new IllegalArgumentException("La placa ya está registrada.");
