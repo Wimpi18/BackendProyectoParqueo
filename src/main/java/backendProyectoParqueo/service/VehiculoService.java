@@ -47,6 +47,9 @@ public class VehiculoService {
         return result;
     }
 
+
+    
+
     public Vehiculo crearVehiculo(Vehiculo vehiculo) {
         if (vehiculoRepository.existsByPlaca(vehiculo.getPlaca())) {
             throw new IllegalArgumentException("La placa ya está registrada.");
