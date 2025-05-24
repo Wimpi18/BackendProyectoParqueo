@@ -2,6 +2,7 @@
 package backendProyectoParqueo.controller;
 
 import backendProyectoParqueo.dto.ApiResponse;
+import backendProyectoParqueo.dto.ClientePlacaRequestDTO;
 import backendProyectoParqueo.model.Cliente; // Importa el nuevo DTO
 import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
@@ -91,6 +92,40 @@ public class ReporteController {
                     .body(new ApiResponse<>("error", HttpStatus.NOT_FOUND.value(), e.getMessage(), null));
         } catch (Exception e) {
              System.err.println("Error procesando /reporte/vehiculo/estados-cuenta (POST): " + e.getMessage());
+             e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("error", HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error al generar los reportes: " + e.getMessage(), null));
+        }
+    }
+
+     @GetMapping("/cliente-vehiculo/estados-cuenta")
+    public ResponseEntity<ApiResponse<List<ReporteEstadoCuentaVehiculoDTO>>> getTodosEstadosCuentaPorClienteYPlacaEnBody(
+            @RequestBody ClientePlacaRequestDTO requestDTO) {
+        try {
+            UUID clienteId = requestDTO.getClienteId();
+            String placa = requestDTO.getPlaca();
+
+            if (clienteId == null || placa == null || placa.trim().isEmpty()) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(new ApiResponse<>("error", HttpStatus.BAD_REQUEST.value(), "Los campos 'clienteId' y 'placa' son requeridos.", null));
+            }
+
+            List<ReporteEstadoCuentaVehiculoDTO> reportes = reporteService.getEstadosCuentaPorClienteYPlaca(clienteId, placa);
+            
+            if (reportes.isEmpty()) {
+                return ApiResponseUtil.success("No se encontraron registros de parqueo para el cliente " + clienteId + " y placa " + placa + ".", new ArrayList<>());
+            }
+            return ApiResponseUtil.success("Estados de cuenta para el cliente " + clienteId + " y placa " + placa + " obtenidos exitosamente.", reportes);
+        } catch (EntityNotFoundException e) { 
+            // Esta excepción podría no ser lanzada directamente por getEstadosCuentaPorClienteYPlaca si solo devuelve lista vacía.
+            // Pero se mantiene por si alguna lógica interna la lanza (ej. si el cliente o vehículo base no existieran)
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("error", HttpStatus.NOT_FOUND.value(), e.getMessage(), null));
+        } catch (Exception e) {
+             System.err.println("Error procesando /reporte/cliente-vehiculo/estados-cuenta (POST): " + e.getMessage());
              e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

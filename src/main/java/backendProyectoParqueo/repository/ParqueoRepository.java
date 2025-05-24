@@ -49,6 +49,16 @@ public interface ParqueoRepository extends JpaRepository<Parqueo, Long> {
             """)
         List<Parqueo> findAllByVehiculoIdWithDetails(@Param("vehiculoId") Long vehiculoId);
         
-
+@Query("""
+            SELECT p
+            FROM Parqueo p
+            JOIN FETCH p.vehiculo v
+            JOIN FETCH p.cliente c
+            WHERE c.id = :clienteId AND v.placa = :placa
+            """)
+    List<Parqueo> findAllByClienteIdAndVehiculoPlacaWithDetailsQuery(
+            @Param("clienteId") UUID clienteId,
+            @Param("placa") String placa
+    );
         
 }
