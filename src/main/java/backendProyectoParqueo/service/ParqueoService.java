@@ -2,6 +2,8 @@ package backendProyectoParqueo.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
@@ -31,5 +33,14 @@ public class ParqueoService {
             throw new NoSuchElementException("Parqueo no encontrado");
         }
         parqueoRepository.deleteById(id);
+    }
+
+    public List<Short> obtenerEspaciosDisponibles() {
+        List<Short> ocupados = parqueoRepository.findEspaciosOcupados();
+
+        return IntStream.rangeClosed(1, 113)
+                .mapToObj(i -> (short) i)
+                .filter(i -> !ocupados.contains(i))
+                .collect(Collectors.toList());
     }
 }

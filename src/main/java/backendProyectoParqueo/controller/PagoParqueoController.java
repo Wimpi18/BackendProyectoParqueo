@@ -2,7 +2,6 @@ package backendProyectoParqueo.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,17 +14,14 @@ import backendProyectoParqueo.dto.PagoParqueoDTO;
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.service.PagoParqueoService;
 import backendProyectoParqueo.util.ApiResponseUtil;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("pago-parqueo")
+@RequiredArgsConstructor
 public class PagoParqueoController {
 
     private final PagoParqueoService pagoParqueoService;
-
-    @Autowired
-    public PagoParqueoController(PagoParqueoService pagoParqueoService) {
-        this.pagoParqueoService = pagoParqueoService;
-    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<PagoParqueo>>> getAllPagoParqueos() {

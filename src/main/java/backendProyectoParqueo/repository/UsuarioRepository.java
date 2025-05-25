@@ -7,4 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import backendProyectoParqueo.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
+    boolean existsByCi(String ci);
+
+    boolean existsByUsername(String username);
+
+    boolean existsByCorreo(String correo);
 }

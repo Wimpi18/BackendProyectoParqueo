@@ -1,60 +1,36 @@
 package backendProyectoParqueo.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import backendProyectoParqueo.dto.TarifaDTO;
+import backendProyectoParqueo.enums.TipoCliente;
+import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Tarifa;
-import backendProyectoParqueo.repository.AdministradorRepository;
 import backendProyectoParqueo.repository.TarifaRepository;
-import backendProyectoParqueo.model.Administrador;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class TarifaService {
 
-    private final TarifaRepository tarifaRepository;
-    private final AdministradorRepository administradorRepository;
+    @Autowired
+    private TarifaRepository tarifaRepository;
 
-    public List<TarifaDTO> listarTarifas() {
-        return tarifaRepository.findAll().stream()
-                .map(t -> new TarifaDTO(
-                        null,
-                        null,
-                        t.getTipoVehiculo(),
-                        t.getTipoCliente(),
-                        t.getMonto(),
-                        t.getFechaInicio()))
-                .toList();
-    }
-
-    public TarifaDTO crearTarifa(TarifaDTO dto) {
-        if (dto.getMonto() == null || dto.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("El monto debe ser mayor a cero.");
+    public Tarifa findTarifaByTipoClienteYVehiculo(String tipoCliente, TipoVehiculo tipoVehiculo) {
+        TipoCliente tipoClienteEnum = null;
+        for (TipoCliente tc : TipoCliente.values()) {
+            if (tc.getLabel().equalsIgnoreCase(tipoCliente)) {
+                tipoClienteEnum = tc;
+                break;
+            }
         }
 
-        UUID adminId = dto.getIdAdministrador();
-        Administrador admin = administradorRepository.findById(adminId)
-                .orElseThrow(() -> new NoSuchElementException("Administrador no encontrado."));
+        if (tipoClienteEnum == null) {
+            throw new IllegalArgumentException("Tipo de cliente inválido: " + tipoCliente);
+        }
 
-        Tarifa tarifa = new Tarifa();
-        tarifa.setAdministrador(admin);
-        tarifa.setTipoVehiculo(dto.getTipoVehiculo());
-        tarifa.setTipoCliente(dto.getTipoCliente());
-        tarifa.setMonto(dto.getMonto());
-
-        Tarifa guardada = tarifaRepository.save(tarifa);
-        return new TarifaDTO(
-                guardada.getId(),
-                admin.getId(),
-                guardada.getTipoVehiculo(),
-                guardada.getTipoCliente(),
-                guardada.getMonto(),
-                guardada.getFechaInicio());
+        // tipoVehiculo ya es del tipo enum, no necesita validación adicional
+        return tarifaRepository.obtenerTarifaVigente(tipoClienteEnum.getLabel(), tipoVehiculo);
     }
 
 }

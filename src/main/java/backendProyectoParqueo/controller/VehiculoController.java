@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.ClienteDTO;
 import backendProyectoParqueo.model.Vehiculo;
 import backendProyectoParqueo.service.VehiculoService;
+import backendProyectoParqueo.util.ApiResponseUtil;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,9 +33,17 @@ public class VehiculoController {
     }
 
     @GetMapping("/activos")
-    public ResponseEntity<List<Object>> listarVehiculosActivos(@RequestBody ClienteDTO request) {
-        return ResponseEntity.ok(vehiculoService.obtenerVehiculosActivosPorClienteId(request.getId()));
+    public ResponseEntity<ApiResponse<List<Object>>> listarVehiculosActivos(@RequestBody ClienteDTO request) {
+        return ApiResponseUtil.success("Todos los vehículos pertenecientes al cliente",
+                vehiculoService.obtenerVehiculosActivosPorClienteId(request.getId()));
     }
+
+    @GetMapping("/reporte")
+    public ResponseEntity<ApiResponse<List<Object>>> listarVehiculos(@RequestBody ClienteDTO request) {
+        return ApiResponseUtil.success("Todos los vehículos pertenecientes al cliente",
+                vehiculoService.obtenerVehiculosPorClienteId(request.getId()));
+    }
+
 
     @PostMapping
     public ResponseEntity<?> crearVehiculo(@RequestBody Vehiculo vehiculo) {

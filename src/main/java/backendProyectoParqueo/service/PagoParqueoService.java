@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.repository.PagoParqueoRepository;
@@ -37,6 +39,11 @@ public class PagoParqueoService {
                 return ultimoMesPagado.plusMonths(1);
             }
         }
+
+        if (result == null)
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "El cliente no tiene asociado el parqueo seleccionado a su cuenta.");
 
         return null;
     }

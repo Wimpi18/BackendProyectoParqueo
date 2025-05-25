@@ -5,7 +5,9 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import backendProyectoParqueo.model.Vehiculo;
 import backendProyectoParqueo.repository.ParqueoRepository;
@@ -26,8 +28,27 @@ public class VehiculoService {
     }
 
     public List<Object> obtenerVehiculosActivosPorClienteId(UUID id) {
-        return vehiculoRepository.obtenerVehiculosActivosPorClienteId(id);
+        List<Object> result = vehiculoRepository.obtenerVehiculosActivosPorClienteId(id);
+        if (result.isEmpty())
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "El cliente no tiene vehículos asociados a su cuenta");
+
+        return result;
     }
+
+    public List<Object> obtenerVehiculosPorClienteId(UUID id) {
+        List<Object> result = vehiculoRepository.obtenerVehiculosPorClienteId(id);
+        if (result.isEmpty())
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "El cliente no tiene vehículos asociados a su cuenta");
+
+        return result;
+    }
+
+
+    
 
     public Vehiculo crearVehiculo(Vehiculo vehiculo) {
         if (vehiculoRepository.existsByPlaca(vehiculo.getPlaca())) {
