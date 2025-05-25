@@ -41,7 +41,7 @@ public class ReporteController {
      * Ejemplo: POST /reporte/cliente/vehiculos
      * Body: { "id": "uuid-aqui" }
      */
-    @GetMapping("/cliente/vehiculos") // Cambiado a @PostMapping
+    @GetMapping("/cliente/vehiculo") // Cambiado a @PostMapping
     public ResponseEntity<ApiResponse<List<Object>>> getTodosVehiculosPorCliente(
             @RequestBody Cliente requestDTO) { // Recibe el DTO
         try {
