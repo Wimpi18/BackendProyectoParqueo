@@ -2,8 +2,8 @@ package backendProyectoParqueo.enums;
 
 public enum TipoCliente {
     ADMINISTRATIVO("Administrativo"),
-    DOCENTE_EXCLUSIVA("Docente a dedicación exclusiva"),
-    DOCENTE_HORARIO("Docente a tiempo horario");
+    DOCENTE_DEDICACION_EXCLUSIVA("Docente a dedicación exclusiva"),
+    DOCENTE_TIEMPO_HORARIO("Docente a tiempo horario");
 
     private final String label;
 
@@ -12,6 +12,15 @@ public enum TipoCliente {
     }
 
     public String getLabel() {
-        return this.label;
+        return label;
+    }
+
+    public static TipoCliente fromLabel(String label) {
+        for (TipoCliente tipo : values()) {
+            if (tipo.label.equalsIgnoreCase(label)) {
+                return tipo;
+            }
+        }
+        throw new IllegalArgumentException("TipoCliente inválido: " + label);
     }
 }
