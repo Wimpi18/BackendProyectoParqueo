@@ -1,7 +1,8 @@
 package backendProyectoParqueo.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -16,8 +17,9 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TarifaDTO {
     private Integer id;
+    private UUID idAdministrador;
     private TipoVehiculo tipoVehiculo;
     private String tipoCliente;
     private BigDecimal monto;
-    private LocalDate fechaInicio;
+    private LocalDateTime fechaInicio;
 }

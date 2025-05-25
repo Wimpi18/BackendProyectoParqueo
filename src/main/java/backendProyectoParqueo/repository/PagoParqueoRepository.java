@@ -28,7 +28,8 @@ public interface PagoParqueoRepository extends JpaRepository<PagoParqueo, Long> 
             @Param("clienteId") UUID clienteId,
             @Param("parqueoId") Long parqueoId);
 
-    // Nuevo método para obtener todos los pagos de un parqueo, incluyendo la tarifa para el monto
+    // Nuevo método para obtener todos los pagos de un parqueo, incluyendo la tarifa
+    // para el monto
     @Query("""
             SELECT pp
             FROM PagoParqueo pp
