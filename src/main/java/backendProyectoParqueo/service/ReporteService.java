@@ -2,7 +2,6 @@
 package backendProyectoParqueo.service;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -24,12 +23,12 @@ import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Tarifa;
-import backendProyectoParqueo.model.Vehiculo; // Importar Vehiculo
-import backendProyectoParqueo.repository.PagoParqueoRepository;
+import backendProyectoParqueo.model.Vehiculo;
+import backendProyectoParqueo.repository.PagoParqueoRepository; // Importar Vehiculo
 import backendProyectoParqueo.repository.ParqueoRepository;
 import backendProyectoParqueo.repository.TarifaRepository;
-import backendProyectoParqueo.repository.VehiculoRepository; // Importar VehiculoRepository
-import jakarta.persistence.EntityNotFoundException;
+import backendProyectoParqueo.repository.VehiculoRepository;
+import jakarta.persistence.EntityNotFoundException; // Importar VehiculoRepository
 
 @Service
 public class ReporteService {
@@ -67,7 +66,7 @@ public class ReporteService {
 
   @Transactional(readOnly = true)
   public List<ReporteEstadoCuentaVehiculoDTO> getEstadosCuentaPorClienteYPlaca(UUID clienteId, String placa) {
-    List<Parqueo> parqueos = parqueoRepository.findAllByClienteIdAndVehiculoPlacaWithDetailsQuery(clienteId, placa); 
+    List<Parqueo> parqueos = parqueoRepository.findAllByClienteIdAndVehiculoPlacaWithDetailsQuery(clienteId, placa);
 
     if (parqueos.isEmpty()) {
       return new ArrayList<>();
@@ -126,8 +125,8 @@ public class ReporteService {
       if (pago.getMeses() != null && pago.getMeses().length > 0) {
         BigDecimal montoPorMesEnEstePago = BigDecimal.valueOf(pago.getMontoPagado());
 
-        for (Date mesSqlDate : pago.getMeses()) {
-          LocalDate mesLocalDate = mesSqlDate.toLocalDate();
+        for (LocalDate mesSqlDate : pago.getMeses()) {
+          LocalDate mesLocalDate = mesSqlDate;
           YearMonth periodoPago = YearMonth.from(mesLocalDate);
           mesesPagadosRegistrados.add(periodoPago);
 
