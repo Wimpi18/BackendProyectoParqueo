@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import backendProyectoParqueo.validation.ValidCliente;
 import backendProyectoParqueo.validation.ValidMeses;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -19,8 +20,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ValidCliente
 public class PagoParqueoDTO {
     private Long id;
+
+    @NotNull(message = "Debe proporcionar un id de usuario cliente.")
+    private UUID idCliente;
+
     @NotNull(message = "Debe proporcionar una tarifa válida.")
     private Integer idTarifa;
 
