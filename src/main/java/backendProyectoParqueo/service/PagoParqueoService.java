@@ -48,8 +48,13 @@ public class PagoParqueoService {
                 .orElseThrow(() -> new RuntimeException("Tarifa no encontrada"));
         Parqueo parqueo = parqueoService.findById(pagoParqueoDTO.getIdParqueo())
                 .orElseThrow(() -> new RuntimeException("Parqueo no encontrado"));
-        Cajero cajero = cajeroService.findById(pagoParqueoDTO.getIdCajero())
-                .orElseThrow(() -> new RuntimeException("Cajero no encontrado"));
+
+        Cajero cajero;
+        if (pagoParqueoDTO.getIdCajero() != null) {
+            cajero = cajeroService.findById(pagoParqueoDTO.getIdCajero())
+                    .orElseThrow(() -> new RuntimeException("Cajero no encontrado"));
+        } else
+            cajero = null;
 
         pagoParqueoEntity.setTarifa(tarifa);
         pagoParqueoEntity.setParqueo(parqueo);

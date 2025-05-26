@@ -1,6 +1,7 @@
 package backendProyectoParqueo.validation;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,16 @@ public class MesesValidator implements ConstraintValidator<ValidMeses, LocalDate
             // Verificamos que no haya elementos duplicados o nulos perdidos
             if (meses.size() != value.length) {
                 return false;
+            }
+
+            // Año actual y límite de 3 años hacia adelante
+            Year currentYear = Year.now();
+            Year maxYear = currentYear.plusYears(3);
+
+            for (YearMonth mes : meses) {
+                if (mes.isAfter(YearMonth.of(maxYear.getValue(), 12))) {
+                    return false;
+                }
             }
 
             // Verificamos que los meses sean consecutivos

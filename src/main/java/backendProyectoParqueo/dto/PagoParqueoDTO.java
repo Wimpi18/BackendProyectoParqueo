@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import backendProyectoParqueo.validation.ValidMeses;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,17 +21,23 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PagoParqueoDTO {
     private Long id;
+    @NotNull(message = "Debe proporcionar una tarifa válida.")
     private Integer idTarifa;
+
+    @NotNull(message = "Debe proporcionar un parqueo válido.")
     private Long idParqueo;
+
     private UUID idCajero;
 
     @Min(value = 1, message = "El monto a pagar debe ser mayor o igual a 1 Bs.")
-    @Max(value = 1000, message = "El monto a pagar debe ser menor o igual a 1000 Bs.")
+    @Max(value = 2000, message = "El monto a pagar debe ser menor o igual a 2000 Bs.")
     private double montoPagado;
 
     private Timestamp fechaHoraPago;
 
-    @ValidMeses(message = "Debe ingresar al menos un mes válido o secuencia continua de meses válido")
+    @ValidMeses(message = "Debe ingresar secuencia continua de meses válidos.")
+    @NotNull(message = "Debe especificar al menos un mes.")
+    @Size(min = 1, message = "Debe pagar al menos un mes.")
     private LocalDate[] meses;
 
     private int nroEspacioPagado;
