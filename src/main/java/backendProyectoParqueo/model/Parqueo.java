@@ -50,7 +50,7 @@ public class Parqueo {
     @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
-    @Column(name = "nro_espacio", nullable = false)
+    @Column(name = "nro_espacio", nullable = true)
     private Short nroEspacio;
 
     public enum EstadoParqueo {
