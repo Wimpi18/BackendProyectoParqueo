@@ -19,8 +19,10 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.Data;
 
-@Entity()
+@Entity
+@Data
 @Table(name = "pago_parqueo")
 public class PagoParqueo {
     @Id()
@@ -61,70 +63,5 @@ public class PagoParqueo {
             ZonedDateTime fechaHoraBolivia = ZonedDateTime.now(zonaBolivia);
             this.fechaHoraPago = Timestamp.valueOf(fechaHoraBolivia.toLocalDateTime());
         }
-    }
-
-    // Métodos getters y setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Tarifa getTarifa() {
-        return tarifa;
-    }
-
-    public void setTarifa(Tarifa tarifa) {
-        this.tarifa = tarifa;
-    }
-
-    public Parqueo getIdParqueo() {
-        return parqueo;
-    }
-
-    public void setIdParqueo(Parqueo parqueo) {
-        this.parqueo = parqueo;
-    }
-
-    public UUID getIdCajero() {
-        return idCajero;
-    }
-
-    public void setIdCajero(UUID idCajero) {
-        this.idCajero = idCajero;
-    }
-
-    public double getMontoPagado() {
-        return montoPagado;
-    }
-
-    public void setMontoPagado(double montoPagado) {
-        this.montoPagado = montoPagado;
-    }
-
-    public Timestamp getFechaHoraPago() {
-        return fechaHoraPago;
-    }
-
-    public void setFechaHoraPago(Timestamp fechaHoraPago) {
-        this.fechaHoraPago = fechaHoraPago;
-    }
-
-    public Date[] getMeses() {
-        return meses;
-    }
-
-    public void setMeses(Date[] meses) {
-        this.meses = meses;
-    }
-
-    public int getNroEspacioPagado() {
-        return nroEspacioPagado;
-    }
-
-    public void setNroEspacioPagado(int nroEspacioPagado) {
-        this.nroEspacioPagado = nroEspacioPagado;
     }
 }
