@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import backendProyectoParqueo.dto.ClienteDTO;
@@ -29,6 +30,8 @@ public class RegistroClienteService {
     private final ClienteRepository clienteRepo;
     private final VehiculoRepository vehiculoRepo;
     private final ParqueoRepository parqueoRepo;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void registrarCliente(RegistroRequestDTO request) {
@@ -77,7 +80,7 @@ public class RegistroClienteService {
         usuario.setCorreo(clienteDTO.getCorreo());
         usuario.setNroCelular(clienteDTO.getNroCelular());
         usuario.setUsername("usuario_" + UUID.randomUUID());
-        usuario.setPassword(clienteDTO.getPassword());
+        usuario.setPassword(passwordEncoder.encode(clienteDTO.getPassword()));
         usuario = usuarioRepo.save(usuario);
 
         Cliente cliente = new Cliente();
