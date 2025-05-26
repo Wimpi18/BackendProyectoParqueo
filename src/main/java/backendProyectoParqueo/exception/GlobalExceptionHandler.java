@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
-import backendProyectoParqueo.dto.ErrorDetail;
-import backendProyectoParqueo.dto.ErrorResponse;
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -26,7 +23,7 @@ public class GlobalExceptionHandler {
                 HttpStatusCode status = ex.getStatusCode();
 
                 ErrorDetail error = new ErrorDetail(
-                                "The requested resource was not found.",
+                                "No se pudo encontrar el recurso solicitado.",
                                 null, // Puedes extraer campo si lo manejas en tu lógica
                                 ex.getReason() != null ? ex.getReason()
                                                 : "No se pudo encontrar el recurso solicitado.");
@@ -38,6 +35,23 @@ public class GlobalExceptionHandler {
                                 Collections.singletonList(error));
 
                 return new ResponseEntity<>(response, status);
+        }
+
+        // Error de lógica de negocio
+        @ExceptionHandler(BusinessException.class)
+        public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
+                ErrorDetail error = new ErrorDetail(
+                                ex.getMessage(),
+                                ex.getField(),
+                                "Violación de reglas de negocio.");
+
+                ErrorResponse response = new ErrorResponse(
+                                "error",
+                                HttpStatus.BAD_REQUEST.value(),
+                                "Se produjo un error de lógica de negocio.",
+                                Collections.singletonList(error));
+
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         // Validación de formulario con @Valid
@@ -59,9 +73,9 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        // Manejador genérico
+        // Manejador genérico para errores del servidor
         @ExceptionHandler(Exception.class)
-        public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        public ResponseEntity<ErrorResponse> handleException(Exception ex) {
                 ErrorDetail error = new ErrorDetail(
                                 "Error interno del servidor.",
                                 null,

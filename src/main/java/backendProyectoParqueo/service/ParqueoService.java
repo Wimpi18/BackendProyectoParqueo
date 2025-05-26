@@ -2,12 +2,12 @@ package backendProyectoParqueo.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
+import backendProyectoParqueo.exception.BusinessException;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.repository.ParqueoRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,8 @@ public class ParqueoService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Parqueo> findById(Long id) {
-        return parqueoRepository.findById(id);
+    public Parqueo findById(Long id) {
+        return parqueoRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Parqueo no encontrado.", "idParqueo"));
     }
 }

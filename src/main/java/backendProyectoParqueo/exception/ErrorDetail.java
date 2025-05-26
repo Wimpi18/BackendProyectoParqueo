@@ -1,4 +1,4 @@
-package backendProyectoParqueo.dto;
+package backendProyectoParqueo.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
