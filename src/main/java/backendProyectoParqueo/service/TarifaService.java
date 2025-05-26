@@ -3,6 +3,7 @@ package backendProyectoParqueo.service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Service;
 import backendProyectoParqueo.dto.TarifaDTO;
 import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
-import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.model.Administrador;
+import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.repository.AdministradorRepository;
 import backendProyectoParqueo.repository.TarifaRepository;
 import lombok.RequiredArgsConstructor;
@@ -74,5 +75,9 @@ public class TarifaService {
         }
 
         return tarifaRepository.obtenerTarifaVigente(tipoClienteEnum.getLabel(), tipoVehiculo);
+    }
+
+    public Optional<Tarifa> findById(Integer id) {
+        return tarifaRepository.findById(id);
     }
 }

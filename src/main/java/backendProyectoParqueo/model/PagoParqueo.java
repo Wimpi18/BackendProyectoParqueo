@@ -1,10 +1,12 @@
 package backendProyectoParqueo.model;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,8 +17,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 @Entity
@@ -33,6 +33,7 @@ public class PagoParqueo {
 
     @ManyToOne
     @JoinColumn(name = "id_parqueo", nullable = false)
+    @JsonBackReference
     private Parqueo parqueo;
 
     @ManyToOne
@@ -40,16 +41,14 @@ public class PagoParqueo {
     private Cajero cajero;
 
     @Column(name = "monto_pagado", columnDefinition = "numeric", nullable = false)
-    @Min(value = 1, message = "El monto a pagar debe ser mayor o igual a 1 Bs.")
-    @Max(value = 1000, message = "El monto a pagar debe ser menor o igual a 1000 Bs.")
     private double montoPagado;
 
     @Column(name = "fecha_hora_pago", columnDefinition = "timestamp without time zone", nullable = false)
     private Timestamp fechaHoraPago = Timestamp.from(Instant.now());
 
     @Column(nullable = false)
-    // @ValidMeses(message = "Debe ingresar al menos un mes válido")
-    private Date[] meses;
+
+    private LocalDate[] meses;
 
     @Column(name = "nro_espacio_pagado", columnDefinition = "smallint")
     private Integer nroEspacioPagado;

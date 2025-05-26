@@ -14,6 +14,7 @@ import backendProyectoParqueo.dto.PagoParqueoDTO;
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.service.PagoParqueoService;
 import backendProyectoParqueo.util.ApiResponseUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,7 +38,7 @@ public class PagoParqueoController {
     }
 
     @PostMapping()
-    public ResponseEntity<ApiResponse<PagoParqueo>> createPagoParqueo(@RequestBody PagoParqueo pagoParqueo) {
+    public ResponseEntity<ApiResponse<PagoParqueo>> createPagoParqueo(@RequestBody @Valid PagoParqueoDTO pagoParqueo) {
         return ApiResponseUtil.success("El pago del parqueo fue realizado correctamente",
                 pagoParqueoService.create(pagoParqueo));
     }
