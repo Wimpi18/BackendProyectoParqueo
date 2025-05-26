@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.service.ParqueoService;
+import backendProyectoParqueo.util.ApiResponseUtil;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -49,6 +51,12 @@ public class ParqueoController {
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/espacios-disponibles")
+    public ResponseEntity<ApiResponse<List<Short>>> obtenerEspaciosDisponibles() {
+        List<Short> disponibles = parqueoService.obtenerEspaciosDisponibles();
+        return ApiResponseUtil.success("Espacios disponibles obtenidos correctamente", disponibles);
     }
 
 }

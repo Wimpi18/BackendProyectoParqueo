@@ -1,5 +1,7 @@
+// src/main/java/backendProyectoParqueo/repository/PagoParqueoRepository.java
 package backendProyectoParqueo.repository;
 
+import java.util.List; // Asegúrate que esta importación esté
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,5 +28,14 @@ public interface PagoParqueoRepository extends JpaRepository<PagoParqueo, Long> 
             @Param("clienteId") UUID clienteId,
             @Param("parqueoId") Long parqueoId);
 
-    
+    // Nuevo método para obtener todos los pagos de un parqueo, incluyendo la tarifa
+    // para el monto
+    @Query("""
+            SELECT pp
+            FROM PagoParqueo pp
+            JOIN FETCH pp.tarifa t
+            WHERE pp.parqueo.id = :parqueoId
+            ORDER BY pp.fechaHoraPago DESC
+            """)
+    List<PagoParqueo> findAllByParqueoIdWithTarifa(@Param("parqueoId") Long parqueoId);
 }
