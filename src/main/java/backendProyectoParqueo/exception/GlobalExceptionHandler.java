@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
                 ErrorDetail error = new ErrorDetail(
                                 ex.getMessage(),
                                 ex.getField(),
-                                "Violación de reglas de negocio.");
+                                "Regla de negocio no cumplida");
 
                 ErrorResponse response = new ErrorResponse(
                                 "error",
