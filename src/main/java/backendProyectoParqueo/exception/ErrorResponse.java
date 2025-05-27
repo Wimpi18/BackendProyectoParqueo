@@ -1,13 +1,15 @@
-package backendProyectoParqueo.dto;
+package backendProyectoParqueo.exception;
+
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ApiResponse<T> {
+public class ErrorResponse {
     private String status;
     private int statusCode;
     private String message;
-    private T data;
+    private List<ErrorDetail> errors;
 }

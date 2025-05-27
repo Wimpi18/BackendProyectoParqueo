@@ -1,5 +1,6 @@
 package backendProyectoParqueo.dto;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class PagoParqueoDTO {
 
     @Min(value = 1, message = "El monto a pagar debe ser mayor o igual a 1 Bs.")
     @Max(value = 2000, message = "El monto a pagar debe ser menor o igual a 2000 Bs.")
-    private double montoPagado;
+    private BigDecimal montoPagado;
 
     private Timestamp fechaHoraPago;
 
@@ -45,6 +46,4 @@ public class PagoParqueoDTO {
     @NotNull(message = "Debe especificar al menos un mes.")
     @Size(min = 1, message = "Debe pagar al menos un mes.")
     private LocalDate[] meses;
-
-    private int nroEspacioPagado;
 }
