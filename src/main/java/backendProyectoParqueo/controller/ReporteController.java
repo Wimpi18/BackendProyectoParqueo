@@ -39,7 +39,7 @@ public class ReporteController {
      * Ejemplo: POST /reporte/cliente/vehiculos
      * Body: { "id": "uuid-aqui" }
      */
-    @GetMapping("/cliente/vehiculo") // Cambiado a @PostMapping
+    @PostMapping("/cliente/vehiculo") // Cambiado a @PostMapping
     public ResponseEntity<ApiResponse<List<Object>>> getTodosVehiculosPorCliente(
             @RequestBody Cliente requestDTO) { // Recibe el DTO
         try {
@@ -67,7 +67,7 @@ public class ReporteController {
     //      pueden permanecer como GET con @RequestParam o @PathVariable si es apropiado para ellos) ...
 
     // Por ejemplo, este sigue estando bien como GET:
-    @GetMapping("/vehiculo/estados-cuenta") // Cambiado a POST y ruta más genérica
+    @PostMapping("/vehiculo/estados-cuenta") // Cambiado a POST y ruta más genérica
     public ResponseEntity<ApiResponse<List<ReporteEstadoCuentaVehiculoDTO>>> getTodosEstadosCuentaPorPlacaEnBody(
             @RequestBody VehiculoDTO requestDTO) { // Recibe el DTO del body
         try {
@@ -97,7 +97,7 @@ public class ReporteController {
         }
     }
 
-     @GetMapping("/cliente-vehiculo/estados-cuenta")
+     @PostMapping("/cliente-vehiculo/estados-cuenta")
     public ResponseEntity<ApiResponse<List<ReporteEstadoCuentaVehiculoDTO>>> getTodosEstadosCuentaPorClienteYPlacaEnBody(
             @RequestBody ClientePlacaRequestDTO requestDTO) {
         try {
