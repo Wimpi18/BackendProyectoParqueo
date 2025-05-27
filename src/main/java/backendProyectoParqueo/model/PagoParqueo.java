@@ -52,7 +52,7 @@ public class PagoParqueo {
     private LocalDate[] meses;
 
     @Column(name = "nro_espacio_pagado", columnDefinition = "smallint")
-    private Integer nroEspacioPagado;
+    private Short nroEspacioPagado;
 
     // Métodos de persistencia
     @PrePersist

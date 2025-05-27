@@ -37,25 +37,14 @@ public class PagoParqueoService {
     @Transactional
     public PagoParqueo create(PagoParqueoDTO dto) {
         PagoParqueo pagoParqueoEntity = new PagoParqueo();
-
         pagoParqueoEntity.setMontoPagado(dto.getMontoPagado());
         pagoParqueoEntity.setFechaHoraPago(dto.getFechaHoraPago());
         pagoParqueoEntity.setMeses(dto.getMeses());
-        pagoParqueoEntity.setNroEspacioPagado(dto.getNroEspacioPagado());
 
         Cliente cliente = clienteService.findById(dto.getIdCliente());
         Parqueo parqueo = parqueoService.findById(dto.getIdParqueo());
         Tarifa tarifa = tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(),
                 parqueo.getVehiculo().getTipo());
-
-        boolean tarifaCompatible = tarifa.getTipoCliente().equalsIgnoreCase(cliente.getTipo()) &&
-                tarifa.getTipoVehiculo().equals(parqueo.getVehiculo().getTipo());
-
-        if (!tarifaCompatible) {
-            throw new BusinessException(
-                    "La tarifa seleccionada no corresponde al tipo de usuario y vehículo.",
-                    "idTarifa");
-        }
 
         Cajero cajero = null;
         if (dto.getIdCajero() != null)
@@ -67,6 +56,7 @@ public class PagoParqueoService {
                     "El monto pagado no coincide con la tarifa multiplicada por la cantidad de meses.", "montoPagado");
         }
 
+        pagoParqueoEntity.setNroEspacioPagado(parqueo.getNroEspacio());
         pagoParqueoEntity.setTarifa(tarifa);
         pagoParqueoEntity.setParqueo(parqueo);
         pagoParqueoEntity.setCajero(cajero);

@@ -46,6 +46,4 @@ public class PagoParqueoDTO {
     @NotNull(message = "Debe especificar al menos un mes.")
     @Size(min = 1, message = "Debe pagar al menos un mes.")
     private LocalDate[] meses;
-
-    private int nroEspacioPagado;
 }
