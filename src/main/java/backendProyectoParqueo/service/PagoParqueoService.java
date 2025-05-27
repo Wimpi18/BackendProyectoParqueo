@@ -1,5 +1,6 @@
 package backendProyectoParqueo.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +17,6 @@ import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Tarifa;
-import backendProyectoParqueo.repository.ClienteRepository;
 import backendProyectoParqueo.repository.PagoParqueoRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class PagoParqueoService {
 
     private final PagoParqueoRepository pagoParqueoRepository;
-    private final ClienteRepository clienteRepository;
+    private final ClienteService clienteService;
     private final TarifaService tarifaService;
     private final ParqueoService parqueoService;
     private final CajeroService cajeroService;
@@ -43,18 +43,29 @@ public class PagoParqueoService {
         pagoParqueoEntity.setMeses(dto.getMeses());
         pagoParqueoEntity.setNroEspacioPagado(dto.getNroEspacioPagado());
 
-        // Verificar que el usuario exista y sea un cliente válido
-        Cliente cliente = clienteRepository.findById(dto.getIdCliente()).orElse(null);
-        if (cliente == null) {
-            throw new BusinessException("El ID proporcionado no corresponde a un cliente válido.", "idCliente");
-        }
-
-        Tarifa tarifa = tarifaService.findById(dto.getIdTarifa());
+        Cliente cliente = clienteService.findById(dto.getIdCliente());
         Parqueo parqueo = parqueoService.findById(dto.getIdParqueo());
+        Tarifa tarifa = tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(),
+                parqueo.getVehiculo().getTipo());
+
+        boolean tarifaCompatible = tarifa.getTipoCliente().equalsIgnoreCase(cliente.getTipo()) &&
+                tarifa.getTipoVehiculo().equals(parqueo.getVehiculo().getTipo());
+
+        if (!tarifaCompatible) {
+            throw new BusinessException(
+                    "La tarifa seleccionada no corresponde al tipo de usuario y vehículo.",
+                    "idTarifa");
+        }
 
         Cajero cajero = null;
         if (dto.getIdCajero() != null)
             cajero = cajeroService.findById(dto.getIdCajero());
+
+        BigDecimal montoEsperado = tarifa.getMonto().multiply(BigDecimal.valueOf(dto.getMeses().length));
+        if (dto.getMontoPagado().compareTo(montoEsperado) != 0) {
+            throw new BusinessException(
+                    "El monto pagado no coincide con la tarifa multiplicada por la cantidad de meses.", "montoPagado");
+        }
 
         pagoParqueoEntity.setTarifa(tarifa);
         pagoParqueoEntity.setParqueo(parqueo);

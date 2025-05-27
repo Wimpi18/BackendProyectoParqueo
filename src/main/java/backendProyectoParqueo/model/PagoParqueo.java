@@ -1,5 +1,6 @@
 package backendProyectoParqueo.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -41,7 +42,7 @@ public class PagoParqueo {
     private Cajero cajero;
 
     @Column(name = "monto_pagado", columnDefinition = "numeric", nullable = false)
-    private double montoPagado;
+    private BigDecimal montoPagado;
 
     @Column(name = "fecha_hora_pago", columnDefinition = "timestamp without time zone", nullable = false)
     private Timestamp fechaHoraPago = Timestamp.from(Instant.now());
