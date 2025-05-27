@@ -33,7 +33,7 @@ public class PagoParqueoControllerTest {
         pagoParqueoDTO.setIdTarifa(1);
         pagoParqueoDTO.setIdParqueo(1L);
         pagoParqueoDTO.setIdCajero(UUID.fromString("33333333-3333-3333-3333-333333333333"));
-        pagoParqueoDTO.setMontoPagado(100.0);
+        // pagoParqueoDTO.setMontoPagado(100.0);
         pagoParqueoDTO.setFechaHoraPago(Timestamp.from(Instant.now()));
         pagoParqueoDTO.setMeses(new LocalDate[] { LocalDate.of(2025, 1, 1), LocalDate.of(2025, 2, 1) });
         pagoParqueoDTO.setNroEspacioPagado(1);

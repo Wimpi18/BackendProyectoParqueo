@@ -1,28 +1,26 @@
 // src/main/java/backendProyectoParqueo/controller/ReporteController.java
 package backendProyectoParqueo.controller;
 
-import backendProyectoParqueo.dto.ApiResponse;
-import backendProyectoParqueo.dto.ClientePlacaRequestDTO;
-import backendProyectoParqueo.model.Cliente; // Importa el nuevo DTO
-import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
-import backendProyectoParqueo.dto.VehiculoDTO;
-import backendProyectoParqueo.service.ReporteService;
-import backendProyectoParqueo.util.ApiResponseUtil;
-import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID; // Importa el nuevo DTO
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import java.util.ArrayList; 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody; // Para el DTO
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-// import org.springframework.web.bind.annotation.RequestParam; // Ya no lo necesitas para este endpoint
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.UUID;
+import backendProyectoParqueo.dto.ApiResponse;
+import backendProyectoParqueo.dto.ClientePlacaRequestDTO;
+import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
+import backendProyectoParqueo.dto.VehiculoDTO;
+import backendProyectoParqueo.model.Cliente;
+import backendProyectoParqueo.service.ReporteService; // Para el DTO
+import backendProyectoParqueo.util.ApiResponseUtil;
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/reporte")
