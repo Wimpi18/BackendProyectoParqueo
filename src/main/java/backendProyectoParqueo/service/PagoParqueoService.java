@@ -1,17 +1,19 @@
 package backendProyectoParqueo.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import backendProyectoParqueo.dto.PagoParqueoDTO;
+import backendProyectoParqueo.exception.BusinessException;
 import backendProyectoParqueo.model.Cajero;
+import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Tarifa;
@@ -22,40 +24,39 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PagoParqueoService {
 
-    @Autowired
-    private PagoParqueoRepository pagoParqueoRepository;
-    @Autowired
-    private TarifaService tarifaService;
-    @Autowired
-    private ParqueoService parqueoService;
-    @Autowired
-    private CajeroService cajeroService;
+    private final PagoParqueoRepository pagoParqueoRepository;
+    private final ClienteService clienteService;
+    private final TarifaService tarifaService;
+    private final ParqueoService parqueoService;
+    private final CajeroService cajeroService;
 
     public List<PagoParqueo> findAll() {
         return pagoParqueoRepository.findAll();
     }
 
     @Transactional
-    public PagoParqueo create(PagoParqueoDTO pagoParqueoDTO) {
+    public PagoParqueo create(PagoParqueoDTO dto) {
         PagoParqueo pagoParqueoEntity = new PagoParqueo();
+        pagoParqueoEntity.setMontoPagado(dto.getMontoPagado());
+        pagoParqueoEntity.setFechaHoraPago(dto.getFechaHoraPago());
+        pagoParqueoEntity.setMeses(dto.getMeses());
 
-        pagoParqueoEntity.setMontoPagado(pagoParqueoDTO.getMontoPagado());
-        pagoParqueoEntity.setFechaHoraPago(pagoParqueoDTO.getFechaHoraPago());
-        pagoParqueoEntity.setMeses(pagoParqueoDTO.getMeses());
-        pagoParqueoEntity.setNroEspacioPagado(pagoParqueoDTO.getNroEspacioPagado());
+        Cliente cliente = clienteService.findById(dto.getIdCliente());
+        Parqueo parqueo = parqueoService.findById(dto.getIdParqueo());
+        Tarifa tarifa = tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(),
+                parqueo.getVehiculo().getTipo());
 
-        Tarifa tarifa = tarifaService.findById(pagoParqueoDTO.getIdTarifa())
-                .orElseThrow(() -> new RuntimeException("Tarifa no encontrada"));
-        Parqueo parqueo = parqueoService.findById(pagoParqueoDTO.getIdParqueo())
-                .orElseThrow(() -> new RuntimeException("Parqueo no encontrado"));
+        Cajero cajero = null;
+        if (dto.getIdCajero() != null)
+            cajero = cajeroService.findById(dto.getIdCajero());
 
-        Cajero cajero;
-        if (pagoParqueoDTO.getIdCajero() != null) {
-            cajero = cajeroService.findById(pagoParqueoDTO.getIdCajero())
-                    .orElseThrow(() -> new RuntimeException("Cajero no encontrado"));
-        } else
-            cajero = null;
+        BigDecimal montoEsperado = tarifa.getMonto().multiply(BigDecimal.valueOf(dto.getMeses().length));
+        if (dto.getMontoPagado().compareTo(montoEsperado) != 0) {
+            throw new BusinessException(
+                    "El monto pagado no coincide con la tarifa multiplicada por la cantidad de meses.", "montoPagado");
+        }
 
+        pagoParqueoEntity.setNroEspacioPagado(parqueo.getNroEspacio());
         pagoParqueoEntity.setTarifa(tarifa);
         pagoParqueoEntity.setParqueo(parqueo);
         pagoParqueoEntity.setCajero(cajero);

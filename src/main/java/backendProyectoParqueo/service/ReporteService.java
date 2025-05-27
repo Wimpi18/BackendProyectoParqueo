@@ -123,7 +123,7 @@ public class ReporteService {
 
     for (PagoParqueo pago : pagosDelParqueo) {
       if (pago.getMeses() != null && pago.getMeses().length > 0) {
-        BigDecimal montoPorMesEnEstePago = BigDecimal.valueOf(pago.getMontoPagado());
+        BigDecimal montoPorMesEnEstePago = pago.getMontoPagado();
 
         for (LocalDate mesSqlDate : pago.getMeses()) {
           LocalDate mesLocalDate = mesSqlDate;
