@@ -36,7 +36,6 @@ public class PagoParqueoControllerTest {
         // pagoParqueoDTO.setMontoPagado(100.0);
         pagoParqueoDTO.setFechaHoraPago(Timestamp.from(Instant.now()));
         pagoParqueoDTO.setMeses(new LocalDate[] { LocalDate.of(2025, 1, 1), LocalDate.of(2025, 2, 1) });
-        pagoParqueoDTO.setNroEspacioPagado(1);
     }
 
     @Test

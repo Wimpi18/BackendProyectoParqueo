@@ -20,6 +20,7 @@ import backendProyectoParqueo.dto.PagoParqueoDTO;
 import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.exception.BusinessException;
+import backendProyectoParqueo.model.Cajero;
 import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.model.Parqueo;
@@ -39,6 +40,9 @@ public class PagoParqueoServiceTest {
 
     @Mock
     private ParqueoService parqueoService;
+
+    @Mock
+    private CajeroService cajeroService;
 
     @InjectMocks
     private PagoParqueoService pagoParqueoService;
@@ -76,7 +80,6 @@ public class PagoParqueoServiceTest {
         dto.setMontoPagado(new BigDecimal("0"));
         dto.setFechaHoraPago(Timestamp.from(Instant.now()));
         dto.setMeses(new LocalDate[] { LocalDate.now(), LocalDate.now().plusMonths(1) });
-        dto.setNroEspacioPagado(1);
     }
 
     @Test
@@ -124,5 +127,83 @@ public class PagoParqueoServiceTest {
         assertNotNull(result);
         assertEquals(dto.getMontoPagado(), result.getMontoPagado());
         assertEquals(dto.getMeses().length, result.getMeses().length);
+    }
+
+    @Test
+    void create_DeberiaLanzarException_SiClienteNoExiste() {
+        UUID clienteId = UUID.randomUUID();
+        dto.setIdCliente(clienteId);
+
+        when(clienteService.findById(clienteId)).thenThrow(
+                new BusinessException("El ID proporcionado no corresponde a un cliente válido.", "idCliente"));
+
+        BusinessException ex = assertThrows(BusinessException.class, () -> pagoParqueoService.create(dto));
+
+        assertEquals("El ID proporcionado no corresponde a un cliente válido.", ex.getMessage());
+    }
+
+    @Test
+    void create_DeberiaLanzarExcepcion_SiParqueoNoExiste() {
+        when(clienteService.findById(cliente.getId())).thenReturn(cliente);
+        when(parqueoService.findById(dto.getIdParqueo()))
+                .thenThrow(new BusinessException("Parqueo no encontrado", "idParqueo"));
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> pagoParqueoService.create(dto));
+        assertEquals("Parqueo no encontrado", exception.getMessage());
+    }
+
+    @Test
+    void create_DeberiaBuscarCajero_SiIdCajeroEsPresente() {
+        UUID cajeroId = UUID.randomUUID();
+        dto.setIdCajero(cajeroId);
+
+        Cajero cajero = new Cajero();
+        cajero.setId(cajeroId);
+
+        when(clienteService.findById(cliente.getId())).thenReturn(cliente);
+        when(parqueoService.findById(parqueo.getId())).thenReturn(parqueo);
+        when(tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(), parqueo.getVehiculo().getTipo()))
+                .thenReturn(tarifa);
+        when(cajeroService.findById(cajeroId)).thenReturn(cajero);
+
+        PagoParqueo pagoMock = new PagoParqueo();
+        pagoMock.setCajero(cajero);
+        pagoMock.setMontoPagado(dto.getMontoPagado());
+        pagoMock.setFechaHoraPago(dto.getFechaHoraPago());
+        pagoMock.setMeses(dto.getMeses());
+
+        when(pagoParqueoRepository.save(org.mockito.ArgumentMatchers.any())).thenReturn(pagoMock);
+
+        PagoParqueo result = pagoParqueoService.create(dto);
+
+        assertNotNull(result.getCajero());
+        assertEquals(cajeroId, result.getCajero().getId());
+    }
+
+    @Test
+    void create_DeberiaGuardarPagoCorrectamente_CuandoIdCajeroEsNull() {
+        // Arrange
+        tarifa.setMonto(new BigDecimal("10.00"));
+        dto.setMontoPagado(new BigDecimal("20.00"));
+        dto.setIdCajero(null); // Cajero nulo
+
+        when(clienteService.findById(cliente.getId())).thenReturn(cliente);
+        when(parqueoService.findById(parqueo.getId())).thenReturn(parqueo);
+        when(tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(), parqueo.getVehiculo().getTipo()))
+                .thenReturn(tarifa);
+        when(pagoParqueoRepository.save(org.mockito.ArgumentMatchers.any(PagoParqueo.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        PagoParqueo result = pagoParqueoService.create(dto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(dto.getMontoPagado(), result.getMontoPagado());
+        assertEquals(dto.getMeses().length, result.getMeses().length);
+        assertEquals(parqueo.getNroEspacio(), result.getNroEspacioPagado());
+        assertEquals(tarifa, result.getTarifa());
+        assertEquals(parqueo, result.getParqueo());
+        assertEquals(null, result.getCajero());
     }
 }
