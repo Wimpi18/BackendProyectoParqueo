@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HistorialTarifaDTO {
 
+public class HistorialTarifaDTO {
     private TipoVehiculo tipoVehiculo;
     private String tipoCliente;
     private BigDecimal monto;

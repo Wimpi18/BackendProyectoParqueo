@@ -1,4 +1,3 @@
-// src/main/java/backendProyectoParqueo/repository/custom/HistorialRepositoryImpl.java
 package backendProyectoParqueo.repository.custom;
 
 import backendProyectoParqueo.dto.HistorialTarifaDTO;
@@ -29,55 +28,71 @@ public class HistorialRepositoryImpl implements HistorialRepositoryCustom {
             BigDecimal montoMinimo,
             BigDecimal montoMaximo) {
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<HistorialTarifaDTO> query = cb.createQuery(HistorialTarifaDTO.class);
-        Root<backendProyectoParqueo.model.Tarifa> tarifa = query.from(backendProyectoParqueo.model.Tarifa.class);
-        Join<?, ?> administrador = tarifa.join("administrador");
-        Join<?, ?> usuario = administrador.join("usuario");
+        StringBuilder jpql = new StringBuilder("""
+                    SELECT new backendProyectoParqueo.dto.HistorialTarifaDTO(
+                        t.tipoVehiculo,
+                        t.tipoCliente,
+                        t.monto,
+                        CONCAT(u.nombre, CONCAT(' ', u.apellido)),
+                        t.fechaInicio
+                    )
+                    FROM Tarifa t
+                    JOIN t.administrador a
+                    JOIN a.usuario u
+                    WHERE 1 = 1
+                """);
 
-        List<Predicate> predicates = new ArrayList<>();
-
+        // Filtros dinámicos
         if (tipoVehiculo != null) {
-            predicates.add(cb.equal(tarifa.get("tipoVehiculo"), tipoVehiculo));
+            jpql.append(" AND t.tipoVehiculo = :tipoVehiculo");
         }
-
         if (tipoCliente != null) {
-            predicates.add(cb.equal(cb.lower(tarifa.get("tipoCliente")), tipoCliente.toLowerCase()));
+            jpql.append(" AND LOWER(t.tipoCliente) = :tipoCliente");
         }
-
         if (nombreUsuario != null) {
-            Expression<String> nombreCompleto = cb.concat(usuario.get("nombre"),
-                    cb.concat(" ", usuario.get("apellido")));
-            predicates.add(cb.like(cb.lower(nombreCompleto), "%" + nombreUsuario.toLowerCase() + "%"));
+            jpql.append(" AND LOWER(CONCAT(u.nombre, ' ', u.apellido)) LIKE :nombreUsuario");
         }
-
         if (fechaInicio != null) {
-            predicates.add(cb.greaterThanOrEqualTo(tarifa.get("fechaInicio"), fechaInicio));
+            jpql.append(" AND t.fechaInicio >= :fechaInicio");
         }
-
         if (fechaFin != null) {
-            predicates.add(cb.lessThanOrEqualTo(tarifa.get("fechaInicio"), fechaFin));
+            jpql.append(" AND t.fechaInicio <= :fechaFin");
         }
-
         if (montoMinimo != null) {
-            predicates.add(cb.greaterThanOrEqualTo(tarifa.get("monto"), montoMinimo));
+            jpql.append(" AND t.monto >= :montoMinimo");
         }
-
         if (montoMaximo != null) {
-            predicates.add(cb.lessThanOrEqualTo(tarifa.get("monto"), montoMaximo));
+            jpql.append(" AND t.monto <= :montoMaximo");
         }
 
-        query.multiselect(cb.construct(
-                HistorialTarifaDTO.class,
-                tarifa.get("tipoVehiculo"),
-                tarifa.get("tipoCliente"),
-                tarifa.get("monto"),
-                cb.concat(usuario.get("nombre"), cb.concat(" ", usuario.get("apellido"))),
-                tarifa.get("fechaInicio"))).where(cb.and(predicates.toArray(new Predicate[0])))
-                .orderBy(cb.desc(tarifa.get("fechaInicio")));
+        jpql.append(" ORDER BY t.fechaInicio DESC");
 
-        List<HistorialTarifaDTO> resultados = entityManager.createQuery(query).getResultList();
-        return resultados;
+        // Crear consulta
+        var query = entityManager.createQuery(jpql.toString(), HistorialTarifaDTO.class);
 
+        // Asignar parámetros
+        if (tipoVehiculo != null) {
+            query.setParameter("tipoVehiculo", tipoVehiculo);
+        }
+        if (tipoCliente != null) {
+            query.setParameter("tipoCliente", tipoCliente.toLowerCase());
+        }
+        if (nombreUsuario != null) {
+            query.setParameter("nombreUsuario", "%" + nombreUsuario.toLowerCase() + "%");
+        }
+        if (fechaInicio != null) {
+            query.setParameter("fechaInicio", fechaInicio);
+        }
+        if (fechaFin != null) {
+            query.setParameter("fechaFin", fechaFin);
+        }
+        if (montoMinimo != null) {
+            query.setParameter("montoMinimo", montoMinimo);
+        }
+        if (montoMaximo != null) {
+            query.setParameter("montoMaximo", montoMaximo);
+        }
+
+        return query.getResultList();
     }
 }
