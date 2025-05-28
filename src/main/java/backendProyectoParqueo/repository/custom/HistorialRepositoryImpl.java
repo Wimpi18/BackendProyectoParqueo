@@ -2,7 +2,6 @@
 package backendProyectoParqueo.repository.custom;
 
 import backendProyectoParqueo.dto.HistorialTarifaDTO;
-import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -23,7 +22,7 @@ public class HistorialRepositoryImpl implements HistorialRepositoryCustom {
     @Override
     public List<HistorialTarifaDTO> filtrarHistorialTarifas(
             TipoVehiculo tipoVehiculo,
-            TipoCliente tipoCliente,
+            String tipoCliente,
             String nombreUsuario,
             LocalDateTime fechaInicio,
             LocalDateTime fechaFin,
@@ -31,7 +30,7 @@ public class HistorialRepositoryImpl implements HistorialRepositoryCustom {
             BigDecimal montoMaximo) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+        CriteriaQuery<HistorialTarifaDTO> query = cb.createQuery(HistorialTarifaDTO.class);
         Root<backendProyectoParqueo.model.Tarifa> tarifa = query.from(backendProyectoParqueo.model.Tarifa.class);
         Join<?, ?> administrador = tarifa.join("administrador");
         Join<?, ?> usuario = administrador.join("usuario");
@@ -43,7 +42,7 @@ public class HistorialRepositoryImpl implements HistorialRepositoryCustom {
         }
 
         if (tipoCliente != null) {
-            predicates.add(cb.equal(tarifa.get("tipoCliente"), tipoCliente));
+            predicates.add(cb.equal(cb.lower(tarifa.get("tipoCliente")), tipoCliente.toLowerCase()));
         }
 
         if (nombreUsuario != null) {
@@ -68,31 +67,17 @@ public class HistorialRepositoryImpl implements HistorialRepositoryCustom {
             predicates.add(cb.lessThanOrEqualTo(tarifa.get("monto"), montoMaximo));
         }
 
-        query.multiselect(
+        query.multiselect(cb.construct(
+                HistorialTarifaDTO.class,
                 tarifa.get("tipoVehiculo"),
                 tarifa.get("tipoCliente"),
                 tarifa.get("monto"),
                 cb.concat(usuario.get("nombre"), cb.concat(" ", usuario.get("apellido"))),
-                tarifa.get("fechaInicio"))
-                .where(cb.and(predicates.toArray(new Predicate[0])))
+                tarifa.get("fechaInicio"))).where(cb.and(predicates.toArray(new Predicate[0])))
                 .orderBy(cb.desc(tarifa.get("fechaInicio")));
 
-        List<Object[]> resultados = entityManager.createQuery(query).getResultList();
+        List<HistorialTarifaDTO> resultados = entityManager.createQuery(query).getResultList();
+        return resultados;
 
-        List<HistorialTarifaDTO> dtos = new ArrayList<>();
-        long contador = resultados.size();
-        for (Object[] fila : resultados) {
-            HistorialTarifaDTO dto = new HistorialTarifaDTO();
-            dto.setTipoVehiculo((TipoVehiculo) fila[0]);
-            dto.setTipoCliente(TipoCliente.fromLabel((String) fila[1]));
-            dto.setMonto((BigDecimal) fila[2]);
-            dto.setNombreCompleto((String) fila[3]);
-            dto.setFechaInicio((LocalDateTime) fila[4]);
-            dto.setCantidadTarifas(contador--);
-            dtos.add(dto);
-
-        }
-
-        return dtos;
     }
 }

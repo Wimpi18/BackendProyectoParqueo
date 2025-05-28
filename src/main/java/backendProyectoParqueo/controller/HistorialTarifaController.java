@@ -29,7 +29,7 @@ public class HistorialTarifaController {
     @GetMapping("/filtrar")
     public List<HistorialTarifaDTO> obtenerHistorialTarifasFiltrado(
             @RequestParam(required = false) TipoVehiculo tipoVehiculo,
-            @RequestParam(required = false) TipoCliente tipoCliente,
+            @RequestParam(required = false) String tipoCliente,
             @RequestParam(required = false) String nombreUsuario,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,

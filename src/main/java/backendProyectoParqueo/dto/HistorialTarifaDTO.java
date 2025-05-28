@@ -3,7 +3,6 @@ package backendProyectoParqueo.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -18,9 +17,8 @@ import lombok.NoArgsConstructor;
 public class HistorialTarifaDTO {
 
     private TipoVehiculo tipoVehiculo;
-    private TipoCliente tipoCliente;
+    private String tipoCliente;
     private BigDecimal monto;
     private String nombreCompleto;
     private LocalDateTime fechaInicio;
-    private Long cantidadTarifas;
 }

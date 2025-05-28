@@ -16,27 +16,11 @@ import java.util.List;
 public interface HistorialRepository extends JpaRepository<Tarifa, Integer>, HistorialRepositoryCustom {
 
     @Query("""
-            SELECT
-                t.tipoVehiculo,
-                t.tipoCliente,
-                t.monto,
-                CONCAT(u.nombre, ' ', u.apellido),
-                MAX(t.fechaInicio)
+            SELECT new backendProyectoParqueo.dto.HistorialTarifaDTO(t.tipoVehiculo, t.tipoCliente, t.monto, CONCAT(u.nombre, CONCAT(' ', u.apellido)), t.fechaInicio)
             FROM Tarifa t
             JOIN t.administrador a
             JOIN a.usuario u
-            GROUP BY
-                t.tipoVehiculo,
-                t.tipoCliente,
-                t.monto,
-                u.nombre,
-                u.apellido,
-                t.fechaInicio
-            ORDER BY MAX(t.fechaInicio) DESC
-
+            ORDER BY t.id DESC
             """)
-
-    List<Object[]> obtenerHistorialTarifas();
-
-    long count();
+    List<HistorialTarifaDTO> obtenerHistorialTarifas();
 }

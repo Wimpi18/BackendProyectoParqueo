@@ -21,6 +21,11 @@ public class GlobalExceptionHandler {
         public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex,
                         WebRequest request) {
                 HttpStatusCode status = ex.getStatusCode();
+                String path = request.getDescription(false); // format: "uri=/favicon.ico"
+                if (path != null && path.contains("/favicon.ico")) {
+                        // Ignorar o devolver respuesta distinta si es recurso estático
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                }
 
                 ErrorDetail error = new ErrorDetail(
                                 "No se pudo encontrar el recurso solicitado.",
