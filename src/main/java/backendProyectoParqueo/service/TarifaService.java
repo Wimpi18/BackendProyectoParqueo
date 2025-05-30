@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -24,16 +25,8 @@ public class TarifaService {
     private final TarifaRepository tarifaRepository;
     private final AdministradorRepository administradorRepository;
 
-    public List<TarifaDTO> listarTarifas() {
-        return tarifaRepository.findAll().stream()
-                .map(t -> new TarifaDTO(
-                        null,
-                        null,
-                        t.getTipoVehiculo(),
-                        t.getTipoCliente(),
-                        t.getMonto(),
-                        t.getFechaInicio()))
-                .toList();
+    public List<TarifaDTO> listarTarifasVigentes() {
+        return tarifaRepository.obtenerTarifasVigentesNativo();
     }
 
     public TarifaDTO crearTarifa(TarifaDTO dto) {
