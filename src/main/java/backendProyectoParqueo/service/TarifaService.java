@@ -12,6 +12,7 @@ import backendProyectoParqueo.dto.TarifaDTO;
 import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.exception.BusinessException;
+import backendProyectoParqueo.exception.TarifaDuplicadaException;
 import backendProyectoParqueo.model.Administrador;
 import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.repository.AdministradorRepository;
@@ -38,6 +39,10 @@ public class TarifaService {
         Administrador admin = administradorRepository.findById(adminId)
                 .orElseThrow(() -> new NoSuchElementException("Administrador no encontrado."));
 
+        Tarifa tarifaActual = tarifaRepository.obtenerTarifaVigente(dto.getTipoCliente(), dto.getTipoVehiculo());
+        if (tarifaActual != null && tarifaActual.getMonto().compareTo(dto.getMonto()) == 0) {
+            throw new TarifaDuplicadaException("Ya existe una tarifa vigente con el mismo monto.");
+        }
         Tarifa tarifa = new Tarifa();
         tarifa.setAdministrador(admin);
         tarifa.setTipoVehiculo(dto.getTipoVehiculo());

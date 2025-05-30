@@ -1,6 +1,7 @@
 package backendProyectoParqueo.exception;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,4 +112,20 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
+        @ExceptionHandler(TarifaDuplicadaException.class)
+        public ResponseEntity<ErrorResponse> handleTarifaDuplicada(TarifaDuplicadaException ex) {
+                ErrorDetail error = new ErrorDetail(
+                                ex.getMessage(), // Mensaje principal
+                                null, // Campo relacionado (null si no aplica)
+                                "La tarifa ingresada ya existe y no se puede duplicar." // Detalle explicativo
+                );
+
+                ErrorResponse response = new ErrorResponse(
+                                "error", // Puedes quitar esto si no lo quieres
+                                HttpStatus.CONFLICT.value(), // 409
+                                "Conflicto al registrar tarifa.",
+                                Collections.singletonList(error));
+
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
 }
