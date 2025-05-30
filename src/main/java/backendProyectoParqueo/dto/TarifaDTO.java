@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TarifaDTO {
+
     private Integer id;
     private UUID idAdministrador;
     private TipoVehiculo tipoVehiculo;
