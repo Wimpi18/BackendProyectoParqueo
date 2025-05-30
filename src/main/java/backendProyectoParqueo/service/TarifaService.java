@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import backendProyectoParqueo.dto.TarifaDTO;
 import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.exception.BusinessException;
+import backendProyectoParqueo.exception.TarifaDuplicadaException;
 import backendProyectoParqueo.model.Administrador;
 import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.repository.AdministradorRepository;
@@ -24,16 +26,8 @@ public class TarifaService {
     private final TarifaRepository tarifaRepository;
     private final AdministradorRepository administradorRepository;
 
-    public List<TarifaDTO> listarTarifas() {
-        return tarifaRepository.findAll().stream()
-                .map(t -> new TarifaDTO(
-                        null,
-                        null,
-                        t.getTipoVehiculo(),
-                        t.getTipoCliente(),
-                        t.getMonto(),
-                        t.getFechaInicio()))
-                .toList();
+    public List<TarifaDTO> listarTarifasVigentes() {
+        return tarifaRepository.obtenerTarifasVigentesNativo();
     }
 
     public TarifaDTO crearTarifa(TarifaDTO dto) {
@@ -41,10 +35,23 @@ public class TarifaService {
             throw new IllegalArgumentException("El monto debe ser mayor a cero.");
         }
 
+        List<String> tiposValidos = List.of(
+                "Administrativo",
+                "Docente a dedicación exclusiva",
+                "Docente a tiempo horario");
+
+        if (!tiposValidos.contains(dto.getTipoCliente())) {
+            throw new IllegalArgumentException("El tipo de cliente no es válido. Debe ser uno de: " + tiposValidos);
+        }
+
         UUID adminId = dto.getIdAdministrador();
         Administrador admin = administradorRepository.findById(adminId)
                 .orElseThrow(() -> new NoSuchElementException("Administrador no encontrado."));
 
+        Tarifa tarifaActual = tarifaRepository.obtenerTarifaVigente(dto.getTipoCliente(), dto.getTipoVehiculo());
+        if (tarifaActual != null && tarifaActual.getMonto().compareTo(dto.getMonto()) == 0) {
+            throw new TarifaDuplicadaException("Ya existe una tarifa vigente con el mismo monto.");
+        }
         Tarifa tarifa = new Tarifa();
         tarifa.setAdministrador(admin);
         tarifa.setTipoVehiculo(dto.getTipoVehiculo());

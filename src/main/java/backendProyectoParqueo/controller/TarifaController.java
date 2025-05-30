@@ -25,9 +25,9 @@ public class TarifaController {
     private final TarifaService tarifaService;
 
     // obtener todas las tarifas
-    @GetMapping
-    public ResponseEntity<List<TarifaDTO>> listarTarifas() {
-        List<TarifaDTO> tarifas = tarifaService.listarTarifas();
+    @GetMapping("/vigentes")
+    public ResponseEntity<List<TarifaDTO>> obtenerTarifasVigentes() {
+        List<TarifaDTO> tarifas = tarifaService.listarTarifasVigentes();
         return ResponseEntity.ok(tarifas);
     }
 
