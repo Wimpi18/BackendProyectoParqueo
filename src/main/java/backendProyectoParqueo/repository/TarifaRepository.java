@@ -16,6 +16,7 @@ public interface TarifaRepository extends JpaRepository<Tarifa, Integer> {
             AND t.tipoVehiculo = :tipoVehiculo
             AND t.fechaInicio <= CURRENT_TIMESTAMP
           ORDER BY t.fechaInicio DESC
+          LIMIT 1
       """)
   Tarifa obtenerTarifaVigente(
       @Param("tipoCliente") String tipoCliente,
