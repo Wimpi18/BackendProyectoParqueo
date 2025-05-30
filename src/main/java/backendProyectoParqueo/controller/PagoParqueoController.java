@@ -29,7 +29,7 @@ public class PagoParqueoController {
         return ApiResponseUtil.success("Todos los pagos realizados al parqueo", pagoParqueoService.findAll());
     }
 
-    @GetMapping("/fecha-correspondiente-pago-parqueo")
+    @PostMapping("/fecha-correspondiente-pago-parqueo")
     public ResponseEntity<ApiResponse<Object>> fechaCorrespondienteDePagoParqueo(
             @RequestBody PagoParqueoDTO pagoParqueoDTO) {
         return ApiResponseUtil.success("Fecha inicial correspondiente para realizar el pago del parqueo",
