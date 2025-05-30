@@ -35,6 +35,15 @@ public class TarifaService {
             throw new IllegalArgumentException("El monto debe ser mayor a cero.");
         }
 
+        List<String> tiposValidos = List.of(
+                "Administrativo",
+                "Docente a dedicación exclusiva",
+                "Docente a tiempo horario");
+
+        if (!tiposValidos.contains(dto.getTipoCliente())) {
+            throw new IllegalArgumentException("El tipo de cliente no es válido. Debe ser uno de: " + tiposValidos);
+        }
+
         UUID adminId = dto.getIdAdministrador();
         Administrador admin = administradorRepository.findById(adminId)
                 .orElseThrow(() -> new NoSuchElementException("Administrador no encontrado."));
