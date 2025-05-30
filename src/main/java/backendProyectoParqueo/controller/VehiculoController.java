@@ -32,7 +32,7 @@ public class VehiculoController {
         return ResponseEntity.ok(vehiculoService.listarTodos());
     }
 
-    @GetMapping("/activos")
+    @PostMapping("/activos")
     public ResponseEntity<ApiResponse<List<Object>>> listarVehiculosActivos(@RequestBody ClienteDTO request) {
         return ApiResponseUtil.success("Todos los vehículos pertenecientes al cliente",
                 vehiculoService.obtenerVehiculosActivosPorClienteId(request.getId()));
