@@ -51,9 +51,17 @@ public class ReporteService {
 
   @Transactional(readOnly = true)
   public ReporteEstadoCuentaVehiculoDTO getEstadoCuentaVehiculo(UUID clienteId, String placa) {
-    Parqueo parqueo = parqueoRepository.findActivoByClienteIdAndVehiculoPlacaWithDetails(clienteId, placa)
-        .orElseThrow(() -> new EntityNotFoundException(
-            "Parqueo activo no encontrado para el cliente " + clienteId + " y placa " + placa));
+    List<Parqueo> parqueos = parqueoRepository.findActivosByClienteIdAndVehiculoPlacaWithDetails(clienteId, placa);
+
+    if (parqueos.isEmpty()) {
+      throw new EntityNotFoundException(
+          "Parqueo activo no encontrado para el cliente " + clienteId + " y placa " + placa);
+    }
+
+    // Escoger uno (por ejemplo, el más reciente)
+    Parqueo parqueo = parqueos.stream()
+        .max(Comparator.comparing(Parqueo::getFechaInicio))
+        .orElseThrow(); // nunca pasa, ya se validó no vacío
     return generarReporteParaParqueo(parqueo);
   }
 
