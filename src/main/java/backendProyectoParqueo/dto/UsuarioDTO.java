@@ -32,7 +32,7 @@ public class UsuarioDTO {
     private String apellido;
 
     @NotBlank(message = "El campo del correo es obligatorio")
-    @Email(message = "Debe ingresar un correo válido")
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "Debe ingresar un correo válido")
     private String correo;
 
     @NotBlank(message = "El campo del número de celular es obligatorio")
