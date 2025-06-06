@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.SignInReq;
 import backendProyectoParqueo.dto.SignedInUser;
-import backendProyectoParqueo.dto.UsuarioConRolesDTO;
+import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.service.UsuarioService;
 import backendProyectoParqueo.util.ApiResponseUtil;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ public class AuthController {
 
     @PostMapping()
     public ResponseEntity<ApiResponse<SignedInUser>> signIn(@RequestBody @Valid SignInReq signInReq) {
-        UsuarioConRolesDTO usuario = usuarioService.findUserByUsername(signInReq.getUsername());
+        Usuario usuario = usuarioService.findUserByUsername(signInReq.getUsername());
 
         if (passwordEncoder.matches(signInReq.getPassword(),
                 usuario.getPassword())) {

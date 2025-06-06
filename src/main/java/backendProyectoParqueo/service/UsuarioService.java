@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import backendProyectoParqueo.dto.SignedInUser;
-import backendProyectoParqueo.dto.UsuarioConRolesDTO;
 import backendProyectoParqueo.enums.RoleEnum;
+import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
 import backendProyectoParqueo.security.JwtManager;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class UsuarioService {
                 .toArray(RoleEnum[]::new);
     }
 
-    public UsuarioConRolesDTO findUserByUsername(String username) {
+    public Usuario findUserByUsername(String username) {
         final String uname = username.trim();
 
         Optional<List<Object[]>> optionalResult = usuarioRepository.findRawUsuarioConRolesByUsername(uname);
@@ -44,7 +44,7 @@ public class UsuarioService {
         // Obtener la primera fila (el usuario)
         Object[] row = resultList.get(0);
 
-        return new UsuarioConRolesDTO(
+        return new Usuario(
                 (UUID) row[0], // id
                 (String) row[1], // ci
                 (String) row[2], // nombre
@@ -57,7 +57,7 @@ public class UsuarioService {
         );
     }
 
-    private SignedInUser createSignedInUser(UsuarioConRolesDTO usuario) {
+    private SignedInUser createSignedInUser(Usuario usuario) {
         String token = tokenManager.create(org.springframework.security.core.userdetails.User.builder()
                 .username(usuario.getUsername())
                 .password(usuario.getPassword())
@@ -68,7 +68,7 @@ public class UsuarioService {
                 .userId(usuario.getId().toString());
     }
 
-    public SignedInUser getSignedInUser(UsuarioConRolesDTO usuario) {
+    public SignedInUser getSignedInUser(Usuario usuario) {
         return createSignedInUser(usuario);
     }
 }
