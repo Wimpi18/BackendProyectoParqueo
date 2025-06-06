@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.SignInReq;
+import backendProyectoParqueo.dto.SignedInUser;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.service.UsuarioService;
 import backendProyectoParqueo.util.ApiResponseUtil;
@@ -29,12 +30,12 @@ public class AuthController {
     }
 
     @PostMapping()
-    public ResponseEntity<ApiResponse<Void>> signIn(@RequestBody @Valid SignInReq signInReq) {
-        Usuario userEntity = usuarioService.findUserByUsername(signInReq.getUsername());
+    public ResponseEntity<ApiResponse<SignedInUser>> signIn(@RequestBody @Valid SignInReq signInReq) {
+        Usuario usuario = usuarioService.findUserByUsername(signInReq.getUsername());
 
         if (passwordEncoder.matches(signInReq.getPassword(),
-                userEntity.getPassword())) {
-            return ApiResponseUtil.successMessage("Autorizado.");
+                usuario.getPassword())) {
+            return ApiResponseUtil.success("Autorizado.", usuarioService.getSignedInUser(usuario));
         }
         throw new InsufficientAuthenticationException("Unauthorized.");
     }
