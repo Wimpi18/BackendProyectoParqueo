@@ -61,8 +61,10 @@ public class UsuarioService {
         String token = tokenManager.create(org.springframework.security.core.userdetails.User.builder()
                 .username(usuario.getUsername())
                 .password(usuario.getPassword())
-                // .authorities(Objects.nonNull(usuario.getRole()) ? usuario.getRole().name() :
-                // "")
+                .authorities(
+                        usuario.getRoles() != null
+                                ? Arrays.stream(usuario.getRoles()).map(RoleEnum::name).toArray(String[]::new)
+                                : new String[] {})
                 .build());
         return new SignedInUser().username(usuario.getUsername()).accessToken(token)
                 .userId(usuario.getId().toString());
