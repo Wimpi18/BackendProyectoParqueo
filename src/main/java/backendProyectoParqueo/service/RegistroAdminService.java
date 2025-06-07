@@ -41,23 +41,21 @@ public class RegistroAdminService {
 
         if (request.getRol() == RolAdmin.ADMINISTRADOR &&
                 administradorRepository.existsById(usuario.getId())) {
-            throw new IllegalStateException("Este usuario ya es administrador");
+            throw new IllegalArgumentException("Este usuario ya es administrador");
         }
 
         if (request.getRol() == RolAdmin.CAJERO &&
                 cajeroRepository.existsById(usuario.getId())) {
-            throw new IllegalStateException("Este usuario ya es cajero");
+            throw new IllegalArgumentException("Este usuario ya es cajero");
         }
 
         // 3. Asignar rol
         if (request.getRol() == RolAdmin.ADMINISTRADOR) {
             Administrador administrador = new Administrador();
-            administrador.setId(usuario.getId());
             administrador.setUsuario(usuario);
             administradorRepository.save(administrador);
         } else {
             Cajero cajero = new Cajero();
-            cajero.setId(usuario.getId());
             cajero.setUsuario(usuario);
             cajeroRepository.save(cajero);
         }

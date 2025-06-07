@@ -10,27 +10,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.RegistroUsuarioAdminRequestDTO;
 import backendProyectoParqueo.service.RegistroAdminService;
+import backendProyectoParqueo.util.ApiResponseUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/admin/usuarios")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
-public class UsuarioAdminController {
+public class RegistroAdminController {
 
     private final RegistroAdminService usuarioAdminService;
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')") // Solo accesible para administradores
-    public ResponseEntity<?> registrarUsuarioAdmin(
+    @PostMapping("/registrar")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponse<String>> registrarUsuarioAdmin(
             @Valid @RequestBody RegistroUsuarioAdminRequestDTO request) {
 
         String username = usuarioAdminService.registrarUsuarioAdmin(request);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                Map.of("message", "Usuario registrado correctamente",
-                        "username", username));
+        return ApiResponseUtil.created("Usuario registrado correctamente.", username);
     }
 }
