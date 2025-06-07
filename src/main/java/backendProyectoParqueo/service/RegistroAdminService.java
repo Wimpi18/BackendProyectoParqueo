@@ -16,12 +16,13 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UsuarioAdminService {
+public class RegistroAdminService {
 
     private final UsuarioRepository usuarioRepository;
     private final AdministradorRepository administradorRepository;
     private final CajeroRepository cajeroRepository;
-    private final PasswordEncoder passwordEncoder;
+
+    private final RegistroUsuarioService registroUsuarioService;
 
     public String registrarUsuarioAdmin(RegistroUsuarioAdminRequestDTO request) {
         UsuarioDTO dto = request.getUsuario();
@@ -29,21 +30,15 @@ public class UsuarioAdminService {
 
         // 1. Si no existe el usuario, lo creamos
         if (usuario == null) {
-            usuario = new Usuario();
-            usuario.setCi(dto.getCi());
-            usuario.setNombre(dto.getNombre());
-            usuario.setApellido(dto.getApellido());
-            usuario.setCorreo(dto.getCorreo());
-            usuario.setNroCelular(dto.getNroCelular());
-            usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
-
-            String username = generarUsername(dto.getNombre(), dto.getApellido(), dto.getCi());
-            usuario.setUsername(username);
-
-            usuarioRepository.save(usuario);
+            usuario = registroUsuarioService.crearUsuario(
+                    dto.getCi(),
+                    dto.getNombre(),
+                    dto.getApellido(),
+                    dto.getCorreo(),
+                    dto.getNroCelular(),
+                    dto.getPassword());
         }
 
-        // 2. Verificamos que el rol no esté duplicado
         if (request.getRol() == RolAdmin.ADMINISTRADOR &&
                 administradorRepository.existsById(usuario.getId())) {
             throw new IllegalStateException("Este usuario ya es administrador");
@@ -54,7 +49,7 @@ public class UsuarioAdminService {
             throw new IllegalStateException("Este usuario ya es cajero");
         }
 
-        // 3. Asignamos el rol
+        // 3. Asignar rol
         if (request.getRol() == RolAdmin.ADMINISTRADOR) {
             Administrador administrador = new Administrador();
             administrador.setId(usuario.getId());
@@ -68,18 +63,5 @@ public class UsuarioAdminService {
         }
 
         return usuario.getUsername();
-    }
-
-    private String generarUsername(String nombre, String apellido, String ci) {
-        String base = nombre.split(" ")[0].toLowerCase() + "." +
-                apellido.split(" ")[0].toLowerCase() + "." + ci;
-        String username = base;
-        int i = 1;
-
-        while (usuarioRepository.existsByUsername(username)) {
-            username = base + "." + i++;
-        }
-
-        return username;
     }
 }

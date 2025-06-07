@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.RegistroUsuarioAdminRequestDTO;
-import backendProyectoParqueo.service.UsuarioAdminService;
+import backendProyectoParqueo.service.RegistroAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UsuarioAdminController {
 
-    private final UsuarioAdminService usuarioAdminService;
+    private final RegistroAdminService usuarioAdminService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')") // Solo accesible para administradores
