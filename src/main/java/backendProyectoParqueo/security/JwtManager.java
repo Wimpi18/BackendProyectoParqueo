@@ -31,8 +31,8 @@ public class JwtManager {
 
         // Convertir los enums de roles en un array de strings
         String[] roles = principal.getRoles() != null
-                ? Arrays.stream(principal.getRoles())
-                        .map(RoleEnum::getAuthority)
+                ?  Arrays.stream(principal.getRoles())
+                        .map(RoleEnum::name)
                         .toArray(String[]::new)
                 : new String[] {};
 

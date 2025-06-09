@@ -1,6 +1,5 @@
 package backendProyectoParqueo.dto;
 
-import backendProyectoParqueo.enums.RoleEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,7 +8,7 @@ import lombok.experimental.Accessors;
 public class SignedInUser {
     private String accessToken;
     private String refreshToken;
-    private RoleEnum[] roles;
+    private String[] roles;
 
     public SignedInUser accessToken(String accessToken) {
         this.accessToken = accessToken;
@@ -21,7 +20,7 @@ public class SignedInUser {
         return this;
     }
 
-    public SignedInUser roles(RoleEnum[] roles) {
+    public SignedInUser roles(String[] roles) {
         this.roles = roles;
         return this;
     }

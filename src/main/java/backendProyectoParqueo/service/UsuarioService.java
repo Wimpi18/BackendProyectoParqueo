@@ -69,7 +69,9 @@ public class UsuarioService {
         private SignedInUser createSignedInUser(Usuario usuario) {
                 String token = tokenManager.create(usuario, EXPIRATION_TIME_ACCESS_TOKEN);
                 return new SignedInUser().accessToken(token)
-                                .roles(usuario.getRoles());
+                                .roles(Arrays.stream(usuario.getRoles())
+                                                .map(RoleEnum::name)
+                                                .toArray(String[]::new));
         }
 
         private String createRefreshToken(Usuario usuario) {
