@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
+import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.model.Usuario;
 import static backendProyectoParqueo.security.Constants.ID_CLAIM;
 import static backendProyectoParqueo.security.Constants.ROLE_CLAIM;
@@ -31,7 +32,7 @@ public class JwtManager {
         // Convertir los enums de roles en un array de strings
         String[] roles = principal.getRoles() != null
                 ? Arrays.stream(principal.getRoles())
-                        .map(Enum::name)
+                        .map(RoleEnum::getAuthority)
                         .toArray(String[]::new)
                 : new String[] {};
 

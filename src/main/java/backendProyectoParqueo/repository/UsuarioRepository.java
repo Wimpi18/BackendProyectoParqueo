@@ -21,9 +21,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
                 SELECT u.id, u.ci, u.nombre, u.apellido, u.correo,
                        u.nro_celular, u.password, u.username,
                        ARRAY_REMOVE(ARRAY[
-                           CASE WHEN c.id IS NOT NULL THEN 'Cliente' ELSE NULL END,
-                           CASE WHEN a.id IS NOT NULL THEN 'Administrador' ELSE NULL END,
-                           CASE WHEN j.id IS NOT NULL THEN 'Cajero' ELSE NULL END
+                           CASE WHEN c.id IS NOT NULL THEN 'ROLE_CLIENTE' ELSE NULL END,
+                           CASE WHEN a.id IS NOT NULL THEN 'ROLE_ADMINISTRADOR' ELSE NULL END,
+                           CASE WHEN j.id IS NOT NULL THEN 'ROLE_CAJERO' ELSE NULL END
                        ], NULL) AS roles
                 FROM usuario u
                 LEFT JOIN cliente c ON c.id = u.id

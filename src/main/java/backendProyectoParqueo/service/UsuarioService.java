@@ -25,7 +25,7 @@ public class UsuarioService {
 
         private RoleEnum[] mapRolesArray(String[] rolesStr) {
                 return Arrays.stream(rolesStr)
-                                .map(RoleEnum::valueOf)
+                                .map(RoleEnum::fromAuthority)
                                 .toArray(RoleEnum[]::new);
         }
 
