@@ -13,6 +13,6 @@ public class Constants {
     public static final long EXPIRATION_TIME_ACCESS_TOKEN = 1000L * 60 * 60 * 24 * 7; // 7 días
     public static final long EXPIRATION_TIME_REFRESH_TOKEN = 1000L * 60 * 15; // 15 mins
     public static final String ROLE_CLAIM = "roles";
-    public static final String ID_CLAIM = "id";
+    public static final String ID_CLAIM = "userId";
     public static final String AUTHORITY_PREFIX = "ROLE_";
 }

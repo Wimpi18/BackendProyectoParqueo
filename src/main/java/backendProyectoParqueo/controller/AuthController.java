@@ -25,7 +25,7 @@ public class AuthController {
     private final UsuarioService usuarioService;
     private final PasswordEncoder passwordEncoder;
 
-    @PostMapping()
+    @PostMapping("/signIn")
     public ResponseEntity<ApiResponse<SignedInUser>> signIn(@RequestBody @Valid SignInReq signInReq) {
         Usuario usuario = usuarioService.findUserByUsername(signInReq.getUsername());
 
