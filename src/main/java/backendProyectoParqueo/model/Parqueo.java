@@ -20,6 +20,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+import backendProyectoParqueo.enums.EstadoParqueo;;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -52,10 +55,4 @@ public class Parqueo {
 
     @Column(name = "nro_espacio", nullable = true)
     private Short nroEspacio;
-
-    public enum EstadoParqueo {
-        Activo,
-        Bloqueado,
-        Inactivo
-    }
 }
