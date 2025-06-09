@@ -1,27 +1,28 @@
 package backendProyectoParqueo.dto;
 
+import backendProyectoParqueo.enums.RoleEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
 public class SignedInUser {
-    private String username;
     private String accessToken;
-    private String userId;
-
-    public SignedInUser username(String username) {
-        this.username = username;
-        return this;
-    }
+    private String refreshToken;
+    private RoleEnum[] roles;
 
     public SignedInUser accessToken(String accessToken) {
         this.accessToken = accessToken;
         return this;
     }
 
-    public SignedInUser userId(String userId) {
-        this.userId = userId;
+    public SignedInUser refreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+        return this;
+    }
+
+    public SignedInUser roles(RoleEnum[] roles) {
+        this.roles = roles;
         return this;
     }
 }

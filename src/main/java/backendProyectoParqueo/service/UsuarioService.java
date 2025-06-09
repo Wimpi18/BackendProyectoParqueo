@@ -12,65 +12,72 @@ import backendProyectoParqueo.dto.SignedInUser;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
+import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_ACCESS_TOKEN;
+import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_REFRESH_TOKEN;
 import backendProyectoParqueo.security.JwtManager;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UsuarioService {
-    private final UsuarioRepository usuarioRepository;
-    private final JwtManager tokenManager;
+        private final UsuarioRepository usuarioRepository;
+        private final JwtManager tokenManager;
 
-    private RoleEnum[] mapRolesArray(String[] rolesStr) {
-        return Arrays.stream(rolesStr)
-                .map(RoleEnum::valueOf)
-                .toArray(RoleEnum[]::new);
-    }
-
-    public Usuario findUserByUsername(String username) {
-        final String uname = username.trim();
-
-        Optional<List<Object[]>> optionalResult = usuarioRepository.findRawUsuarioConRolesByUsername(uname);
-
-        // Obtener la lista o lanzar excepción si no hay
-        List<Object[]> resultList = optionalResult.orElseThrow(
-                () -> new UsernameNotFoundException(String.format("No se encontró al usuario %s.", uname)));
-
-        // Verificar que la lista no esté vacía
-        if (resultList.isEmpty()) {
-            throw new UsernameNotFoundException(String.format("No se encontró al usuario %s.", uname));
+        private RoleEnum[] mapRolesArray(String[] rolesStr) {
+                return Arrays.stream(rolesStr)
+                                .map(RoleEnum::valueOf)
+                                .toArray(RoleEnum[]::new);
         }
 
-        // Obtener la primera fila (el usuario)
-        Object[] row = resultList.get(0);
+        public Usuario findUserByUsername(String username) {
+                final String uname = username.trim();
 
-        return new Usuario(
-                (UUID) row[0], // id
-                (String) row[1], // ci
-                (String) row[2], // nombre
-                (String) row[3], // apellido
-                (String) row[4], // correo
-                (String) row[5], // nroCelular
-                (String) row[6], // password
-                (String) row[7], // username
-                mapRolesArray((String[]) row[8]) // roles
-        );
-    }
+                Optional<List<Object[]>> optionalResult = usuarioRepository.findRawUsuarioConRolesByUsername(uname);
 
-    private SignedInUser createSignedInUser(Usuario usuario) {
-        String token = tokenManager.create(org.springframework.security.core.userdetails.User.builder()
-                .username(usuario.getUsername())
-                .password(usuario.getPassword())
-                .authorities(
-                        usuario.getRoles() != null
-                                ? Arrays.stream(usuario.getRoles()).map(RoleEnum::name).toArray(String[]::new)
-                                : new String[] {})
-                .build());
-        return new SignedInUser().username(usuario.getUsername()).accessToken(token)
-                .userId(usuario.getId().toString());
-    }
+                // Obtener la lista o lanzar excepción si no hay
+                List<Object[]> resultList = optionalResult.orElseThrow(
+                                () -> new UsernameNotFoundException(
+                                                String.format("No se encontró al usuario %s.", uname)));
 
-    public SignedInUser getSignedInUser(Usuario usuario) {
-        return createSignedInUser(usuario);
-    }
+                // Verificar que la lista no esté vacía
+                if (resultList.isEmpty()) {
+                        throw new UsernameNotFoundException(String.format("No se encontró al usuario %s.", uname));
+                }
+
+                // Obtener la primera fila (el usuario)
+                Object[] row = resultList.get(0);
+
+                return new Usuario(
+                                (UUID) row[0], // id
+                                (String) row[1], // ci
+                                (String) row[2], // nombre
+                                (String) row[3], // apellido
+                                (String) row[4], // correo
+                                (String) row[5], // nroCelular
+                                (String) row[6], // password
+                                (String) row[7], // username
+                                mapRolesArray((String[]) row[8]) // roles
+                );
+        }
+
+        private SignedInUser createSignedUserWithRefreshToken(
+                        Usuario userEntity) {
+                return createSignedInUser(userEntity)
+                                .refreshToken(createRefreshToken(userEntity));
+        }
+
+        private SignedInUser createSignedInUser(Usuario usuario) {
+                String token = tokenManager.create(usuario, EXPIRATION_TIME_ACCESS_TOKEN);
+                return new SignedInUser().accessToken(token)
+                                .roles(usuario.getRoles());
+        }
+
+        private String createRefreshToken(Usuario usuario) {
+                String token = tokenManager.create(usuario, EXPIRATION_TIME_REFRESH_TOKEN);
+                return token;
+        }
+
+        public SignedInUser getSignedInUser(Usuario usuario) {
+                return createSignedUserWithRefreshToken(usuario);
+        }
 }
