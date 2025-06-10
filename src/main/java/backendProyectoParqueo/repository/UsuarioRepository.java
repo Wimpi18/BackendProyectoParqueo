@@ -1,5 +1,6 @@
 package backendProyectoParqueo.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     boolean existsByCorreo(String correo);
 
+    Optional<Usuario> findByCi(String ci);
     @Query(value = """
                 SELECT
                     u.ci,
@@ -43,5 +45,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
                 WHERE u.id = :usuarioId
             """, nativeQuery = true)
     List<Object[]> obtenerDetallesUsuarioPorId(@Param("usuarioId") UUID usuarioId);
-
 }

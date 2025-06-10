@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 public class ClienteDTO extends UsuarioDTO {
 
     private String entidad;
-    private byte[] foto;
     private String tipo;
 
     public ClienteDTO(UUID id, String ci, String nombre, String apellido, String tipo) {
