@@ -1,5 +1,7 @@
 package backendProyectoParqueo.model;
 
+import java.util.List;
+
 import backendProyectoParqueo.enums.TipoVehiculo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,13 +40,6 @@ public class Vehiculo {
     @Column(name = "foto_trasera", nullable = false)
     private byte[] fotoTrasera;
 
-    @Column(nullable = false)
-    private String marca;
-
-    @Column(nullable = false)
-    private String modelo;
-
-    @Column(nullable = false)
-    private String color;
-
+    @OneToMany(mappedBy = "vehiculo")
+    private List<VehiculoEnParqueo> parqueoAsignado;
 }
