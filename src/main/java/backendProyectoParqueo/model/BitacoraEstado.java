@@ -1,12 +1,13 @@
 package backendProyectoParqueo.model;
 
-import org.hibernate.validator.constraints.UUID;
 
 import backendProyectoParqueo.enums.TipoAccion;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -14,18 +15,18 @@ import jakarta.persistence.Table;
 @Table(name = "bitacora_estado")
 public class BitacoraEstado {
   @Id
-  @GeneratedValue
-  @Column(name = "id", columnDefinition = "uuid", unique = true, updatable = false)
+  @GeneratedValue (strategy = GenerationType.IDENTITY)
+  @Column(name = "id", unique = true, updatable = false)
   private Long id;
   
   @ManyToOne
-  @Column (name = "idUsuario", columnDefinition = "uuid", updatable = false)
-  private UUID idUsuario;
+  @JoinColumn(name = "idUsuario", referencedColumnName = "id", nullable = true)
+  private Usuario idUsuario;
 
 
   @ManyToOne
-  @Column (name = "idAdministrador", columnDefinition = "uuid",updatable = false)
-  private UUID idAdministrador;
+  @JoinColumn(name = "idAdministrador" , referencedColumnName = "id", nullable = true)
+  private Administrador idAdministrador;
 
   @Column (name = "tipo_accion")
   private TipoAccion tipo;
