@@ -56,7 +56,7 @@ public class Parqueo {
     private Short nroEspacio;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private TipoVehiculo tipo;
 
     public enum EstadoParqueo {

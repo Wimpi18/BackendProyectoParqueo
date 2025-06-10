@@ -13,8 +13,10 @@ import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.model.Vehiculo;
+import backendProyectoParqueo.model.VehiculoEnParqueo;
 import backendProyectoParqueo.repository.ClienteRepository;
 import backendProyectoParqueo.repository.ParqueoRepository;
+import backendProyectoParqueo.repository.VehiculoEnParqueoRepository;
 import backendProyectoParqueo.repository.VehiculoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class RegistroClienteService {
     private final ClienteRepository clienteRepo;
     private final VehiculoRepository vehiculoRepo;
     private final ParqueoRepository parqueoRepo;
+    private final VehiculoEnParqueoRepository vehiculoEnParqueoRepo;
 
     @Transactional
     public void registrarCliente(RegistroRequestDTO request) {
@@ -97,11 +100,15 @@ public class RegistroClienteService {
 
         Parqueo parqueo = new Parqueo();
         parqueo.setCliente(cliente);
-        parqueo.setVehiculo(vehiculo);
         parqueo.setEstado(Parqueo.EstadoParqueo.Activo);
         parqueo.setFechaInicio(LocalDate.now());
         parqueo.setNroEspacio(espacioAsignado);
-        parqueoRepo.save(parqueo);
+        parqueo = parqueoRepo.save(parqueo);
+
+        VehiculoEnParqueo relacion = new VehiculoEnParqueo();
+        relacion.setParqueo(parqueo);
+        relacion.setVehiculo(vehiculo);
+        vehiculoEnParqueoRepo.save(relacion);
     }
 
 }

@@ -40,6 +40,15 @@ public class Vehiculo {
     @Column(name = "foto_trasera", nullable = false)
     private byte[] fotoTrasera;
 
+    @Column(nullable = false)
+    private String marca;
+
+    @Column(nullable = false)
+    private String modelo;
+
+    @Column(nullable = false)
+    private String color;
+
     @OneToMany(mappedBy = "vehiculo")
     private List<VehiculoEnParqueo> parqueoAsignado;
 }
