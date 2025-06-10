@@ -46,12 +46,12 @@ public class RegistroClienteService {
                 clienteDTO.getApellido(),
                 clienteDTO.getCorreo(),
                 clienteDTO.getNroCelular(),
-                clienteDTO.getPassword());
+                clienteDTO.getPassword(),
+                clienteDTO.getFoto());
 
         Cliente cliente = new Cliente();
         cliente.setUsuario(usuario);
         cliente.setEntidad(clienteDTO.getEntidad());
-        cliente.setFoto(clienteDTO.getFoto());
         cliente.setTipo(clienteDTO.getTipo());
         cliente = clienteRepo.save(cliente);
 

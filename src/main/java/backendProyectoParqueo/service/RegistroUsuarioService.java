@@ -16,7 +16,7 @@ public class RegistroUsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     Usuario crearUsuario(String ci, String nombre, String apellido, String correo, String celular,
-            String password) {
+            String password, byte[] foto) {
         if (usuarioRepo.existsByCi(ci))
             throw new IllegalArgumentException("CI ya registrado.");
         if (usuarioRepo.existsByCorreo(correo))
@@ -27,6 +27,7 @@ public class RegistroUsuarioService {
         usuario.setNombre(nombre);
         usuario.setApellido(apellido);
         usuario.setCorreo(correo);
+        usuario.setFoto(foto);
         usuario.setNroCelular(celular);
         usuario.setUsername("usuario_" + UUID.randomUUID());
         usuario.setPassword(passwordEncoder.encode(password));

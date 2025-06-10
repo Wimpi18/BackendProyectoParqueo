@@ -36,7 +36,8 @@ public class RegistroAdminService {
                     dto.getApellido(),
                     dto.getCorreo(),
                     dto.getNroCelular(),
-                    dto.getPassword());
+                    dto.getPassword(),
+                    dto.getFoto());
         }
 
         if (request.getRol() == RolAdmin.ADMINISTRADOR &&

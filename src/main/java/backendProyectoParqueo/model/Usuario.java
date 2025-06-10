@@ -41,4 +41,7 @@ public class Usuario {
 
     @Column(name = "username", nullable = true, unique = true)
     private String username;
+
+    @Column(name = "foto", nullable = true)
+    private byte[] foto;
 }

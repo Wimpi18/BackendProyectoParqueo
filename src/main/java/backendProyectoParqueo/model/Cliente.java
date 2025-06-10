@@ -37,18 +37,14 @@ public class Cliente {
     @Column(name = "entidad", nullable = true)
     private String entidad;
 
-    @Column(name = "foto", nullable = false)
-    private byte[] foto;
-
     @Column(name = "tipo", nullable = false)
     private String tipo;
 
     public Cliente() {
     }
 
-    public Cliente(String entidad, byte[] foto, String tipo) {
+    public Cliente(String entidad, String tipo) {
         this.entidad = entidad;
-        this.foto = foto;
         this.tipo = tipo;
     }
 
@@ -74,14 +70,6 @@ public class Cliente {
 
     public void setEntidad(String entidad) {
         this.entidad = entidad;
-    }
-
-    public byte[] getFoto() {
-        return foto;
-    }
-
-    public void setFoto(byte[] foto) {
-        this.foto = foto;
     }
 
     public String getTipo() {
