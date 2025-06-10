@@ -8,6 +8,8 @@ import java.util.UUID;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import backendProyectoParqueo.dto.SignedInUser;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.model.Usuario;
@@ -77,6 +79,10 @@ public class UsuarioService {
         private String createRefreshToken(Usuario usuario) {
                 String token = tokenManager.create(usuario, EXPIRATION_TIME_REFRESH_TOKEN);
                 return token;
+        }
+
+        public DecodedJWT decodeRefreshToken(String token) {
+                return tokenManager.decode(token);
         }
 
         public SignedInUser getSignedInUser(Usuario usuario) {

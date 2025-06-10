@@ -8,7 +8,10 @@ import java.util.Date;
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.model.Usuario;
@@ -31,7 +34,7 @@ public class JwtManager {
 
         // Convertir los enums de roles en un array de strings
         String[] roles = principal.getRoles() != null
-                ?  Arrays.stream(principal.getRoles())
+                ? Arrays.stream(principal.getRoles())
                         .map(RoleEnum::name)
                         .toArray(String[]::new)
                 : new String[] {};
@@ -44,5 +47,17 @@ public class JwtManager {
                 .withIssuedAt(new Date(now))
                 .withExpiresAt(new Date(now + expirationMillis))
                 .sign(Algorithm.RSA256(publicKey, privateKey));
+    }
+
+    public DecodedJWT decode(String token) {
+        try {
+            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer("Sindicato parqueo UMSS")
+                    .build();
+            return verifier.verify(token);
+        } catch (JWTVerificationException ex) {
+            throw new IllegalArgumentException("Token inválido o expirado", ex);
+        }
     }
 }
