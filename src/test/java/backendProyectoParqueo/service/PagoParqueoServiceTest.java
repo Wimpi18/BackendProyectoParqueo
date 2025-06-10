@@ -77,7 +77,6 @@ public class PagoParqueoServiceTest {
                 dto = new PagoParqueoDTO();
                 dto.setIdCliente(clienteId);
                 dto.setIdParqueo(1L);
-                dto.setIdTarifa(1);
                 dto.setMontoPagado(new BigDecimal("0"));
                 dto.setFechaHoraPago(Timestamp.from(Instant.now()));
                 dto.setMeses(new LocalDate[] { LocalDate.now(), LocalDate.now().plusMonths(1) });

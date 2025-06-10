@@ -30,7 +30,6 @@ public class PagoParqueoControllerTest {
 
         pagoParqueoDTO = new PagoParqueoDTO();
         pagoParqueoDTO.setIdCliente(UUID.fromString("44444444-4444-4444-4444-444444444444"));
-        pagoParqueoDTO.setIdTarifa(1);
         pagoParqueoDTO.setIdParqueo(1L);
         pagoParqueoDTO.setIdCajero(UUID.fromString("33333333-3333-3333-3333-333333333333"));
         // pagoParqueoDTO.setMontoPagado(100.0);
