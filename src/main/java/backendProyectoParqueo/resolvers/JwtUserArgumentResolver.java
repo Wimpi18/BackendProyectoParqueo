@@ -17,20 +17,18 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import backendProyectoParqueo.dto.JwtUserPayload;
 import static backendProyectoParqueo.security.Constants.AUTHORIZATION;
+import static backendProyectoParqueo.security.Constants.ID_CLAIM;
 import static backendProyectoParqueo.security.Constants.ROLE_CLAIM;
 import static backendProyectoParqueo.security.Constants.TOKEN_PREFIX;
 import backendProyectoParqueo.security.JwtManager;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String ID_CLAIM = null;
     private final JwtManager jwtManager;
-
-    public JwtUserArgumentResolver(JwtManager jwtManager) {
-        this.jwtManager = jwtManager;
-    }
 
     @Override
     public boolean supportsParameter(@NonNull MethodParameter parameter) {
@@ -44,6 +42,10 @@ public class JwtUserArgumentResolver implements HandlerMethodArgumentResolver {
             @NonNull NativeWebRequest webRequest,
             @Nullable WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+
+        if (request == null)
+            return null;
+
         String authHeader = request.getHeader(AUTHORIZATION);
 
         if (authHeader != null && authHeader.startsWith(TOKEN_PREFIX)) {
