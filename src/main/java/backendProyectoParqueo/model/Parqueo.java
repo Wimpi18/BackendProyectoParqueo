@@ -23,8 +23,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -56,6 +54,10 @@ public class Parqueo {
 
     @Column(name = "nro_espacio", nullable = true)
     private Short nroEspacio;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private TipoVehiculo tipo;
 
     public enum EstadoParqueo {
         Activo,

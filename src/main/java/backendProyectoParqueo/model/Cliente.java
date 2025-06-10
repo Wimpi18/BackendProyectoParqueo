@@ -20,26 +20,27 @@ import jakarta.persistence.Table;
 @Check(constraints = "tipo IN ('Administrativo', 'Docente a dedicación exclusiva', 'Docente a tiempo horario')")
 public class Cliente {
 
-  //-----------------------id-----------------------------
     @Id
+    @GeneratedValue
     @Column(name = "id", columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    @OneToOne (optional = false)
+    @OneToOne
     @MapsId
     @JoinColumn(name = "id")
     private Usuario usuario;
-    
+
     @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Parqueo parqueo;
-  
-    //-----------------------entidad-----------------------------
+
     @Column(name = "entidad", nullable = true)
     private String entidad;
-    //-----------------------tipo-----------------------------
+
     @Column(name = "tipo", nullable = false)
     private String tipo;
 
+    public Cliente() {
+    }
 
     public Cliente(String entidad, String tipo) {
         this.entidad = entidad;
