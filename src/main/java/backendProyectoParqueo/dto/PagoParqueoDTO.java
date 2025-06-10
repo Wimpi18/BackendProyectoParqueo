@@ -28,9 +28,6 @@ public class PagoParqueoDTO {
     @NotNull(message = "Debe proporcionar un id de usuario cliente.")
     private UUID idCliente;
 
-    @NotNull(message = "Debe proporcionar una tarifa válida.")
-    private Integer idTarifa;
-
     @NotNull(message = "Debe proporcionar un parqueo válido.")
     private Long idParqueo;
 
