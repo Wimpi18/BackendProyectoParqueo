@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import backendProyectoParqueo.enums.TipoVehiculo;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,13 +17,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-import backendProyectoParqueo.enums.EstadoParqueo;;
 
 @Entity
 @Data
@@ -34,13 +36,12 @@ public class Parqueo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_cliente")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "id_cliente", nullable = false, unique = true)
     private Cliente cliente;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_vehiculo")
-    private Vehiculo vehiculo;
+    @OneToMany(mappedBy = "parqueo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VehiculoEnParqueo> vehiculosAsignados;
 
     @OneToMany(mappedBy = "parqueo")
     @JsonManagedReference
@@ -55,4 +56,10 @@ public class Parqueo {
 
     @Column(name = "nro_espacio", nullable = true)
     private Short nroEspacio;
+
+    public enum EstadoParqueo {
+        Activo,
+        Bloqueado,
+        Inactivo
+    }
 }
