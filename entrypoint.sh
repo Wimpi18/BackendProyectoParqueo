@@ -1,30 +1,16 @@
 #!/bin/bash
 
-# Cargar variables desde el archivo .env
-if [ -f .env ]; then
-  export $(grep -v '^#' .env | xargs)
-else
-  echo "❌ No se encontró el archivo .env"
-  exit 1
-fi
-
-# Validación de contraseñas
-if [[ ${#KEY_PASS} -lt 6 || ${#STORE_PASS} -lt 6 ]]; then
-  echo "❌ ERROR: Las contraseñas deben tener al menos 6 caracteres."
-  exit 1
-fi
-
 echo "✅ Generando keystore..."
 keytool -genkey \
   -alias "jwt-sign-key" \
   -keyalg RSA \
   -keysize 4096 \
   -storetype JKS \
-  -keystore "$KEYSTORE_PATH" \
+  -keystore "src/main/resources/jwt-keystore.jks" \
   -validity 3650 \
-  -storepass "$STORE_PASS" \
-  -keypass "$KEY_PASS" \
-  -dname "$DNAME"
+  -storepass "aladinos" \
+  -keypass "aladinos" \
+  -dname "CN=JWT, OU=Dev, O=MyCompany, L=LaPaz, ST=LaPaz, C=BO"
 
 echo "🚀 Iniciando la aplicación..."
 exec java -jar app.jar
