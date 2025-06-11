@@ -5,7 +5,6 @@ keytool -genkey \
   -alias "jwt-sign-key" \
   -keyalg RSA \
   -keysize 4096 \
-  -storetype JKS \
   -keystore "src/main/resources/jwt-keystore.jks" \
   -validity 3650 \
   -storepass "aladinos" \
