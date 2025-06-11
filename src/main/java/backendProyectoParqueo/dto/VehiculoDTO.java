@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VehiculoDTO {
+    private Long id;
     private String placa;
     private String marca;
     private TipoVehiculo tipo;
@@ -29,5 +30,14 @@ public class VehiculoDTO {
         this.color = color;
         this.fotoDelantera = fotoDelantera;
         this.fotoTrasera = fotoTrasera;
+    }
+
+    public VehiculoDTO(long id, String placa, TipoVehiculo tipo, String marca, String modelo, String color) {
+        this.id = id;
+        this.placa = placa;
+        this.tipo = tipo;
+        this.marca = marca;
+        this.modelo = modelo;
+        this.color = color;
     }
 }

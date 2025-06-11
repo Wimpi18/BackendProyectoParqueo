@@ -1,4 +1,3 @@
-// src/main/java/backendProyectoParqueo/dto/DetalleMesEstadoCuentaDTO.java
 package backendProyectoParqueo.dto;
 
 import java.math.BigDecimal;
@@ -19,7 +18,7 @@ public class DetalleMesEstadoCuentaDTO {
     private String periodo; // "MM/yyyy"
     private String estado; // "Pagado", "Pendiente"
     private BigDecimal monto;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fechaPago; // Solo para "Pagado"
     // Podrías añadir fechaVencimiento para pendientes si es necesario
 }

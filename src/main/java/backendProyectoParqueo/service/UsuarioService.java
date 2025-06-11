@@ -1,12 +1,13 @@
 package backendProyectoParqueo.service;
 
-
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import backendProyectoParqueo.dto.SignedInUser;
-
 import backendProyectoParqueo.dto.UsuarioDTO;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
@@ -24,27 +24,11 @@ import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.model.Vehiculo;
 import backendProyectoParqueo.repository.ParqueoRepository;
 import backendProyectoParqueo.repository.UsuarioRepository;
-import backendProyectoParqueo.repository.VehiculoRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.lang.StackWalker.Option;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import backendProyectoParqueo.repository.UsuarioRepository;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_ACCESS_TOKEN;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_REFRESH_TOKEN;
 import backendProyectoParqueo.security.JwtManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +36,6 @@ public class UsuarioService {
         private final UsuarioRepository usuarioRepository;
         private final ParqueoRepository parqueoRepository;
         private final JwtManager tokenManager;
-  
 
         @Transactional
         public List<UsuarioDetalleDTO> obtenerDetalleUsuario(UUID idUsuario) {
@@ -132,41 +115,43 @@ public class UsuarioService {
                                 mapRolesArray((String[]) row[9]) // roles
                 );
         }
+
         public Optional<Map<String, Object>> buscarPorCi(String ci) {
-              Optional<Usuario> usuario = usuarioRepository.findByCi(ci);
+                Optional<Usuario> usuario = usuarioRepository.findByCi(ci);
 
-              if (usuario.isPresent()) {
-                  Usuario u = usuario.get();
-                  UsuarioDTO usuarioDTO = new UsuarioDTO(
-                          u.getId(),
-                          u.getCi(),
-                          u.getNombre(),
-                          u.getApellido(),
-                          u.getCorreo(),
-                          u.getNroCelular(),
-                          u.getPassword(),
-                          u.getFoto());
+                if (usuario.isPresent()) {
+                        Usuario u = usuario.get();
+                        UsuarioDTO usuarioDTO = new UsuarioDTO(
+                                        u.getId(),
+                                        u.getCi(),
+                                        u.getNombre(),
+                                        u.getApellido(),
+                                        u.getCorreo(),
+                                        u.getNroCelular(),
+                                        u.getPassword(),
+                                        u.getFoto());
 
-                  List<Vehiculo> vehiculos = parqueoRepository.obtenerVehiculosActivosPorClienteId(u.getId());
-                  List<VehiculoDTO> vehiculoDTOs = vehiculos.stream().map(v -> new VehiculoDTO(
-                          v.getPlaca(),
-                          v.getTipo(),
-                          v.getMarca(),
-                          v.getModelo(),
-                          v.getColor(),
-                          v.getFotoDelantera(),
-                          v.getFotoTrasera())).collect(Collectors.toList());
+                        List<Vehiculo> vehiculos = parqueoRepository.obtenerVehiculosActivosPorClienteId(u.getId());
+                        List<VehiculoDTO> vehiculoDTOs = vehiculos.stream().map(v -> new VehiculoDTO(
+                                        v.getPlaca(),
+                                        v.getTipo(),
+                                        v.getMarca(),
+                                        v.getModelo(),
+                                        v.getColor(),
+                                        v.getFotoDelantera(),
+                                        v.getFotoTrasera())).collect(Collectors.toList());
 
-                  Map<String, Object> response = new HashMap<>();
-                  response.put("user", usuarioDTO);
-                  response.put("vehiculos", vehiculoDTOs);
-                  response.put("message", "Usuario encontrado. Se añadirán permisos administrativos a su cuenta actual.");
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("user", usuarioDTO);
+                        response.put("vehiculos", vehiculoDTOs);
+                        response.put("message",
+                                        "Usuario encontrado. Se añadirán permisos administrativos a su cuenta actual.");
 
-                  return Optional.of(response);
-              }
+                        return Optional.of(response);
+                }
 
-              return Optional.empty();
-          }
+                return Optional.empty();
+        }
 
         private SignedInUser createSignedUserWithRefreshToken(
                         Usuario userEntity) {

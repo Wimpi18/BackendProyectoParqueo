@@ -1,14 +1,15 @@
 package backendProyectoParqueo.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import backendProyectoParqueo.dto.HistorialTarifaDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.repository.HistorialRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

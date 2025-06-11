@@ -18,6 +18,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     boolean existsByCorreo(String correo);
 
     Optional<Usuario> findByCi(String ci);
+
     @Query(value = """
                 SELECT
                     u.ci,

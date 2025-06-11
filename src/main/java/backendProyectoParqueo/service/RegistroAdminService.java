@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 
 import backendProyectoParqueo.dto.RegistroUsuarioAdminRequestDTO;
 import backendProyectoParqueo.dto.UsuarioDTO;
-import backendProyectoParqueo.model.Administrador;
 import backendProyectoParqueo.enums.RolAdmin;
+import backendProyectoParqueo.model.Administrador;
 import backendProyectoParqueo.model.Cajero;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.AdministradorRepository;

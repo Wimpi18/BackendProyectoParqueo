@@ -30,18 +30,21 @@ public class PagoParqueoControllerTest {
 
     @Test
     void testCreatePagoParqueo() {
-        /* // Arrange: Simula el resultado esperado del servicio
-        when(pagoParqueoService.create(pagoParqueoDTO))
-                .thenReturn(ResponseEntity.ok("Pago registrado con éxito"));
-
-        // Act: Llama al método del controlador
-        ResponseEntity<?> response = pagoParqueoController.createPagoParqueo(pagoParqueoDTO);
-
-        // Assert: Verifica que se haya llamado correctamente
-        assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Pago registrado con éxito", response.getBody());
-
-        verify(pagoParqueoService, times(1)).create(pagoParqueoDTO); */
+        /*
+         * // Arrange: Simula el resultado esperado del servicio
+         * when(pagoParqueoService.create(pagoParqueoDTO))
+         * .thenReturn(ResponseEntity.ok("Pago registrado con éxito"));
+         * 
+         * // Act: Llama al método del controlador
+         * ResponseEntity<?> response =
+         * pagoParqueoController.createPagoParqueo(pagoParqueoDTO);
+         * 
+         * // Assert: Verifica que se haya llamado correctamente
+         * assertNotNull(response);
+         * assertEquals(200, response.getStatusCodeValue());
+         * assertEquals("Pago registrado con éxito", response.getBody());
+         * 
+         * verify(pagoParqueoService, times(1)).create(pagoParqueoDTO);
+         */
     }
 }

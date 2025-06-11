@@ -149,9 +149,7 @@ public class ReporteServiceTest {
     VehiculoDTO vehiculoDTO = new VehiculoDTO(parqueoActivoModelo.getId(), placa, TipoVehiculo.Auto, "Toyota",
         "Corolla", "Rojo");
     List<VehiculoDTO> listaRepo = List.of(vehiculoDTO);
-    when(vehiculoRepository.obtenerVehiculosPorClienteId(clienteId)).thenReturn(new ArrayList<>(listaRepo)); // Convertir
-                                                                                                             // a
-                                                                                                             // List<Object>
+    when(vehiculoRepository.obtenerVehiculosPorClienteId(clienteId)).thenReturn(new ArrayList<>(listaRepo));
 
     List<Object> resultado = reporteService.getTodosVehiculosDTOPorCliente(clienteId);
 

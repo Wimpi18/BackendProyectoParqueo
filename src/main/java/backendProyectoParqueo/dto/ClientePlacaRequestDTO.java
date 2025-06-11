@@ -1,4 +1,3 @@
-// backendProyectoParqueo.dto.ClientePlacaRequestDTO.java
 package backendProyectoParqueo.dto;
 
 import java.util.UUID;

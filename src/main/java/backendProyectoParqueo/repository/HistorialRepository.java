@@ -1,18 +1,17 @@
 package backendProyectoParqueo.repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
 import backendProyectoParqueo.dto.HistorialTarifaDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.repository.custom.HistorialRepositoryCustom;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface HistorialRepository extends JpaRepository<Tarifa, Integer>, HistorialRepositoryCustom {
@@ -26,6 +25,7 @@ public interface HistorialRepository extends JpaRepository<Tarifa, Integer>, His
                         """)
         List<HistorialTarifaDTO> obtenerHistorialTarifas();
 
+        @Override
         List<HistorialTarifaDTO> filtrarHistorialTarifas(
                         TipoVehiculo tipoVehiculo,
                         String tipoCliente,

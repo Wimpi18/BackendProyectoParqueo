@@ -63,4 +63,10 @@ public class UsuarioDTO {
         this.foto = foto;
     }
 
+    public UsuarioDTO(UUID id, String ci, String nombre, String apellido) {
+        this.id = id;
+        this.ci = ci;
+        this.nombre = nombre;
+        this.apellido = apellido;
+    }
 }
