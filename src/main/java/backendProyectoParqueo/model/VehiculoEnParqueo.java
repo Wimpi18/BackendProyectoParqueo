@@ -23,10 +23,10 @@ public class VehiculoEnParqueo {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "id_parqueo")
+    @JoinColumn(name = "id_parqueo", nullable = false)
     private Parqueo parqueo;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "id_vehiculo")
+    @JoinColumn(name = "id_vehiculo", nullable = false)
     private Vehiculo vehiculo;
 }

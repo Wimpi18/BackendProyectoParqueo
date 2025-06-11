@@ -51,4 +51,8 @@ public class Vehiculo {
 
     @OneToMany(mappedBy = "vehiculo")
     private List<VehiculoEnParqueo> parqueoAsignado;
+
+    public Vehiculo(Long id) {
+        this.id = id;
+    }
 }

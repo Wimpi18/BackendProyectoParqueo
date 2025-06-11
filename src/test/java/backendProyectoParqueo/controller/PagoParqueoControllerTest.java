@@ -7,20 +7,11 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import backendProyectoParqueo.dto.PagoParqueoDTO;
-import backendProyectoParqueo.service.PagoParqueoService;
 
 public class PagoParqueoControllerTest {
-
-    @InjectMocks
-    private PagoParqueoController pagoParqueoController;
-
-    @Mock
-    private PagoParqueoService pagoParqueoService;
 
     private PagoParqueoDTO pagoParqueoDTO;
 
@@ -30,7 +21,6 @@ public class PagoParqueoControllerTest {
 
         pagoParqueoDTO = new PagoParqueoDTO();
         pagoParqueoDTO.setIdCliente(UUID.fromString("44444444-4444-4444-4444-444444444444"));
-        pagoParqueoDTO.setIdTarifa(1);
         pagoParqueoDTO.setIdParqueo(1L);
         pagoParqueoDTO.setIdCajero(UUID.fromString("33333333-3333-3333-3333-333333333333"));
         // pagoParqueoDTO.setMontoPagado(100.0);

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import backendProyectoParqueo.enums.TipoVehiculo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
