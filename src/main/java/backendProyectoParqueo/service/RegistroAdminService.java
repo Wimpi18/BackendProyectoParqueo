@@ -51,7 +51,7 @@ public class RegistroAdminService {
             }
             Administrador administrador = new Administrador();
             administrador.setUsuario(usuario);
-            administrador.setEsActivo(request.getEsActivo());
+            administrador.setEsActivo(true);// por defecto
             administradorRepository.save(administrador);
 
         } else if (request.getRol() == RolAdmin.CAJERO) {
@@ -60,7 +60,7 @@ public class RegistroAdminService {
             }
             Cajero cajero = new Cajero();
             cajero.setUsuario(usuario);
-            cajero.setEsActivo(request.getEsActivo());
+            cajero.setEsActivo(true); // por defecto
             cajeroRepository.save(cajero);
         }
 

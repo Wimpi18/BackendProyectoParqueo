@@ -1,15 +1,24 @@
 package backendProyectoParqueo.service;
 
+import backendProyectoParqueo.dto.UsuarioDTO;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
+import backendProyectoParqueo.model.Usuario;
+import backendProyectoParqueo.model.Vehiculo;
+import backendProyectoParqueo.repository.ParqueoRepository;
 import backendProyectoParqueo.repository.UsuarioRepository;
+import backendProyectoParqueo.repository.VehiculoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.lang.StackWalker.Option;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -18,6 +27,7 @@ import java.util.stream.Collectors;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final ParqueoRepository parqueoRepository;
 
     @Transactional
     public List<UsuarioDetalleDTO> obtenerDetalleUsuario(UUID idUsuario) {
@@ -56,5 +66,41 @@ public class UsuarioService {
         List<UsuarioDetalleDTO> lista = new ArrayList<>();
         lista.add(dto);
         return lista;
+    }
+
+    public Optional<Map<String, Object>> buscarPorCi(String ci) {
+        Optional<Usuario> usuario = usuarioRepository.findByCi(ci);
+
+        if (usuario.isPresent()) {
+            Usuario u = usuario.get();
+            UsuarioDTO usuarioDTO = new UsuarioDTO(
+                    u.getId(),
+                    u.getCi(),
+                    u.getNombre(),
+                    u.getApellido(),
+                    u.getCorreo(),
+                    u.getNroCelular(),
+                    u.getPassword(),
+                    u.getFoto());
+
+            List<Vehiculo> vehiculos = parqueoRepository.obtenerVehiculosActivosPorClienteId(u.getId());
+            List<VehiculoDTO> vehiculoDTOs = vehiculos.stream().map(v -> new VehiculoDTO(
+                    v.getPlaca(),
+                    v.getTipo(),
+                    v.getMarca(),
+                    v.getModelo(),
+                    v.getColor(),
+                    v.getFotoDelantera(),
+                    v.getFotoTrasera())).collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("user", usuarioDTO);
+            response.put("vehiculos", vehiculoDTOs);
+            response.put("message", "Usuario encontrado. Se añadirán permisos administrativos a su cuenta actual.");
+
+            return Optional.of(response);
+        }
+
+        return Optional.empty();
     }
 }

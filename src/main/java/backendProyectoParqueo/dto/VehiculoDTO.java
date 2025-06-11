@@ -20,11 +20,14 @@ public class VehiculoDTO {
     private String modelo;
     private String color;
 
-    public VehiculoDTO(Long idParqueo, String placa, TipoVehiculo tipo, String marca, String modelo, String color) {
+    public VehiculoDTO(String placa, TipoVehiculo tipo, String marca, String modelo, String color, byte[] fotoDelantera,
+            byte[] fotoTrasera) {
         this.placa = placa;
         this.tipo = tipo;
         this.marca = marca;
         this.modelo = modelo;
         this.color = color;
+        this.fotoDelantera = fotoDelantera;
+        this.fotoTrasera = fotoTrasera;
     }
 }

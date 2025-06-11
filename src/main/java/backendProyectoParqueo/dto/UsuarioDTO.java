@@ -50,10 +50,17 @@ public class UsuarioDTO {
     // Se genera automáticamente
     private String username;
 
-    public UsuarioDTO(UUID id, String ci, String nombre, String apellido) {
+    public UsuarioDTO(UUID id, String ci, String nombre, String apellido, String correo, String nroCelular,
+            String password,
+            byte[] foto) {
         this.id = id;
         this.ci = ci;
         this.nombre = nombre;
         this.apellido = apellido;
+        this.correo = correo;
+        this.nroCelular = nroCelular;
+        this.password = password;
+        this.foto = foto;
     }
+
 }
