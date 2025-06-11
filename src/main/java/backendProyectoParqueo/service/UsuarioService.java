@@ -117,40 +117,17 @@ public class UsuarioService {
         }
 
         public Optional<Map<String, Object>> buscarPorCi(String ci) {
-                Optional<Usuario> usuario = usuarioRepository.findByCi(ci);
-
-                if (usuario.isPresent()) {
-                        Usuario u = usuario.get();
-                        UsuarioDTO usuarioDTO = new UsuarioDTO(
-                                        u.getId(),
-                                        u.getCi(),
-                                        u.getNombre(),
-                                        u.getApellido(),
-                                        u.getCorreo(),
-                                        u.getNroCelular(),
-                                        u.getPassword(),
-                                        u.getFoto());
-
-                        List<Vehiculo> vehiculos = parqueoRepository.obtenerVehiculosActivosPorClienteId(u.getId());
-                        List<VehiculoDTO> vehiculoDTOs = vehiculos.stream().map(v -> new VehiculoDTO(
-                                        v.getPlaca(),
-                                        v.getTipo(),
-                                        v.getMarca(),
-                                        v.getModelo(),
-                                        v.getColor(),
-                                        v.getFotoDelantera(),
-                                        v.getFotoTrasera())).collect(Collectors.toList());
-
+                return usuarioRepository.findByCi(ci).map(usuario -> {
                         Map<String, Object> response = new HashMap<>();
-                        response.put("user", usuarioDTO);
-                        response.put("vehiculos", vehiculoDTOs);
-                        response.put("message",
-                                        "Usuario encontrado. Se añadirán permisos administrativos a su cuenta actual.");
-
-                        return Optional.of(response);
-                }
-
-                return Optional.empty();
+                        response.put("ci", usuario.getCi());
+                        response.put("nombre", usuario.getNombre());
+                        response.put("apellido", usuario.getApellido());
+                        response.put("correo", usuario.getCorreo());
+                        response.put("telefono", usuario.getNroCelular());
+                        response.put("foto", usuario.getFoto());
+                        response.put("password", usuario.getPassword());
+                        return response;
+                });
         }
 
         private SignedInUser createSignedUserWithRefreshToken(

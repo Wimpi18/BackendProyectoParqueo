@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
+import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
 import backendProyectoParqueo.service.UsuarioService;
@@ -40,6 +42,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/check-ci/{ci}")
+    @PreAuthorize("hasRole('" + RoleEnum.Const.ADMINISTRADOR + "')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> checkIfUserExist(@PathVariable String ci) {
         Optional<Map<String, Object>> usuario = usuarioService.buscarPorCi(ci);
 
