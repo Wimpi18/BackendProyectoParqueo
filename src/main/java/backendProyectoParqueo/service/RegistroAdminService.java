@@ -27,7 +27,6 @@ public class RegistroAdminService {
         UsuarioDTO dto = request.getUsuario();
         Usuario usuario = usuarioRepository.findByCi(dto.getCi()).orElse(null);
 
-        // 1. Si no existe el usuario, lo creamos
         if (usuario == null) {
             usuario = registroUsuarioService.crearUsuario(
                     dto.getCi(),
@@ -37,26 +36,31 @@ public class RegistroAdminService {
                     dto.getNroCelular(),
                     dto.getPassword(),
                     dto.getFoto());
+        } else {
+
+            dto.setNombre(usuario.getNombre());
+            dto.setApellido(usuario.getApellido());
+            dto.setCorreo(usuario.getCorreo());
+            dto.setNroCelular(usuario.getNroCelular());
+            dto.setFoto(usuario.getFoto());
         }
 
-        if (request.getRol() == RolAdmin.ADMINISTRADOR &&
-                administradorRepository.existsById(usuario.getId())) {
-            throw new IllegalArgumentException("Este usuario ya es administrador");
-        }
-
-        if (request.getRol() == RolAdmin.CAJERO &&
-                cajeroRepository.existsById(usuario.getId())) {
-            throw new IllegalArgumentException("Este usuario ya es cajero");
-        }
-
-        // 3. Asignar rol
         if (request.getRol() == RolAdmin.ADMINISTRADOR) {
+            if (administradorRepository.existsById(usuario.getId())) {
+                throw new IllegalArgumentException("Este usuario ya es administrador.");
+            }
             Administrador administrador = new Administrador();
             administrador.setUsuario(usuario);
+            administrador.setEsActivo(true);// por defecto
             administradorRepository.save(administrador);
-        } else {
+
+        } else if (request.getRol() == RolAdmin.CAJERO) {
+            if (cajeroRepository.existsById(usuario.getId())) {
+                throw new IllegalArgumentException("Este usuario ya es cajero.");
+            }
             Cajero cajero = new Cajero();
             cajero.setUsuario(usuario);
+            cajero.setEsActivo(true); // por defecto
             cajeroRepository.save(cajero);
         }
 

@@ -1,8 +1,12 @@
 package backendProyectoParqueo.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import backendProyectoParqueo.dto.ApiResponse;
+import backendProyectoParqueo.dto.UsuarioDTO;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
 import backendProyectoParqueo.service.UsuarioService;
+import backendProyectoParqueo.util.ApiResponseUtil;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,6 +39,19 @@ public class UsuarioController {
     @GetMapping
     public List<Usuario> getAllUsuarios() {
         return usuarioRepository.findAll();
+    }
+
+    @GetMapping("/check-ci/{ci}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkIfUserExist(@PathVariable String ci) {
+        Optional<Map<String, Object>> usuario = usuarioService.buscarPorCi(ci);
+
+        if (usuario.isPresent()) {
+            return ApiResponseUtil.success("Datos del usuario", usuario.get());
+        } else {
+            Map<String, Object> response = new HashMap<>();
+            response.put("exists", false);
+            return ApiResponseUtil.success("Usuario no encontrado.", response);
+        }
     }
 
     @PostMapping("/crear")

@@ -1,5 +1,9 @@
 package backendProyectoParqueo.repository;
 
+
+import backendProyectoParqueo.dto.VehiculoParqueoActivoDTO; // Importar el nuevo DTO
+import backendProyectoParqueo.model.Parqueo;
+import backendProyectoParqueo.model.Vehiculo;
 import java.util.List; // Importar el nuevo DTO
 import java.util.UUID;
 
@@ -13,6 +17,9 @@ import backendProyectoParqueo.model.Parqueo;
 
 @Repository // Asegúrate que ParqueoRepository tenga @Repository si no lo tiene
 public interface ParqueoRepository extends JpaRepository<Parqueo, Long> {
+
+    List<Parqueo> findByVehiculo_Id(Long id); // Cambiado el nombre del parámetro para claridad
+
 
     @Query("""
             SELECT new backendProyectoParqueo.dto.VehiculoParqueoActivoDTO(p.id, v.placa, v.tipo)
@@ -63,4 +70,10 @@ public interface ParqueoRepository extends JpaRepository<Parqueo, Long> {
             @Param("clienteId") UUID clienteId,
             @Param("placa") String placa);
 
+    @Query("""
+                SELECT p.vehiculo
+                FROM Parqueo p
+                WHERE p.cliente.id = :clienteId AND p.estado != 'Inactivo'
+            """)
+    List<Vehiculo> obtenerVehiculosActivosPorClienteId(@Param("clienteId") UUID clienteId);
 }

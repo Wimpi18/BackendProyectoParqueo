@@ -13,4 +13,6 @@ public class RegistroUsuarioAdminRequestDTO {
 
     @NotNull(message = "Debe especificar el rol")
     private RolAdmin rol;
+
+    private Boolean esActivo = true;
 }
