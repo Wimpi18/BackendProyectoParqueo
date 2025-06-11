@@ -12,17 +12,13 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17.0.1-jdk-slim
 WORKDIR /app
 
-# Copiar el .jar
 COPY --from=build /app/target/*.jar app.jar
-
-# Copiar script y declarar variables
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x entrypoint.sh
 
-ENV KEYSTORE_PATH=src/main/resources/jwt-keystore.jks
-ENV DNAME="CN=JWT, OU=Dev, O=MyCompany, L=LaPaz, ST=LaPaz, C=BO"
+# Crear el directorio necesario para el keystore
+RUN mkdir -p src/main/resources
 
-# Exponer el puerto
+# Pasar variables desde .env (se hará en tiempo de ejecución)
 EXPOSE 8080
-
 ENTRYPOINT ["./entrypoint.sh"]
