@@ -13,12 +13,9 @@ FROM openjdk:17.0.1-jdk-slim
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
-COPY entrypoint.sh ./entrypoint.sh
-RUN chmod +x entrypoint.sh
 
-# Crear el directorio necesario para el keystore
-RUN mkdir -p src/main/resources
-
-# Pasar variables desde .env (se hará en tiempo de ejecución)
+# Exponer el puerto
 EXPOSE 8080
-ENTRYPOINT ["./entrypoint.sh"]
+
+# Ejecutar la app directamente
+ENTRYPOINT ["java", "-jar", "app.jar"]
