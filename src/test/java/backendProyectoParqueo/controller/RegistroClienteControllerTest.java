@@ -5,18 +5,16 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backendProyectoParqueo.dto.ClienteDTO;
@@ -25,8 +23,7 @@ import backendProyectoParqueo.dto.RegistroRequestDTO;
 import backendProyectoParqueo.dto.UsuarioDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
-import backendProyectoParqueo.service.RegistroClienteService;
-import backendProyectoParqueo.util.SecurityConfig;
+import backendProyectoParqueo.security.SecurityConfig;
 
 @WebMvcTest(controllers = RegistroClienteController.class)
 @Import(SecurityConfig.class)
@@ -34,9 +31,6 @@ import backendProyectoParqueo.util.SecurityConfig;
 class RegistroClienteControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private RegistroClienteService registroClienteService;
 
     private RegistroRequestDTO requestDTO;
 
@@ -63,7 +57,6 @@ class RegistroClienteControllerTest {
 
         // Vehículo válido
         VehiculoDTO vehiculo = new VehiculoDTO();
-        vehiculo.setIdParqueo(1L);
         vehiculo.setPlaca("123ABC");
         vehiculo.setTipo(TipoVehiculo.Auto);
         vehiculo.setMarca("Toyota");
@@ -105,7 +98,7 @@ class RegistroClienteControllerTest {
     private static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

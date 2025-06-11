@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -44,8 +44,24 @@ public class UsuarioDTO {
     @Pattern(regexp = "^(?=.*[A-Z]).+$", message = "La contraseña debe contener al menos una letra mayúscula")
     private String password;
 
+    @NotNull(message = "La foto es obligatoria")
+    private byte[] foto;
+
     // Se genera automáticamente
     private String username;
+
+    public UsuarioDTO(UUID id, String ci, String nombre, String apellido, String correo, String nroCelular,
+            String password,
+            byte[] foto) {
+        this.id = id;
+        this.ci = ci;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.correo = correo;
+        this.nroCelular = nroCelular;
+        this.password = password;
+        this.foto = foto;
+    }
 
     public UsuarioDTO(UUID id, String ci, String nombre, String apellido) {
         this.id = id;

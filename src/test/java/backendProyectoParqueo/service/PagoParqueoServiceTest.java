@@ -67,7 +67,6 @@ public class PagoParqueoServiceTest {
 
                 parqueo = new Parqueo();
                 parqueo.setId(1L);
-                parqueo.setVehiculo(vehiculo);
 
                 tarifa = new Tarifa();
                 tarifa.setTipoCliente(TipoCliente.ADMINISTRATIVO.getLabel());
@@ -77,7 +76,6 @@ public class PagoParqueoServiceTest {
                 dto = new PagoParqueoDTO();
                 dto.setIdCliente(clienteId);
                 dto.setIdParqueo(1L);
-                dto.setIdTarifa(1);
                 dto.setMontoPagado(new BigDecimal("0"));
                 dto.setFechaHoraPago(Timestamp.from(Instant.now()));
                 dto.setMeses(new LocalDate[] { LocalDate.now(), LocalDate.now().plusMonths(1) });
@@ -91,7 +89,7 @@ public class PagoParqueoServiceTest {
                 dto.setMontoPagado(new BigDecimal("1.00"));
                 when(clienteService.findById(cliente.getId())).thenReturn(cliente);
                 when(parqueoService.findById(parqueo.getId())).thenReturn(parqueo);
-                when(tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(), parqueo.getVehiculo().getTipo()))
+                when(tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(), parqueo.getTipo()))
                                 .thenReturn(tarifa);
 
                 // Act & Assert
@@ -112,7 +110,7 @@ public class PagoParqueoServiceTest {
                 when(parqueoService.findById(parqueo.getId())).thenReturn(parqueo);
                 when(tarifaService.findTarifaByTipoClienteYVehiculo(
                                 cliente.getTipo(),
-                                parqueo.getVehiculo().getTipo()))
+                                parqueo.getTipo()))
                                 .thenReturn(tarifa);
 
                 PagoParqueo pagoGuardado = new PagoParqueo();
@@ -175,7 +173,7 @@ public class PagoParqueoServiceTest {
 
                 when(clienteService.findById(cliente.getId())).thenReturn(cliente);
                 when(parqueoService.findById(parqueo.getId())).thenReturn(parqueo);
-                when(tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(), parqueo.getVehiculo().getTipo()))
+                when(tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(), parqueo.getTipo()))
                                 .thenReturn(tarifa);
                 when(cajeroService.findById(cajeroId)).thenReturn(cajero);
 
@@ -205,7 +203,7 @@ public class PagoParqueoServiceTest {
 
                 when(clienteService.findById(cliente.getId())).thenReturn(cliente);
                 when(parqueoService.findById(parqueo.getId())).thenReturn(parqueo);
-                when(tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(), parqueo.getVehiculo().getTipo()))
+                when(tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(), parqueo.getTipo()))
                                 .thenReturn(tarifa);
                 when(pagoParqueoRepository.save(org.mockito.ArgumentMatchers.any(PagoParqueo.class)))
                                 .thenAnswer(invocation -> invocation.getArgument(0));

@@ -53,7 +53,6 @@ public class MesesValidator implements ConstraintValidator<ValidMeses, LocalDate
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
     }

@@ -3,9 +3,9 @@ package backendProyectoParqueo.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import backendProyectoParqueo.enums.TipoVehiculo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import backendProyectoParqueo.enums.TipoVehiculo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,11 +1,12 @@
 package backendProyectoParqueo.dto;
 
-import java.util.UUID;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Data
 @NoArgsConstructor

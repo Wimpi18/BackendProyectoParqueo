@@ -2,16 +2,22 @@ package backendProyectoParqueo.model;
 
 import java.util.UUID;
 
+import backendProyectoParqueo.enums.RoleEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "usuario")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Usuario {
 
     @Id
@@ -41,4 +47,10 @@ public class Usuario {
 
     @Column(name = "username", nullable = true, unique = true)
     private String username;
+
+    @Column(name = "foto", nullable = false)
+    private byte[] foto;
+
+    @Transient
+    private RoleEnum[] roles;
 }

@@ -56,7 +56,6 @@ public class ReporteController {
             return ApiResponseUtil.success("Vehículos del cliente obtenidos exitosamente.", vehiculos);
         } catch (Exception e) {
             System.err.println("Error en getTodosVehiculosPorCliente: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>("error", HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -96,7 +95,6 @@ public class ReporteController {
                     .body(new ApiResponse<>("error", HttpStatus.NOT_FOUND.value(), e.getMessage(), null));
         } catch (Exception e) {
             System.err.println("Error procesando /reporte/vehiculo/estados-cuenta (POST): " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>("error", HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -138,7 +136,6 @@ public class ReporteController {
                     .body(new ApiResponse<>("error", HttpStatus.NOT_FOUND.value(), e.getMessage(), null));
         } catch (Exception e) {
             System.err.println("Error procesando /reporte/cliente-vehiculo/estados-cuenta (POST): " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>("error", HttpStatus.INTERNAL_SERVER_ERROR.value(),

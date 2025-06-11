@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import backendProyectoParqueo.model.Vehiculo;
-import backendProyectoParqueo.repository.ParqueoRepository;
+import backendProyectoParqueo.repository.VehiculoEnParqueoRepository;
 import backendProyectoParqueo.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +21,7 @@ public class VehiculoService {
     @Autowired
     private VehiculoRepository vehiculoRepository;
 
-    private final ParqueoRepository parqueoRepository;
+    private final VehiculoEnParqueoRepository vehiculoEnParqueoRepository;
 
     public List<Vehiculo> listarTodos() {
         return vehiculoRepository.findAll();
@@ -47,9 +47,6 @@ public class VehiculoService {
         return result;
     }
 
-
-    
-
     public Vehiculo crearVehiculo(Vehiculo vehiculo) {
         if (vehiculoRepository.existsByPlaca(vehiculo.getPlaca())) {
             throw new IllegalArgumentException("La placa ya está registrada.");
@@ -62,7 +59,7 @@ public class VehiculoService {
             throw new NoSuchElementException("Vehículo no encontrado");
         }
 
-        if (!parqueoRepository.findByVehiculo_Id(id).isEmpty()) {
+        if (!vehiculoEnParqueoRepository.findByVehiculo(new Vehiculo(id)).isEmpty()) {
             throw new IllegalStateException("No se puede eliminar: el vehículo está siendo usado en parqueos.");
         }
 

@@ -44,7 +44,6 @@ public class VehiculoController {
                 vehiculoService.obtenerVehiculosPorClienteId(request.getId()));
     }
 
-
     @PostMapping
     public ResponseEntity<?> crearVehiculo(@RequestBody Vehiculo vehiculo) {
         try {

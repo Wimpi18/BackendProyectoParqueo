@@ -110,18 +110,20 @@ public class ReporteService {
     ReporteEstadoCuentaVehiculoDTO reporte = new ReporteEstadoCuentaVehiculoDTO();
     // ... (asignaciones iniciales a reporte: placa, tipoCliente, tipoVehiculo,
     // ultimaActualizacion) ...
-    reporte.setPlacaVehiculo(parqueo.getVehiculo().getPlaca());
+    // REVISAR URGENTE LA LÍNEA A CONTINUACIÓN
+    reporte.setPlacaVehiculo(parqueo.getVehiculosAsignados().get(0).getVehiculo().getPlaca());
 
     if (parqueo.getCliente().getTipo() instanceof String) {
       reporte.setTipoCliente(parqueo.getCliente().getTipo());
     } else if (parqueo.getCliente().getTipo() instanceof String) {
       reporte.setTipoCliente((String) parqueo.getCliente().getTipo());
     } else if (parqueo.getCliente().getTipo() != null) {
-      reporte.setTipoCliente(parqueo.getCliente().getTipo().toString());
+      // REVISAR URGENTE LA LÍNEA A CONTINUACIÓN
+      reporte.setTipoCliente(parqueo.getCliente().getTipo());
     } else {
       reporte.setTipoCliente(null);
     }
-    reporte.setTipoVehiculo(parqueo.getVehiculo().getTipo());
+    reporte.setTipoVehiculo(parqueo.getTipo());
     reporte.setUltimaActualizacion(LocalDateTime.now());
 
     List<DetalleMesEstadoCuentaDTO> detallesMes = new ArrayList<>();
@@ -182,12 +184,12 @@ public class ReporteService {
 
     Tarifa tarifaAplicable = tarifaRepository.obtenerTarifaVigente(
         parqueo.getCliente().getTipo(),
-        parqueo.getVehiculo().getTipo());
+        parqueo.getTipo());
 
     if (tarifaAplicable == null && parqueo.getEstado() != Parqueo.EstadoParqueo.Inactivo) {
       System.err.println("Advertencia: No se encontró tarifa vigente para cliente tipo " +
           parqueo.getCliente().getTipo() + " y vehículo tipo " +
-          parqueo.getVehiculo().getTipo() + ". Los montos pendientes pueden no ser precisos para el parqueo ID: "
+          parqueo.getTipo() + ". Los montos pendientes pueden no ser precisos para el parqueo ID: "
           + parqueo.getId());
     }
 

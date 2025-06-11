@@ -1,28 +1,8 @@
 package backendProyectoParqueo.service;
 
-import backendProyectoParqueo.dto.DetalleMesEstadoCuentaDTO;
-import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
-import backendProyectoParqueo.dto.VehiculoDTO; // Usaremos este tipo si es lo que devuelve el repo
-import backendProyectoParqueo.enums.TipoCliente; // Para usar .getLabel()
-import backendProyectoParqueo.enums.TipoVehiculo;
-import backendProyectoParqueo.model.*;
-import backendProyectoParqueo.repository.PagoParqueoRepository;
-import backendProyectoParqueo.repository.ParqueoRepository;
-import backendProyectoParqueo.repository.TarifaRepository;
-import backendProyectoParqueo.repository.VehiculoRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.math.BigDecimal;
-// import java.sql.Date; // Ya no se usa para PagoParqueo.meses
-import java.sql.Timestamp;
-import java.time.LocalDate;
+import java.sql.Timestamp; // Usaremos este tipo si es lo que devuelve el repo
+import java.time.LocalDate; // Para usar .getLabel()
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -32,10 +12,37 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
+import backendProyectoParqueo.dto.VehiculoDTO;
+import backendProyectoParqueo.enums.TipoCliente;
+import backendProyectoParqueo.enums.TipoVehiculo;
+import backendProyectoParqueo.model.Cliente;
+import backendProyectoParqueo.model.PagoParqueo;
+import backendProyectoParqueo.model.Parqueo;
+import backendProyectoParqueo.model.Tarifa;
+import backendProyectoParqueo.model.Vehiculo;
+import backendProyectoParqueo.repository.PagoParqueoRepository;
+import backendProyectoParqueo.repository.ParqueoRepository;
+import backendProyectoParqueo.repository.TarifaRepository;
+import backendProyectoParqueo.repository.VehiculoRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class ReporteServiceTest {
@@ -85,14 +92,12 @@ public class ReporteServiceTest {
     parqueoActivoModelo = new Parqueo();
     parqueoActivoModelo.setId(10L);
     parqueoActivoModelo.setCliente(clienteModelo);
-    parqueoActivoModelo.setVehiculo(vehiculoModelo);
     parqueoActivoModelo.setEstado(Parqueo.EstadoParqueo.Activo);
     parqueoActivoModelo.setFechaInicio(LocalDate.now().minusMonths(2).withDayOfMonth(1));
 
     parqueoInactivoSinPagosModelo = new Parqueo();
     parqueoInactivoSinPagosModelo.setId(11L);
     parqueoInactivoSinPagosModelo.setCliente(clienteModelo);
-    parqueoInactivoSinPagosModelo.setVehiculo(vehiculoModelo);
     parqueoInactivoSinPagosModelo.setEstado(Parqueo.EstadoParqueo.Inactivo);
     parqueoInactivoSinPagosModelo.setFechaInicio(LocalDate.now().minusMonths(5).withDayOfMonth(1));
     // Sin fechaFin explícita
@@ -100,7 +105,6 @@ public class ReporteServiceTest {
     parqueoInactivoConPagosModelo = new Parqueo();
     parqueoInactivoConPagosModelo.setId(12L);
     parqueoInactivoConPagosModelo.setCliente(clienteModelo);
-    parqueoInactivoConPagosModelo.setVehiculo(vehiculoModelo);
     parqueoInactivoConPagosModelo.setEstado(Parqueo.EstadoParqueo.Inactivo);
     parqueoInactivoConPagosModelo.setFechaInicio(LocalDate.now().minusMonths(6).withDayOfMonth(1));
 
@@ -145,9 +149,7 @@ public class ReporteServiceTest {
     VehiculoDTO vehiculoDTO = new VehiculoDTO(parqueoActivoModelo.getId(), placa, TipoVehiculo.Auto, "Toyota",
         "Corolla", "Rojo");
     List<VehiculoDTO> listaRepo = List.of(vehiculoDTO);
-    when(vehiculoRepository.obtenerVehiculosPorClienteId(clienteId)).thenReturn(new ArrayList<>(listaRepo)); // Convertir
-                                                                                                             // a
-                                                                                                             // List<Object>
+    when(vehiculoRepository.obtenerVehiculosPorClienteId(clienteId)).thenReturn(new ArrayList<>(listaRepo));
 
     List<Object> resultado = reporteService.getTodosVehiculosDTOPorCliente(clienteId);
 
