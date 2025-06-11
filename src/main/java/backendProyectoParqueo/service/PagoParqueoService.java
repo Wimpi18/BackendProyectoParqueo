@@ -44,7 +44,7 @@ public class PagoParqueoService {
         Cliente cliente = clienteService.findById(dto.getIdCliente());
         Parqueo parqueo = parqueoService.findById(dto.getIdParqueo());
         Tarifa tarifa = tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(),
-                parqueo.getVehiculo().getTipo());
+                parqueo.getTipo());
 
         Cajero cajero = null;
         if (dto.getIdCajero() != null)

@@ -2,6 +2,7 @@
 package backendProyectoParqueo.dto;
 
 import java.util.UUID;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
