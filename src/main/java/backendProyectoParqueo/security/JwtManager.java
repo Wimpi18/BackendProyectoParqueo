@@ -1,10 +1,9 @@
 package backendProyectoParqueo.security;
 
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
@@ -20,13 +19,10 @@ import static backendProyectoParqueo.security.Constants.ROLE_CLAIM;
 
 @Component
 public class JwtManager {
+    private final String SECRET_KEY;
 
-    private final RSAPrivateKey privateKey;
-    private final RSAPublicKey publicKey;
-
-    public JwtManager(RSAPrivateKey privateKey, RSAPublicKey publicKey) {
-        this.privateKey = privateKey;
-        this.publicKey = publicKey;
+    public JwtManager(@Value("${jwt.secret}") String secretKey) {
+        this.SECRET_KEY = secretKey;
     }
 
     public String create(Usuario principal, long expirationMillis) {
@@ -46,12 +42,12 @@ public class JwtManager {
                 .withArrayClaim(ROLE_CLAIM, roles)
                 .withIssuedAt(new Date(now))
                 .withExpiresAt(new Date(now + expirationMillis))
-                .sign(Algorithm.RSA256(publicKey, privateKey));
+                .sign(Algorithm.HMAC256(SECRET_KEY));
     }
 
     public DecodedJWT decode(String token) {
         try {
-            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("Sindicato parqueo UMSS")
                     .build();
