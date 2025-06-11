@@ -37,7 +37,6 @@ public class RegistroAdminService {
                     dto.getPassword(),
                     dto.getFoto());
         } else {
-
             dto.setNombre(usuario.getNombre());
             dto.setApellido(usuario.getApellido());
             dto.setCorreo(usuario.getCorreo());
@@ -45,25 +44,39 @@ public class RegistroAdminService {
             dto.setFoto(usuario.getFoto());
         }
 
+        boolean yaEsAdmin = administradorRepository.existsById(usuario.getId());
+        boolean yaEsCajero = cajeroRepository.existsById(usuario.getId());
+
         if (request.getRol() == RolAdmin.ADMINISTRADOR) {
-            if (administradorRepository.existsById(usuario.getId())) {
+            if (yaEsAdmin) {
                 throw new IllegalArgumentException("Este usuario ya es administrador.");
             }
+            if (yaEsCajero) {
+                throw new IllegalArgumentException(
+                        "Este usuario ya tiene el rol de cajero. No puede ser administrador.");
+            }
+
             Administrador administrador = new Administrador();
             administrador.setUsuario(usuario);
-            administrador.setEsActivo(true);// por defecto
+            administrador.setEsActivo(true);
             administradorRepository.save(administrador);
 
         } else if (request.getRol() == RolAdmin.CAJERO) {
-            if (cajeroRepository.existsById(usuario.getId())) {
+            if (yaEsCajero) {
                 throw new IllegalArgumentException("Este usuario ya es cajero.");
             }
+            if (yaEsAdmin) {
+                throw new IllegalArgumentException(
+                        "Este usuario ya tiene el rol de administrador. No puede ser cajero.");
+            }
+
             Cajero cajero = new Cajero();
             cajero.setUsuario(usuario);
-            cajero.setEsActivo(true); // por defecto
+            cajero.setEsActivo(true);
             cajeroRepository.save(cajero);
         }
 
         return usuario.getUsername();
     }
+
 }
