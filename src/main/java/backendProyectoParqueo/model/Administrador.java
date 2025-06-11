@@ -25,4 +25,6 @@ public class Administrador {
     @JoinColumn(name = "id")
     private Usuario usuario;
 
+    @Column(name = "es_activo", nullable = false)
+    private boolean esActivo = true;
 }
