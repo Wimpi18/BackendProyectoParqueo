@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.RegistroUsuarioAdminRequestDTO;
+import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.service.RegistroAdminService;
 import backendProyectoParqueo.util.ApiResponseUtil;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ public class RegistroAdminController {
     private final RegistroAdminService usuarioAdminService;
 
     @PostMapping("/registrar")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('" + RoleEnum.Const.ADMINISTRADOR + "')")
     public ResponseEntity<ApiResponse<String>> registrarUsuarioAdmin(
             @Valid @RequestBody RegistroUsuarioAdminRequestDTO request) {
 

@@ -103,6 +103,7 @@ public class RegistroClienteService {
         parqueo.setEstado(Parqueo.EstadoParqueo.Activo);
         parqueo.setFechaInicio(LocalDate.now());
         parqueo.setNroEspacio(espacioAsignado);
+        parqueo.setTipo(dto.getTipo());
         parqueo = parqueoRepo.save(parqueo);
 
         VehiculoEnParqueo relacion = new VehiculoEnParqueo();
