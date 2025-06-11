@@ -49,7 +49,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     @Query(value = """
                 SELECT u.id, u.ci, u.nombre, u.apellido, u.correo,
-                       u.nro_celular, u.password, u.username,
+                       u.nro_celular, u.password, u.username, u.foto,
                        ARRAY_REMOVE(ARRAY[
                            CASE WHEN c.id IS NOT NULL THEN 'ROLE_CLIENTE' ELSE NULL END,
                            CASE WHEN a.id IS NOT NULL THEN 'ROLE_ADMINISTRADOR' ELSE NULL END,
