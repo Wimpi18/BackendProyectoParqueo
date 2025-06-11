@@ -1,21 +1,12 @@
 package backendProyectoParqueo.security;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,15 +40,8 @@ import static backendProyectoParqueo.security.Constants.TOKEN_URL;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    private final Logger LOG = LoggerFactory.getLogger(getClass());
-    @Value("${app.security.jwt.keystore-location}")
-    private String keyStorePath;
-    @Value("${app.security.jwt.keystore-password}")
-    private String keyStorePassword;
-    @Value("${app.security.jwt.key-alias}")
-    private String keyAlias;
-    @Value("${app.security.jwt.private-key-passphrase}")
-    private String privateKeyPassphrase;
+    @Value("${jwt.secret}")
+    private String secret;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -83,57 +67,15 @@ public class SecurityConfig {
         JwtGrantedAuthoritiesConverter authorityConverter = new JwtGrantedAuthoritiesConverter();
         authorityConverter.setAuthorityPrefix(AUTHORITY_PREFIX);
         authorityConverter.setAuthoritiesClaimName(ROLE_CLAIM);
-        System.out.println(authorityConverter);
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(authorityConverter);
         return converter;
     }
 
     @Bean
-    public KeyStore keyStore() {
-        try {
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream resourceAsStream = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream(keyStorePath);
-            keyStore.load(resourceAsStream, keyStorePassword.toCharArray());
-            return keyStore;
-        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-            LOG.error("Unable to load keystore: {}", keyStorePath, e);
-        }
-
-        throw new IllegalArgumentException("Unable to load keystore");
-    }
-
-    @Bean
-    public RSAPrivateKey jwtSigningKey(KeyStore keyStore) {
-        try {
-            Key key = keyStore.getKey(keyAlias, privateKeyPassphrase.toCharArray());
-            if (key instanceof RSAPrivateKey rSAPrivateKey) {
-                return rSAPrivateKey;
-            }
-        } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-            LOG.error("Unable to load private key from keystore: {}", keyStorePath, e);
-        }
-        throw new IllegalArgumentException("Unable to load private key");
-    }
-
-    @Bean
-    public RSAPublicKey jwtValidationKey(KeyStore keyStore) {
-        try {
-            Certificate certificate = keyStore.getCertificate(keyAlias);
-            PublicKey publicKey = certificate.getPublicKey();
-            if (publicKey instanceof RSAPublicKey rSAPublicKey) {
-                return rSAPublicKey;
-            }
-        } catch (KeyStoreException e) {
-            LOG.error("Unable to load private key from keystore: {}", keyStorePath, e);
-        }
-        throw new IllegalArgumentException("Unable to load RSA public key");
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder(RSAPublicKey rsaPublicKey) {
-        return NimbusJwtDecoder.withPublicKey(rsaPublicKey).build();
+    public JwtDecoder jwtDecoder() {
+        SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        return NimbusJwtDecoder.withSecretKey(key).build();
     }
 
     @Bean
@@ -144,11 +86,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH"));
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:5173",
+                "https://frontend-sindicato-io99.vercel.app"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
