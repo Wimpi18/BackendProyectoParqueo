@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.CambiarEstadoParqueoDTO;
 import backendProyectoParqueo.dto.JwtUserPayload;
 import backendProyectoParqueo.model.Parqueo;
@@ -45,30 +45,10 @@ public class AdminParqueoController {
             );
             String mensaje = String.format("Parqueo ID %d bloqueado exitosamente. Cliente asociado ahora está BLOQUEADO. Nuevo estado del parqueo: %s",
                                            requestDTO.getParqueoId(), parqueoActualizado.getEstado());
-            return ResponseEntity.ok(mensaje);
+            return ResponseEntity.ok(ApiResponse.success(mensaje, HttpStatus.OK));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al bloquear parqueo: " + e.getMessage());
-        }
-    }
-
-    // Endpoint para DESBLOQUEAR un parqueo lo cual es equivalente a activarlo
-    @PostMapping("/desbloquear")
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    public ResponseEntity<?> desbloquearParqueoCliente(
-            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
-            @UserGuard JwtUserPayload adminAutenticado) {
-        try {
-            UUID adminEjecutorId = adminAutenticado.getUserId();
-            Parqueo parqueoActualizado = parqueoAdminService.desbloquearParqueoCliente(
-                    requestDTO.getParqueoId(),
-                    requestDTO.getMotivo(),
-                    adminEjecutorId
-            );
-            String mensaje = String.format("Parqueo ID %d desbloqueado exitosamente. Cliente asociado ahora está ACTIVO. Nuevo estado del parqueo: %s",
-                                           requestDTO.getParqueoId(), parqueoActualizado.getEstado());
-            return ResponseEntity.ok(mensaje);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al desbloquear parqueo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("Error al bloquear parqueo: " + e.getMessage(), HttpStatus.BAD_REQUEST));
         }
     }
 
@@ -87,9 +67,10 @@ public class AdminParqueoController {
             );
             String mensaje = String.format("Parqueo ID %d inactivado exitosamente. Cliente asociado ahora está INACTIVO. Nuevo estado del parqueo: %s. Espacio liberado: %s",
                                            requestDTO.getParqueoId(), parqueoActualizado.getEstado(), parqueoActualizado.getNroEspacio() == null ? "Sí" : "No (o ya estaba libre)");
-            return ResponseEntity.ok(mensaje);
+            return ResponseEntity.ok(ApiResponse.success(mensaje, HttpStatus.OK));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al inactivar parqueo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("Error al inactivar parqueo: " + e.getMessage(), HttpStatus.BAD_REQUEST));
         }
     }
 
@@ -108,9 +89,10 @@ public class AdminParqueoController {
             );
              String mensaje = String.format("Parqueo ID %d activado exitosamente. Cliente asociado ahora está ACTIVO. Nuevo estado del parqueo: %s",
                                            requestDTO.getParqueoId(), parqueoActualizado.getEstado());
-            return ResponseEntity.ok(mensaje);
+            return ResponseEntity.ok(ApiResponse.success(mensaje, HttpStatus.OK));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al activar parqueo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("Error al activar parqueo: " + e.getMessage(), HttpStatus.BAD_REQUEST));
         }
     }
 
