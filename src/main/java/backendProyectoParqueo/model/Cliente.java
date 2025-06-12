@@ -21,7 +21,6 @@ import jakarta.persistence.Table;
 public class Cliente {
 
     @Id
-    @GeneratedValue
     @Column(name = "id", columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 

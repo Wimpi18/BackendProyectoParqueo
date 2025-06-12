@@ -20,4 +20,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
                 WHERE p.estado != 'Inactivo'
             """)
     List<Object> findAllClientesNoInactivos();
+    
+
 }
