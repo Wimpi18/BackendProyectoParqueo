@@ -1,6 +1,7 @@
 package backendProyectoParqueo.repository;
 
 import java.util.List; // Importar el nuevo DTO
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -70,4 +71,6 @@ public interface ParqueoRepository extends JpaRepository<Parqueo, Long> {
                         WHERE p.cliente.id = :clienteId AND p.estado != 'Inactivo'
                         """)
         List<Vehiculo> obtenerVehiculosActivosPorClienteId(@Param("clienteId") UUID clienteId);
+
+        Optional<Parqueo> findByCliente_Id(UUID clienteId);
 }

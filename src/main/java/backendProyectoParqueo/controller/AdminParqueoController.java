@@ -20,7 +20,7 @@ import backendProyectoParqueo.service.admin.CambioEstadoParqueo;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("admin/parqueo")
+@RequestMapping("admin")
 public class AdminParqueoController {
   
   private final CambioEstadoParqueo parqueoAdminService;
@@ -33,66 +33,66 @@ public class AdminParqueoController {
     // Endpoint para BLOQUEAR un parqueo (ID y motivo en el body)
     @PostMapping("/bloquear")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    public ResponseEntity<?> bloquearParqueoCliente(
+    public ResponseEntity<ApiResponse<?>> bloquearParqueoCliente(
             @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
             @UserGuard JwtUserPayload adminAutenticado) {
         try {
             UUID adminEjecutorId = adminAutenticado.getUserId();
-            Parqueo parqueoActualizado = parqueoAdminService.bloquearParqueoCliente(
-                    requestDTO.getParqueoId(), 
+            Parqueo parqueoActualizado = parqueoAdminService.bloquearCliente(
+                    requestDTO.getUsuarioId(), 
                     requestDTO.getMotivo(),
                     adminEjecutorId
             );
-            String mensaje = String.format("Parqueo ID %d bloqueado exitosamente. Cliente asociado ahora está BLOQUEADO. Nuevo estado del parqueo: %s",
-                                           requestDTO.getParqueoId(), parqueoActualizado.getEstado());
+            String mensaje = String.format("Cliente ID %d bloqueado exitosamente. Nuevo estado del cliente: %s",
+                                           requestDTO.getUsuarioId(),  parqueoActualizado.getEstado());
             return ResponseEntity.ok(ApiResponse.success(mensaje, HttpStatus.OK));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error("Error al bloquear parqueo: " + e.getMessage(), HttpStatus.BAD_REQUEST));
+                .body(ApiResponse.error("Error al bloquear cliente: " + e.getMessage(), HttpStatus.BAD_REQUEST));
         }
     }
 
     // Endpoint para INACTIVAR un parqueo
     @PostMapping("/inactivar")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    public ResponseEntity<?> inactivarParqueoCliente(
+    public ResponseEntity<ApiResponse<?>> inactivarParqueoCliente(
             @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
             @UserGuard JwtUserPayload adminAutenticado) {
         try {
             UUID adminEjecutorId = adminAutenticado.getUserId();
-            Parqueo parqueoActualizado = parqueoAdminService.inactivarParqueoCliente(
-                    requestDTO.getParqueoId(),
+            Parqueo parqueoActualizado = parqueoAdminService.inactivarCliente(
+                    requestDTO.getUsuarioId(), 
                     requestDTO.getMotivo(),
                     adminEjecutorId
             );
-            String mensaje = String.format("Parqueo ID %d inactivado exitosamente. Cliente asociado ahora está INACTIVO. Nuevo estado del parqueo: %s. Espacio liberado: %s",
-                                           requestDTO.getParqueoId(), parqueoActualizado.getEstado(), parqueoActualizado.getNroEspacio() == null ? "Sí" : "No (o ya estaba libre)");
+            String mensaje = String.format("Cliente ID %d inactivado exitosamente. Nuevo estado del cliente: %s. Espacio liberado: %s",
+                                           requestDTO.getUsuarioId(),  parqueoActualizado.getEstado(), parqueoActualizado.getNroEspacio() == null ? "Sí" : "No (o ya estaba libre)");
             return ResponseEntity.ok(ApiResponse.success(mensaje, HttpStatus.OK));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error("Error al inactivar parqueo: " + e.getMessage(), HttpStatus.BAD_REQUEST));
+                .body(ApiResponse.error("Error al inactivar cliente: " + e.getMessage(), HttpStatus.BAD_REQUEST));
         }
     }
 
     // Endpoint para ACTIVAR un parqueo
     @PostMapping("/activar")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    public ResponseEntity<?> activarParqueoCliente(
+    public ResponseEntity<ApiResponse<?>> activarParqueoCliente(
             @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
             @UserGuard JwtUserPayload adminAutenticado) {
         try {
             UUID adminEjecutorId = adminAutenticado.getUserId();
-            Parqueo parqueoActualizado = parqueoAdminService.activarParqueoCliente(
-                    requestDTO.getParqueoId(),
+            Parqueo parqueoActualizado = parqueoAdminService.activarCliente(
+                    requestDTO.getUsuarioId(), 
                     requestDTO.getMotivo(),
                     adminEjecutorId
             );
-             String mensaje = String.format("Parqueo ID %d activado exitosamente. Cliente asociado ahora está ACTIVO. Nuevo estado del parqueo: %s",
-                                           requestDTO.getParqueoId(), parqueoActualizado.getEstado());
+             String mensaje = String.format("Cliente ID %d activado exitosamente. Nuevo estado del parqueo: %s",
+                                           requestDTO.getUsuarioId(),  parqueoActualizado.getEstado());
             return ResponseEntity.ok(ApiResponse.success(mensaje, HttpStatus.OK));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error("Error al activar parqueo: " + e.getMessage(), HttpStatus.BAD_REQUEST));
+                .body(ApiResponse.error("Error al activar cliente: " + e.getMessage(), HttpStatus.BAD_REQUEST));
         }
     }
 

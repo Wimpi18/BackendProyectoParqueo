@@ -14,6 +14,7 @@ import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.AdministradorRepository;
 import backendProyectoParqueo.repository.BitacoraEstadoRepository;
+import backendProyectoParqueo.repository.ClienteRepository;
 import backendProyectoParqueo.repository.ParqueoRepository;
 import jakarta.transaction.Transactional;
 
@@ -22,61 +23,64 @@ public class CambioEstadoParqueo {
   private final ParqueoRepository parqueoRepository;
   private final AdministradorRepository administradorRepository;
   private final BitacoraEstadoRepository bitacoraEstadoRepository;
+  private final ClienteRepository clienteRepository;
 
   @Autowired
   public CambioEstadoParqueo(ParqueoRepository parqueoRepository,
       AdministradorRepository administradorRepository,
-      BitacoraEstadoRepository bitacoraEstadoRepository) {
+      BitacoraEstadoRepository bitacoraEstadoRepository,
+      ClienteRepository clienteRepository) { 
     this.parqueoRepository = parqueoRepository;
     this.administradorRepository = administradorRepository;
     this.bitacoraEstadoRepository = bitacoraEstadoRepository;
+    this.clienteRepository = clienteRepository;
   }
 
 
   @Transactional
-    public Parqueo cambiarEstadoParqueo(Long parqueoId, EstadoParqueo nuevoEstado, String motivo, UUID adminId) {
+    public Parqueo cambiarEstadoParqueoPorUsuarioId(UUID usuarioIdCliente, EstadoParqueo nuevoEstado, String motivo, UUID adminQueEjecutaId) {
 
-        Administrador adminEjecutor = administradorRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Administrador ejecutor con ID " + adminId + " no encontrado.")); 
+      Administrador adminEjecutor = administradorRepository.findById(adminQueEjecutaId)
+              .orElseThrow(() -> new RuntimeException("Administrador ejecutor con ID " + adminQueEjecutaId + " no encontrado.")); 
 
-        Parqueo parqueo = parqueoRepository.findById(parqueoId)
-                .orElseThrow(() -> new RuntimeException("Parqueo con ID " + parqueoId + " no encontrado.")); 
+      Cliente clienteAfectado = clienteRepository.findById(usuarioIdCliente)
+              .orElseThrow(() -> new RuntimeException("Cliente con Usuario ID " + usuarioIdCliente + " no encontrado."));
+      
+      Parqueo parqueo = parqueoRepository.findByCliente_Id(usuarioIdCliente) 
+              .orElseThrow(() -> new RuntimeException("No se encontró un Parqueo asociado al Cliente con Usuario ID " + usuarioIdCliente));
 
-        Cliente clienteDelParqueo = parqueo.getCliente();
-        if (clienteDelParqueo == null) {
-            throw new IllegalStateException("Error de integridad de datos: Parqueo ID " + parqueoId + " no tiene un cliente asociado.");
-        }
-        Usuario usuarioDelClienteAfectado = clienteDelParqueo.getUsuario();
-        if (usuarioDelClienteAfectado == null) {
-            throw new IllegalStateException("Error de integridad de datos: Cliente ID " + clienteDelParqueo.getId() + " no tiene un usuario base asociado.");
-        }
+      Usuario usuarioDelClienteAfectado = clienteAfectado.getUsuario();
+      if (usuarioDelClienteAfectado == null) { // Esto no debería pasar con @MapsId
+          throw new IllegalStateException("Error de integridad: Cliente ID " + clienteAfectado.getId() + " no tiene un usuario base.");
+      }
 
-        if (adminEjecutor.getUsuario().getId().equals(usuarioDelClienteAfectado.getId())) {
-            throw new RuntimeException("Un administrador no puede modificar el estado de un parqueo que le pertenece como cliente."); // Reemplazar con AccionNoPermitidaException
-        }
+      if (adminEjecutor.getUsuario().getId().equals(usuarioDelClienteAfectado.getId())) {
+          throw new RuntimeException("Un administrador no puede modificar el estado de un parqueo que le pertenece como cliente.");
+      }
 
+      if (parqueo.getEstado() == nuevoEstado) {
+          throw new RuntimeException("El parqueo ya se encuentra en el estado " + nuevoEstado + ". No se realizaron cambios.");
+      }
+      EstadoParqueo estadoAnterior = parqueo.getEstado();
+      parqueo.setEstado(nuevoEstado);
 
-        if (parqueo.getEstado() == nuevoEstado) {
-            throw new RuntimeException("El parqueo ya se encuentra en el estado " + nuevoEstado + ". No se realizaron cambios."); // Reemplazar con EstadoInvalidoException
-        }
-        EstadoParqueo estadoAnterior = parqueo.getEstado();
-        parqueo.setEstado(nuevoEstado);
+      if (nuevoEstado == EstadoParqueo.Inactivo) {
+          parqueo.setNroEspacio(null);
+      }
+      
+      Parqueo parqueoGuardado = parqueoRepository.save(parqueo);
+      TipoAccion tipoAccionEnBitacora = determinarTipoAccionParaCambioEstadoParqueo(nuevoEstado, estadoAnterior);
+      BitacoraEstado bitacora = new BitacoraEstado(
+              usuarioDelClienteAfectado, 
+              adminEjecutor,             
+              tipoAccionEnBitacora,
+              motivo
+      );
+      
+      bitacoraEstadoRepository.save(bitacora);
 
-        
-        Parqueo parqueoGuardado = parqueoRepository.save(parqueo);
-        TipoAccion tipoAccionEnBitacora = determinarTipoAccionParaCambioEstadoParqueo(nuevoEstado, estadoAnterior);
-        BitacoraEstado bitacora = new BitacoraEstado(
-                usuarioDelClienteAfectado, 
-                adminEjecutor,             
-                tipoAccionEnBitacora,
-                motivo
-        );
-        
-        bitacoraEstadoRepository.save(bitacora);
-
-        return parqueoGuardado; 
-    }
-
+      return parqueoGuardado; 
+  }
 
     private TipoAccion determinarTipoAccionParaCambioEstadoParqueo(EstadoParqueo nuevoEstado, EstadoParqueo estadoAnterior) {
         switch (nuevoEstado) {
@@ -86,7 +90,7 @@ public class CambioEstadoParqueo {
                 return TipoAccion.INACTIVACION_CLIENTE_POR_PARQUEO;
             case Activo:
                 if (estadoAnterior == EstadoParqueo.Bloqueado) {
-                    return TipoAccion.ACTIVACION_CLIENTE_POR_PARQUEO;
+                    return TipoAccion.ACTIVACION_CLIENTE_POR_PARQUEO; // Corregido de ACTIVACION a DESBLOQUEO si viene de Bloqueado
                 } else if (estadoAnterior == EstadoParqueo.Inactivo) {
                     return TipoAccion.ACTIVACION_CLIENTE_POR_PARQUEO;
                 } else {
@@ -97,16 +101,16 @@ public class CambioEstadoParqueo {
         }
     }
 
-    public Parqueo bloquearParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
-        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Bloqueado, motivo, adminQueEjecutaId);
+     public Parqueo bloquearCliente(UUID usuarioIdCliente, String motivo, UUID adminQueEjecutaId) {
+        return cambiarEstadoParqueoPorUsuarioId(usuarioIdCliente, EstadoParqueo.Bloqueado, motivo, adminQueEjecutaId);
     }
 
-    public Parqueo inactivarParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
-        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Inactivo, motivo, adminQueEjecutaId);
+    public Parqueo inactivarCliente(UUID usuarioIdCliente, String motivo, UUID adminQueEjecutaId) {
+        return cambiarEstadoParqueoPorUsuarioId(usuarioIdCliente, EstadoParqueo.Inactivo, motivo, adminQueEjecutaId);
     }
 
-    public Parqueo activarParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
-        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Activo, motivo, adminQueEjecutaId);
+    public Parqueo activarCliente(UUID usuarioIdCliente, String motivo, UUID adminQueEjecutaId) {
+        return cambiarEstadoParqueoPorUsuarioId(usuarioIdCliente, EstadoParqueo.Activo, motivo, adminQueEjecutaId);
     }
 
 }
