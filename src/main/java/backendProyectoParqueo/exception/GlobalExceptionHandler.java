@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -93,6 +95,37 @@ public class GlobalExceptionHandler {
                                 Collections.singletonList(error));
 
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        @ExceptionHandler(AuthenticationException.class)
+        public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+                ErrorDetail error = new ErrorDetail(
+                                "No autorizado",
+                                "credentials",
+                                ex.getMessage());
+
+                ErrorResponse response = new ErrorResponse(
+                                "error",
+                                HttpStatus.UNAUTHORIZED.value(),
+                                "Fallo de autenticación",
+                                Collections.singletonList(error));
+
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+                ErrorDetail error = new ErrorDetail(
+                                "Acceso denegado",
+                                null,
+                                "Acceso no autorizado al recurso solicitado");
+
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(new ErrorResponse(
+                                                "error",
+                                                HttpStatus.FORBIDDEN.value(),
+                                                "Operación no permitida",
+                                                Collections.singletonList(error)));
         }
 
         @ExceptionHandler(IllegalArgumentException.class)

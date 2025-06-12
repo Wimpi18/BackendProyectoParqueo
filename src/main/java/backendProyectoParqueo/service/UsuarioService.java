@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,14 +14,11 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import backendProyectoParqueo.dto.SignedInUser;
-import backendProyectoParqueo.dto.UsuarioDTO;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Usuario;
-import backendProyectoParqueo.model.Vehiculo;
-import backendProyectoParqueo.repository.ParqueoRepository;
 import backendProyectoParqueo.repository.UsuarioRepository;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_ACCESS_TOKEN;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_REFRESH_TOKEN;
@@ -34,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UsuarioService {
         private final UsuarioRepository usuarioRepository;
-        private final ParqueoRepository parqueoRepository;
         private final JwtManager tokenManager;
 
         @Transactional

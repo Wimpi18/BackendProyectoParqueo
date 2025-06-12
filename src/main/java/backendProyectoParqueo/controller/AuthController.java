@@ -54,7 +54,7 @@ public class AuthController {
                     .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                     .body(signedInUser);
         }
-        throw new InsufficientAuthenticationException("Unauthorized.");
+        throw new InsufficientAuthenticationException("Credenciales inválidas.");
     }
 
     @GetMapping("refresh")
