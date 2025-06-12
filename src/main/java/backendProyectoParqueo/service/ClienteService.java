@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import backendProyectoParqueo.dto.ClienteDTO;
 import backendProyectoParqueo.exception.BusinessException;
 import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.repository.ClienteRepository;
@@ -21,7 +22,7 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
-    public List<Object> findAllClientesNoInactivos() {
+    public List<ClienteDTO> findAllClientesNoInactivos() {
         return clienteRepository.findAllClientesNoInactivos();
     }
 
