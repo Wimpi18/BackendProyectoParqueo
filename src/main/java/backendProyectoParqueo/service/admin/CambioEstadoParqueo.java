@@ -4,8 +4,6 @@ package backendProyectoParqueo.service.admin;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import backendProyectoParqueo.model.Parqueo.EstadoParqueo;
 import backendProyectoParqueo.enums.TipoAccion;
@@ -88,7 +86,7 @@ public class CambioEstadoParqueo {
                 return TipoAccion.INACTIVACION_CLIENTE_POR_PARQUEO;
             case Activo:
                 if (estadoAnterior == EstadoParqueo.Bloqueado) {
-                    return TipoAccion.DESBLOQUEO_CLIENTE_POR_PARQUEO;
+                    return TipoAccion.ACTIVACION_CLIENTE_POR_PARQUEO;
                 } else if (estadoAnterior == EstadoParqueo.Inactivo) {
                     return TipoAccion.ACTIVACION_CLIENTE_POR_PARQUEO;
                 } else {
@@ -101,10 +99,6 @@ public class CambioEstadoParqueo {
 
     public Parqueo bloquearParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
         return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Bloqueado, motivo, adminQueEjecutaId);
-    }
-
-    public Parqueo desbloquearParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
-        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Activo, motivo, adminQueEjecutaId);
     }
 
     public Parqueo inactivarParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {

@@ -3,7 +3,6 @@ package backendProyectoParqueo.enums;
 public enum TipoAccion {
     // Para Clientes (vía Parqueo)
     BLOQUEO_CLIENTE_POR_PARQUEO,      
-    DESBLOQUEO_CLIENTE_POR_PARQUEO,   
     INACTIVACION_CLIENTE_POR_PARQUEO, 
     ACTIVACION_CLIENTE_POR_PARQUEO,   
 
