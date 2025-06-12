@@ -55,17 +55,22 @@ public class PagoParqueoService {
         }
 
         // Obtener la fecha mínima permitida
-        LocalDate fechaPagoMinima = (LocalDate) getFechaCorrespondienteDePagoParqueo(cliente.getId());
+        LocalDate fechaPagoCorrespondiente = (LocalDate) getFechaCorrespondienteDePagoParqueo(cliente.getId());
 
         // Validar que todos los meses sean posteriores o iguales a la fecha de pago
         // mínima
         List<LocalDate> mesesInvalidos = Arrays.stream(dto.getMeses())
-                .filter(mes -> mes.isBefore(fechaPagoMinima))
+                .filter(mes -> mes.isBefore(fechaPagoCorrespondiente))
                 .toList();
 
         if (!mesesInvalidos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Alguno(s) de los meses ya han sido pagados. Meses inválidos: " + mesesInvalidos);
+        }
+
+        if (!dto.getMeses()[0].equals(fechaPagoCorrespondiente)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "El primer mes a pagar no es el correspondiente. Mes inválido: " + dto.getMeses()[0].toString());
         }
 
         pagoParqueoEntity.setNroEspacioPagado(cliente.getParqueos().getNroEspacio());
