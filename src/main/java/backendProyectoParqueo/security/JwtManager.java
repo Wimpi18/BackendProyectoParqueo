@@ -53,7 +53,7 @@ public class JwtManager {
                     .build();
             return verifier.verify(token);
         } catch (JWTVerificationException ex) {
-            throw new IllegalArgumentException("Token inválido o expirado", ex);
+            throw new JWTVerificationException("Token inválido o expirado", ex);
         }
     }
 }
