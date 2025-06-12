@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
+import backendProyectoParqueo.dto.ClienteDTO;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.service.ClienteService;
@@ -34,8 +35,8 @@ public class ClienteController {
     }
 
     @GetMapping("/activos")
-    @PreAuthorize("hasRole('" + RoleEnum.Const.ADMINISTRADOR + "')")
-    public ResponseEntity<ApiResponse<List<Object>>> getAllClientesNoInactivos() {
+    @PreAuthorize("hasRole('" + RoleEnum.Const.CAJERO + "')")
+    public ResponseEntity<ApiResponse<List<ClienteDTO>>> getAllClientesNoInactivos() {
         return ApiResponseUtil.success("Todos los clientes que pueden realizar un pago del parqueo",
                 clienteService.findAllClientesNoInactivos());
     }

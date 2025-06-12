@@ -20,13 +20,12 @@ public interface PagoParqueoRepository extends JpaRepository<PagoParqueo, Long> 
                         FROM pago_parqueo pp
                         RIGHT JOIN parqueo p ON p.id = pp.id_parqueo
                         INNER JOIN cliente c ON c.id = p.id_cliente
-                        WHERE c.id = :clienteId AND p.id = :parqueoId
+                        WHERE c.id = :clienteId
                         ORDER BY pp.id DESC
                         LIMIT 1
                         """, nativeQuery = true)
         Object obtenerUltimoPago(
-                        @Param("clienteId") UUID clienteId,
-                        @Param("parqueoId") Long parqueoId);
+                        @Param("clienteId") UUID clienteId);
 
         // Nuevo método para obtener todos los pagos de un parqueo, incluyendo la tarifa
         // para el monto

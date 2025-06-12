@@ -34,11 +34,11 @@ public class PagoParqueoController {
     }
 
     @PostMapping("/fecha-correspondiente-pago-parqueo")
+    @PreAuthorize("hasRole('" + RoleEnum.Const.CAJERO + "')")
     public ResponseEntity<ApiResponse<Object>> fechaCorrespondienteDePagoParqueo(
             @RequestBody PagoParqueoDTO pagoParqueoDTO) {
         return ApiResponseUtil.success("Fecha inicial correspondiente para realizar el pago del parqueo",
-                pagoParqueoService.getFechaCorrespondienteDePagoParqueo(pagoParqueoDTO.getIdCliente(),
-                        pagoParqueoDTO.getIdParqueo()));
+                pagoParqueoService.getFechaCorrespondienteDePagoParqueo(pagoParqueoDTO.getIdCliente()));
     }
 
     @PostMapping()
