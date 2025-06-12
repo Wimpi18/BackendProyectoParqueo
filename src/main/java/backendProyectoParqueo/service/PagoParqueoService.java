@@ -2,6 +2,7 @@ package backendProyectoParqueo.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,6 @@ import backendProyectoParqueo.exception.BusinessException;
 import backendProyectoParqueo.model.Cajero;
 import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.PagoParqueo;
-import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.repository.PagoParqueoRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,6 @@ public class PagoParqueoService {
     private final PagoParqueoRepository pagoParqueoRepository;
     private final ClienteService clienteService;
     private final TarifaService tarifaService;
-    private final ParqueoService parqueoService;
     private final CajeroService cajeroService;
 
     public List<PagoParqueo> findAll() {
@@ -42,9 +41,8 @@ public class PagoParqueoService {
         pagoParqueoEntity.setMeses(dto.getMeses());
 
         Cliente cliente = clienteService.findById(dto.getIdCliente());
-        Parqueo parqueo = parqueoService.findById(dto.getIdParqueo());
         Tarifa tarifa = tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(),
-                parqueo.getTipo());
+                cliente.getParqueos().getTipo());
 
         Cajero cajero = null;
         if (dto.getIdCajero() != null)
@@ -56,9 +54,23 @@ public class PagoParqueoService {
                     "El monto pagado no coincide con la tarifa multiplicada por la cantidad de meses.", "montoPagado");
         }
 
-        pagoParqueoEntity.setNroEspacioPagado(parqueo.getNroEspacio());
+        // Obtener la fecha mínima permitida
+        LocalDate fechaPagoMinima = (LocalDate) getFechaCorrespondienteDePagoParqueo(cliente.getId());
+
+        // Validar que todos los meses sean posteriores o iguales a la fecha de pago
+        // mínima
+        List<LocalDate> mesesInvalidos = Arrays.stream(dto.getMeses())
+                .filter(mes -> mes.isBefore(fechaPagoMinima))
+                .toList();
+
+        if (!mesesInvalidos.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Alguno(s) de los meses ya han sido pagados. Meses inválidos: " + mesesInvalidos);
+        }
+
+        pagoParqueoEntity.setNroEspacioPagado(cliente.getParqueos().getNroEspacio());
         pagoParqueoEntity.setTarifa(tarifa);
-        pagoParqueoEntity.setParqueo(parqueo);
+        pagoParqueoEntity.setParqueo(cliente.getParqueos());
         pagoParqueoEntity.setCajero(cajero);
 
         return pagoParqueoRepository.save(pagoParqueoEntity);
