@@ -1,5 +1,7 @@
 package backendProyectoParqueo.controller;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import backendProyectoParqueo.dto.CambiarEstadoParqueoDTO;
+import backendProyectoParqueo.dto.JwtUserPayload;
 import backendProyectoParqueo.model.Parqueo;
+import backendProyectoParqueo.resolvers.UserGuard;
 import backendProyectoParqueo.service.admin.CambioEstadoParqueo;
 import jakarta.validation.Valid;
 
@@ -30,11 +34,14 @@ public class AdminParqueoController {
     @PostMapping("/bloquear")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<?> bloquearParqueoCliente(
-            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO) {
+            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
+            @UserGuard JwtUserPayload adminAutenticado) {
         try {
+            UUID adminEjecutorId = adminAutenticado.getUserId();
             Parqueo parqueoActualizado = parqueoAdminService.bloquearParqueoCliente(
                     requestDTO.getParqueoId(), 
-                    requestDTO.getMotivo()
+                    requestDTO.getMotivo(),
+                    adminEjecutorId
             );
             String mensaje = String.format("Parqueo ID %d bloqueado exitosamente. Cliente asociado ahora está BLOQUEADO. Nuevo estado del parqueo: %s",
                                            requestDTO.getParqueoId(), parqueoActualizado.getEstado());
@@ -48,11 +55,14 @@ public class AdminParqueoController {
     @PostMapping("/desbloquear")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<?> desbloquearParqueoCliente(
-            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO) {
+            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
+            @UserGuard JwtUserPayload adminAutenticado) {
         try {
+            UUID adminEjecutorId = adminAutenticado.getUserId();
             Parqueo parqueoActualizado = parqueoAdminService.desbloquearParqueoCliente(
                     requestDTO.getParqueoId(),
-                    requestDTO.getMotivo()
+                    requestDTO.getMotivo(),
+                    adminEjecutorId
             );
             String mensaje = String.format("Parqueo ID %d desbloqueado exitosamente. Cliente asociado ahora está ACTIVO. Nuevo estado del parqueo: %s",
                                            requestDTO.getParqueoId(), parqueoActualizado.getEstado());
@@ -66,11 +76,14 @@ public class AdminParqueoController {
     @PostMapping("/inactivar")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<?> inactivarParqueoCliente(
-            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO) {
+            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
+            @UserGuard JwtUserPayload adminAutenticado) {
         try {
+            UUID adminEjecutorId = adminAutenticado.getUserId();
             Parqueo parqueoActualizado = parqueoAdminService.inactivarParqueoCliente(
                     requestDTO.getParqueoId(),
-                    requestDTO.getMotivo()
+                    requestDTO.getMotivo(),
+                    adminEjecutorId
             );
             String mensaje = String.format("Parqueo ID %d inactivado exitosamente. Cliente asociado ahora está INACTIVO. Nuevo estado del parqueo: %s. Espacio liberado: %s",
                                            requestDTO.getParqueoId(), parqueoActualizado.getEstado(), parqueoActualizado.getNroEspacio() == null ? "Sí" : "No (o ya estaba libre)");
@@ -84,11 +97,14 @@ public class AdminParqueoController {
     @PostMapping("/activar")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<?> activarParqueoCliente(
-            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO) {
+            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
+            @UserGuard JwtUserPayload adminAutenticado) {
         try {
+            UUID adminEjecutorId = adminAutenticado.getUserId();
             Parqueo parqueoActualizado = parqueoAdminService.activarParqueoCliente(
                     requestDTO.getParqueoId(),
-                    requestDTO.getMotivo()
+                    requestDTO.getMotivo(),
+                    adminEjecutorId
             );
              String mensaje = String.format("Parqueo ID %d activado exitosamente. Cliente asociado ahora está ACTIVO. Nuevo estado del parqueo: %s",
                                            requestDTO.getParqueoId(), parqueoActualizado.getEstado());

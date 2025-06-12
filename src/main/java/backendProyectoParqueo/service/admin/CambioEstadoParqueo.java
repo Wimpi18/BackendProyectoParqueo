@@ -36,20 +36,7 @@ public class CambioEstadoParqueo {
 
 
   @Transactional
-    public Parqueo cambiarEstadoParqueo(Long parqueoId, EstadoParqueo nuevoEstado, String motivo) {
-        
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new RuntimeException("Se requiere autenticación de administrador para esta acción."); 
-        }
-
-        String adminIdStringDelToken = authentication.getName(); 
-        UUID adminId;
-        try {
-            adminId = UUID.fromString(adminIdStringDelToken);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("ID de administrador en el token es inválido.", e); 
-        }
+    public Parqueo cambiarEstadoParqueo(Long parqueoId, EstadoParqueo nuevoEstado, String motivo, UUID adminId) {
 
         Administrador adminEjecutor = administradorRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Administrador ejecutor con ID " + adminId + " no encontrado.")); 
@@ -112,22 +99,20 @@ public class CambioEstadoParqueo {
         }
     }
 
-
-
-    public Parqueo bloquearParqueoCliente(Long parqueoId, String motivo) {
-        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Bloqueado, motivo);
+    public Parqueo bloquearParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
+        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Bloqueado, motivo, adminQueEjecutaId);
     }
 
-    public Parqueo desbloquearParqueoCliente(Long parqueoId, String motivo) {
-        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Activo, motivo);
+    public Parqueo desbloquearParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
+        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Activo, motivo, adminQueEjecutaId);
     }
 
-    public Parqueo inactivarParqueoCliente(Long parqueoId, String motivo) {
-        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Inactivo, motivo);
+    public Parqueo inactivarParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
+        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Inactivo, motivo, adminQueEjecutaId);
     }
 
-    public Parqueo activarParqueoCliente(Long parqueoId, String motivo) {
-        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Activo, motivo);
+    public Parqueo activarParqueoCliente(Long parqueoId, String motivo, UUID adminQueEjecutaId) {
+        return cambiarEstadoParqueo(parqueoId, EstadoParqueo.Activo, motivo, adminQueEjecutaId);
     }
 
 }
