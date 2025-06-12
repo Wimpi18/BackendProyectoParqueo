@@ -12,7 +12,7 @@ import backendProyectoParqueo.dto.VehiculoParqueoActivoDTO;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Vehiculo;
 
-@Repository // Asegúrate que ParqueoRepository tenga @Repository si no lo tiene
+@Repository 
 public interface ParqueoRepository extends JpaRepository<Parqueo, Long> {
 
         @Query("""
