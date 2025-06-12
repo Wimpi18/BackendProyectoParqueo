@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
-import backendProyectoParqueo.dto.CambiarEstadoParqueoDTO;
+import backendProyectoParqueo.dto.AccionConMotivoOpcionalRequestDT;
+import backendProyectoParqueo.dto.AccionConMotivoRequestDTO;
 import backendProyectoParqueo.dto.JwtUserPayload;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.resolvers.UserGuard;
@@ -34,7 +35,7 @@ public class AdminEstadoUsuarioController {
     @PostMapping("/bloquear")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponse<?>> bloquearParqueoCliente(
-            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
+            @Valid @RequestBody AccionConMotivoRequestDTO requestDTO,
             @UserGuard JwtUserPayload adminAutenticado) {
         try {
             UUID adminEjecutorId = adminAutenticado.getUserId();
@@ -60,7 +61,7 @@ public class AdminEstadoUsuarioController {
     @PostMapping("/inactivar")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponse<?>> inactivarEntidad(
-            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
+            @Valid @RequestBody AccionConMotivoRequestDTO requestDTO,
             @UserGuard JwtUserPayload adminAutenticado) {
         try {
             UUID adminEjecutorId = adminAutenticado.getUserId();
@@ -83,7 +84,7 @@ public class AdminEstadoUsuarioController {
     @PostMapping("/activar")
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponse<?>> activarEntidad(
-            @Valid @RequestBody CambiarEstadoParqueoDTO requestDTO,
+            @Valid @RequestBody AccionConMotivoOpcionalRequestDT requestDTO,
             @UserGuard JwtUserPayload adminAutenticado) {
         try {
             UUID adminEjecutorId = adminAutenticado.getUserId();

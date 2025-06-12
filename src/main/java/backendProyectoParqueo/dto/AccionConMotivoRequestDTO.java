@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CambiarEstadoParqueoDTO {
+public class AccionConMotivoRequestDTO {
     @NotNull(message = "El ID del usuario (cliente) no puede ser nulo")
     private UUID usuarioId;
 
