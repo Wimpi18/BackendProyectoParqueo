@@ -34,7 +34,7 @@ public class ClienteController {
     }
 
     @GetMapping("/activos")
-    @PreAuthorize("hasRole('" + RoleEnum.Const.ADMINISTRADOR + "')")
+    @PreAuthorize("hasRole('" + RoleEnum.Const.CAJERO + "')")
     public ResponseEntity<ApiResponse<List<Object>>> getAllClientesNoInactivos() {
         return ApiResponseUtil.success("Todos los clientes que pueden realizar un pago del parqueo",
                 clienteService.findAllClientesNoInactivos());

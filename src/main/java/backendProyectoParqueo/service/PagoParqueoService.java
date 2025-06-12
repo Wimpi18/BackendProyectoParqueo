@@ -64,8 +64,8 @@ public class PagoParqueoService {
         return pagoParqueoRepository.save(pagoParqueoEntity);
     }
 
-    public Object getFechaCorrespondienteDePagoParqueo(UUID clienteId, Long parqueoId) {
-        Object result = pagoParqueoRepository.obtenerUltimoPago(clienteId, parqueoId);
+    public Object getFechaCorrespondienteDePagoParqueo(UUID clienteId) {
+        Object result = pagoParqueoRepository.obtenerUltimoPago(clienteId);
 
         if (result instanceof Object[] row) {
             LocalDate fechaInicio = LocalDate.parse(row[0].toString());
