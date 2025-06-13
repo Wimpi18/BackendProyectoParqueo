@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, TOKEN_URL).permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/refresh").permitAll()
                         .anyRequest().authenticated())
