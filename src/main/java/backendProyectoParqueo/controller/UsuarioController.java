@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.enums.RoleEnum;
@@ -67,6 +68,11 @@ public class UsuarioController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(detalles);
+    }
+
+    @GetMapping("/vista")
+    public List<AllUsuarioDTO> obtenerVistaUsuarios() {
+        return usuarioService.obtenerUsuariosVista();
     }
 
 }
