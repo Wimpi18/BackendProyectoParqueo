@@ -28,6 +28,11 @@ public class RegistroAdminService {
         Usuario usuario = usuarioRepository.findByCi(dto.getCi()).orElse(null);
 
         if (usuario == null) {
+            if (dto.getNombre() == null || dto.getApellido() == null || dto.getCorreo() == null ||
+                    dto.getPassword() == null || dto.getNroCelular() == null || dto.getFoto() == null) {
+                throw new IllegalArgumentException("Faltan campos obligatorios para crear un nuevo usuario.");
+            }
+
             usuario = registroUsuarioService.crearUsuario(
                     dto.getCi(),
                     dto.getNombre(),
