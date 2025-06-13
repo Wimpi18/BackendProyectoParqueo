@@ -7,6 +7,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +24,6 @@ import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.security.Constants;
 import backendProyectoParqueo.service.UsuarioService;
 import backendProyectoParqueo.util.ApiResponseUtil;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -46,7 +45,7 @@ public class AuthController {
             ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", signedInUser.getRefreshToken())
                     .httpOnly(true)
                     .secure(true)
-                    .path("/api/auth/refresh")
+                    .path("/")
                     .maxAge(Duration.ofMillis(Constants.EXPIRATION_TIME_REFRESH_TOKEN))
                     .sameSite("None")
                     .build();
@@ -57,30 +56,26 @@ public class AuthController {
         throw new InsufficientAuthenticationException("Credenciales inválidas.");
     }
 
-    @GetMapping("refresh")
-    public ResponseEntity<ApiResponse<SignedInUser>> refreshToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+    @GetMapping("/refresh")
+    public ResponseEntity<ApiResponse<SignedInUser>> refreshToken(
+            @CookieValue(name = "refreshToken") String refreshToken) {
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    String token = cookie.getValue();
+        if (refreshToken != null) {
 
-                    try {
-                        DecodedJWT decoded = usuarioService.decodeRefreshToken(token);
-                        Usuario usuario = usuarioService.findUserByUsername(decoded.getSubject());
+            try {
+                DecodedJWT decoded = usuarioService.decodeRefreshToken(refreshToken);
+                Usuario usuario = usuarioService.findUserByUsername(decoded.getSubject());
 
-                        SignedInUser signedInUser = usuarioService.getSignedInUser(usuario);
-                        signedInUser.setRefreshToken(null);
-                        return ApiResponseUtil.success("Autorizado", signedInUser);
+                SignedInUser signedInUser = usuarioService.getSignedInUser(usuario);
+                signedInUser.setRefreshToken(null);
+                return ApiResponseUtil.success("Autorizado", signedInUser);
 
-                    } catch (JWTVerificationException ex) {
-                        throw new InsufficientAuthenticationException("Refresh token inválido o expirado");
-                    }
-                }
+            } catch (JWTVerificationException ex) {
+                throw new InsufficientAuthenticationException("Refresh token inválido o expirado");
             }
         }
 
         throw new InsufficientAuthenticationException("No se encontró el refresh token");
+
     }
 }
