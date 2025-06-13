@@ -13,11 +13,14 @@ import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.dto.SignedInUser;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
+import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.enums.TipoVehiculo;
+import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_ACCESS_TOKEN;
@@ -151,4 +154,19 @@ public class UsuarioService {
         public SignedInUser getSignedInUser(Usuario usuario) {
                 return createSignedUserWithRefreshToken(usuario);
         }
+
+        public List<AllUsuarioDTO> obtenerUsuariosVista() {
+                List<Object[]> resultados = usuarioRepository.obtenerUsuarioClienteParqueoRaw();
+
+                return resultados.stream()
+                                .map(obj -> new AllUsuarioDTO(
+                                                UUID.fromString(obj[0].toString()),
+                                                (String) obj[1],
+                                                (String) obj[2],
+                                                (byte[]) obj[3],
+                                                (String) obj[4],
+                                                Parqueo.EstadoParqueo.valueOf((String) obj[5])))
+                                .toList();
+        }
+
 }

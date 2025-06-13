@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import backendProyectoParqueo.model.Usuario;
 
@@ -63,4 +64,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
                 LIMIT 1;
             """, nativeQuery = true)
     Optional<List<Object[]>> findRawUsuarioConRolesByUsername(@Param("username") String username);
+
+    @Query(value = """
+            SELECT u.id, u.nombre, u.apellido, u.foto, c.tipo, p.estado
+            FROM usuario u
+            JOIN cliente c ON u.id = c.id
+            JOIN parqueo p ON c.id = p.id_cliente
+            """, nativeQuery = true)
+    List<Object[]> obtenerUsuarioClienteParqueoRaw();
 }
