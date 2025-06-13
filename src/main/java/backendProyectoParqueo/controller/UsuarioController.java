@@ -62,6 +62,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('" + RoleEnum.Const.ADMINISTRADOR + "')")
     public ResponseEntity<List<UsuarioDetalleDTO>> obtenerDetallePorId(@PathVariable UUID id) {
         List<UsuarioDetalleDTO> detalles = usuarioService.obtenerDetalleUsuario(id);
         if (detalles.isEmpty()) {
@@ -71,6 +72,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/vista")
+    @PreAuthorize("hasRole('" + RoleEnum.Const.ADMINISTRADOR + "')")
     public List<AllUsuarioDTO> obtenerVistaUsuarios() {
         return usuarioService.obtenerUsuariosVista();
     }
