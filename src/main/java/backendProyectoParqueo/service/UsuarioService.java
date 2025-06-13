@@ -56,17 +56,16 @@ public class UsuarioService {
                 List<VehiculoDTO> vehiculos = new ArrayList<>();
                 for (Object[] fila : resultados) {
                         VehiculoDTO vehiculo = new VehiculoDTO();
-                        // REVISAR URGENTE LA LÍNEA A CONTINUACIÓN
-                        // vehiculo.setId(((Number) fila[9]).longValue());
-                        // REVISAR URGENTE LA LÍNEA A CONTINUACIÓN
-                        // vehiculo.setIdParqueo(((Number) fila[10]).longValue());
-                        vehiculo.setPlaca((String) fila[11]);
-                        vehiculo.setTipo(TipoVehiculo.valueOf((String) fila[12]));
-                        vehiculo.setMarca((String) fila[13]);
-                        vehiculo.setFotoDelantera((byte[]) fila[14]);
-                        vehiculo.setFotoTrasera((byte[]) fila[15]);
-                        vehiculo.setModelo((String) fila[16]);
-                        vehiculo.setColor((String) fila[17]);
+                        vehiculo.setId(((Number) fila[9]).longValue());
+
+                        vehiculo.setId(((Number) fila[9]).longValue());
+                        vehiculo.setPlaca((String) fila[10]);
+                        vehiculo.setTipo(TipoVehiculo.valueOf((String) fila[11]));
+                        vehiculo.setMarca((String) fila[12]);
+                        vehiculo.setFotoDelantera((byte[]) fila[13]);
+                        vehiculo.setFotoTrasera((byte[]) fila[14]);
+                        vehiculo.setModelo((String) fila[15]);
+                        vehiculo.setColor((String) fila[16]);
 
                         vehiculos.add(vehiculo);
                 }
