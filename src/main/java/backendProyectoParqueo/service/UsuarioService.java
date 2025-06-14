@@ -162,28 +162,17 @@ public class UsuarioService {
                 return createSignedUserWithRefreshToken(usuario);
         }
 
-        public List<AllUsuarioDTO> obtenerUsuariosVista(UUID usuarioActualId) {
+        public List<AllUsuarioDTO> obtenerUsuariosVista() {
                 List<Object[]> resultados = usuarioRepository.obtenerUsuariosConRolesRaw();
 
                 return resultados.stream()
-                                .filter(obj -> {
-                                        UUID idUsuario = UUID.fromString(obj[0].toString());
-                                        return usuarioActualId == null || !idUsuario.equals(usuarioActualId);
-                                })
                                 .map(obj -> {
                                         UUID id = UUID.fromString(obj[0].toString());
                                         String nombre = (String) obj[1];
                                         String apellido = (String) obj[2];
                                         byte[] foto = (byte[]) obj[3];
-                                        String tipoCliente = (String) obj[4];
-                                        EstadoParqueo estadoParqueo = null;
-                                        if (obj[5] != null) {
-                                                try {
-                                                        estadoParqueo = EstadoParqueo.valueOf(obj[5].toString());
-                                                } catch (IllegalArgumentException e) {
-                                                        System.out.println("⚠️ Estado inválido: " + obj[5]);
-                                                }
-                                        }
+
+                                        // Extraer los roles
                                         List<String> roles = new ArrayList<>();
                                         if (obj[6] != null)
                                                 roles.add("ADMINISTRADOR");
@@ -192,9 +181,21 @@ public class UsuarioService {
                                         if (obj[8] != null)
                                                 roles.add("CLIENTE");
 
+                                        // Asignar tipoCliente solo si tiene rol CLIENTE
+                                        String tipoCliente = roles.contains("CLIENTE") ? (String) obj[4] : null;
+
+                                        // Asignar estado parqueo (si no es nulo y es válido)
+                                        EstadoParqueo estadoParqueo = null;
+                                        if (obj[5] != null) {
+                                                try {
+                                                        estadoParqueo = EstadoParqueo.valueOf(obj[5].toString());
+                                                } catch (IllegalArgumentException e) {
+                                                        System.out.println("⚠️ Estado inválido: " + obj[5]);
+                                                }
+                                        }
+
                                         return new AllUsuarioDTO(id, nombre, apellido, foto, roles, tipoCliente,
                                                         estadoParqueo);
-
                                 })
                                 .toList();
         }
