@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.sql.Timestamp;
 import java.sql.Date;
 
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.dto.SignedInUser;
-import backendProyectoParqueo.dto.UsuarioDTO;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.dto.AllUsuarioDTO;
@@ -30,8 +30,6 @@ import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Parqueo.EstadoParqueo;
 import backendProyectoParqueo.model.Usuario;
-import backendProyectoParqueo.model.Vehiculo;
-import backendProyectoParqueo.repository.ParqueoRepository;
 import backendProyectoParqueo.repository.UsuarioRepository;
 import backendProyectoParqueo.repository.AdministradorRepository;
 import backendProyectoParqueo.repository.CajeroRepository;
