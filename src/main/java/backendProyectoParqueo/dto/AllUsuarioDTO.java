@@ -28,4 +28,5 @@ public class AllUsuarioDTO {
     private List<String> roles; // Ej: ["Cliente", "Cajero"]
     private String tipoCliente; // solo si rol incluye "Cliente"
     private EstadoParqueo estadoParqueo;
+    private Integer cantidadMesesDeuda;
 }
