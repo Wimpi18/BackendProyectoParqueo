@@ -83,6 +83,20 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
             """, nativeQuery = true)
     List<Object[]> obtenerUsuariosConRolesRaw();
 
+    @Query(value = """
+            SELECT
+                p.id_cliente,
+                p.fecha_inicio,
+                COALESCE(array_agg(pagos.mes_pagado ORDER BY pagos.mes_pagado), '{}') AS meses_pagados
+            FROM parqueo p
+            LEFT JOIN pago_parqueo pg ON pg.id_parqueo = p.id
+            LEFT JOIN LATERAL (
+                SELECT unnest(pg.meses) AS mes_pagado
+            ) pagos ON true
+            GROUP BY p.id_cliente, p.fecha_inicio
+                            """, nativeQuery = true)
+    List<Object[]> obtenerFechasYPagosClientes();
+
     @Repository
     public interface AdministradorRepository extends JpaRepository<Administrador, UUID> {
         boolean existsById(UUID id);
