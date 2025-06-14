@@ -72,9 +72,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/vista")
-    @PreAuthorize("hasRole('" + RoleEnum.Const.ADMINISTRADOR + "')")
-    public List<AllUsuarioDTO> obtenerVistaUsuarios() {
-        return usuarioService.obtenerUsuariosVista();
+    public ResponseEntity<List<AllUsuarioDTO>> obtenerUsuariosVista() {
+        List<AllUsuarioDTO> usuarios = usuarioService.obtenerUsuariosVista();
+        return ResponseEntity.ok(usuarios);
     }
 
 }

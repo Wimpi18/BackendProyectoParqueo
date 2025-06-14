@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import backendProyectoParqueo.model.Administrador;
+import backendProyectoParqueo.model.Cajero;
+import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
@@ -66,10 +69,33 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     Optional<List<Object[]>> findRawUsuarioConRolesByUsername(@Param("username") String username);
 
     @Query(value = """
-            SELECT u.id, u.nombre, u.apellido, u.foto, c.tipo, p.estado
+            SELECT
+              u.id, u.nombre, u.apellido, u.foto, c.tipo, p.estado,
+              CASE WHEN a.id IS NOT NULL THEN 'ADMINISTRADOR' ELSE NULL END AS rol_admin,
+              CASE WHEN ca.id IS NOT NULL THEN 'CAJERO' ELSE NULL END AS rol_cajero,
+              CASE WHEN cl.id IS NOT NULL THEN 'CLIENTE' ELSE NULL END AS rol_cliente
             FROM usuario u
-            JOIN cliente c ON u.id = c.id
-            JOIN parqueo p ON c.id = p.id_cliente
+            LEFT JOIN administrador a ON u.id = a.id
+            LEFT JOIN cajero ca ON u.id = ca.id
+            LEFT JOIN cliente cl ON u.id = cl.id
+            LEFT JOIN cliente c ON u.id = c.id
+            LEFT JOIN parqueo p ON c.id = p.id_cliente
             """, nativeQuery = true)
-    List<Object[]> obtenerUsuarioClienteParqueoRaw();
+    List<Object[]> obtenerUsuariosConRolesRaw();
+
+    @Repository
+    public interface AdministradorRepository extends JpaRepository<Administrador, UUID> {
+        boolean existsById(UUID id);
+    }
+
+    @Repository
+    public interface CajeroRepository extends JpaRepository<Cajero, UUID> {
+        boolean existsById(UUID id);
+    }
+
+    @Repository
+    public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
+        Optional<Cliente> findById(UUID id);
+    }
+
 }
