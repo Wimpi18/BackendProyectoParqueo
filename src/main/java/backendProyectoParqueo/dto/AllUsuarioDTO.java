@@ -1,8 +1,16 @@
 package backendProyectoParqueo.dto;
 
 import java.util.UUID;
+import java.util.List;
+import java.util.Set;
 
+import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.model.Parqueo.EstadoParqueo;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,6 +21,8 @@ public class AllUsuarioDTO {
     private String nombre;
     private String apellido;
     private byte[] foto;
-    private String tipoCliente;
+
+    private List<String> roles; // Ej: ["Cliente", "Cajero"]
+    private String tipoCliente; // solo si rol incluye "Cliente"
     private EstadoParqueo estadoParqueo;
 }

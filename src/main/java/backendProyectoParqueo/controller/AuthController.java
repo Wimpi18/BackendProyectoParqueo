@@ -58,7 +58,7 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseEntity<ApiResponse<SignedInUser>> refreshToken(
-            @CookieValue(name = "refreshToken") String refreshToken) {
+            @CookieValue(name = "refreshToken", required = false) String refreshToken) {
 
         if (refreshToken != null) {
 
@@ -77,5 +77,26 @@ public class AuthController {
 
         throw new InsufficientAuthenticationException("No se encontró el refresh token");
 
+    }
+
+    @PostMapping("/signOut")
+    public ResponseEntity<ResponseEntity<ApiResponse<Void>>> signOut(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken) {
+
+        if (refreshToken != null) {
+            ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0)
+                    .sameSite("None")
+                    .build();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                    .body(ApiResponseUtil.successMessage("Sesión cerrada correctamente"));
+        }
+
+        throw new InsufficientAuthenticationException("No se encontró el refresh token");
     }
 }
