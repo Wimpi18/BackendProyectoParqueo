@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import java.sql.Timestamp;
 import java.sql.Date;
 
-
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -178,7 +177,10 @@ public class UsuarioService {
                         List<LocalDate> mesesPagados = new ArrayList<>();
                         if (mesesPagadosRaw != null) {
                                 for (Date d : mesesPagadosRaw) {
-                                        mesesPagados.add(d.toLocalDate().withDayOfMonth(1));
+                                        if (d != null) {
+                                                mesesPagados.add(d.toLocalDate().withDayOfMonth(1));
+
+                                        }
                                 }
                         }
 
