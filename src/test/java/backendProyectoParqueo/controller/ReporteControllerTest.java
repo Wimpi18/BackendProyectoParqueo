@@ -84,27 +84,7 @@ public class ReporteControllerTest {
                 // ... poblar otros campos
         }
 
-        @Test
-        @DisplayName("POST /reporte/cliente/vehiculo - Devuelve lista de vehículos y status 200") // CORREGIDO
-                                                                                                  // DisplayName
-                                                                                                  // para que coincida
-        void getTodosVehiculosPorCliente_devuelveListaYOk() throws Exception {
-                given(reporteService.getTodosVehiculosDTOPorCliente(clienteId)).willReturn(listaVehiculosObject);
-
-                mockMvc.perform(post("/reporte/cliente/vehiculo") // <-- CORREGIDA LA URL AQUÍ
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(clienteRequest))) // Enviamos el objeto Cliente
-                                                                                           // (esto es
-                                                                                           // correcto para
-                                                                                           // /reporte/cliente/vehiculo)
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.status", is("success")))
-                                .andExpect(jsonPath("$.data", hasSize(1)))
-                                .andExpect(jsonPath("$.data[0].placa", is(placa))); // Asumiendo que el Object es un
-                                                                                    // VehiculoDTO
-
-                verify(reporteService).getTodosVehiculosDTOPorCliente(clienteId);
-        }
+        
 
         @Test
         @DisplayName("POST /reporte/cliente/vehiculo - Cliente sin ID en body devuelve 400") // CORREGIDO DisplayName
@@ -126,19 +106,7 @@ public class ReporteControllerTest {
                                                                                                             // correcto
         }
 
-        @Test
-        @DisplayName("POST /reporte/cliente/vehiculo - Sin vehículos devuelve lista vacía y OK")
-        void getTodosVehiculosPorCliente_sinVehiculos_devuelveVacioYOk() throws Exception {
-                given(reporteService.getTodosVehiculosDTOPorCliente(clienteId)).willReturn(Collections.emptyList());
-
-                mockMvc.perform(post("/reporte/cliente/vehiculo")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(clienteRequest)))
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.status", is("success")))
-                                .andExpect(jsonPath("$.message", is("El cliente no tiene vehículos asociados.")))
-                                .andExpect(jsonPath("$.data", hasSize(0)));
-        }
+      
 
         @Test
         @DisplayName("POST /reporte/vehiculo/estados-cuenta - Devuelve lista de reportes y status 200")

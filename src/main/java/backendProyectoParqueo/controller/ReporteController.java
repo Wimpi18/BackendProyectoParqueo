@@ -8,18 +8,20 @@ import java.util.UUID; // Importa el nuevo DTO
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
-import backendProyectoParqueo.dto.ClientePlacaRequestDTO;
+import backendProyectoParqueo.dto.JwtUserPayload;
 import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
-import backendProyectoParqueo.model.Cliente;
+import backendProyectoParqueo.resolvers.UserGuard;
 import backendProyectoParqueo.service.ReporteService;
-import backendProyectoParqueo.util.ApiResponseUtil; // Para el DTO
+import backendProyectoParqueo.util.ApiResponseUtil; 
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
@@ -33,47 +35,13 @@ public class ReporteController {
         this.reporteService = reporteService;
     }
 
-    /**
-     * Obtiene la lista de TODOS los vehículos (DTOs) asociados a un cliente.
-     * El clienteId se pasa en el cuerpo de la solicitud POST.
-     * Ejemplo: POST /reporte/cliente/vehiculos
-     * Body: { "id": "uuid-aqui" }
-     */
-    @PostMapping("/cliente/vehiculo") // Cambiado a @PostMapping
-    public ResponseEntity<ApiResponse<List<Object>>> getTodosVehiculosPorCliente(
-            @RequestBody Cliente requestDTO) { // Recibe el DTO
-        try {
-            UUID clienteId = requestDTO.getId(); // Obtén el ID del DTO
-            if (clienteId == null) {
-                return ResponseEntity.badRequest().body(
-                        new ApiResponse<>("error", HttpStatus.BAD_REQUEST.value(),
-                                "El campo 'id' del cliente es requerido en el body.", null));
-            }
-            List<Object> vehiculos = reporteService.getTodosVehiculosDTOPorCliente(clienteId);
-            if (vehiculos.isEmpty()) {
-                return ApiResponseUtil.success("El cliente no tiene vehículos asociados.", vehiculos);
-            }
-            return ApiResponseUtil.success("Vehículos del cliente obtenidos exitosamente.", vehiculos);
-        } catch (Exception e) {
-            System.err.println("Error en getTodosVehiculosPorCliente: " + e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("error", HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            "Error al obtener vehículos del cliente: " + e.getMessage(), null));
-        }
-    }
 
-    // ... (otros endpoints como getVehiculosActivosCliente,
-    // getEstadoCuentaVehiculoActivo, getTodosEstadosCuentaPorPlaca
-    // pueden permanecer como GET con @RequestParam o @PathVariable si es apropiado
-    // para ellos) ...
-
-    // Por ejemplo, este sigue estando bien como GET:
-    @PostMapping("/vehiculo/estados-cuenta") // Cambiado a POST y ruta más genérica
+    @PostMapping("/vehiculo/estados-cuenta") 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponse<List<ReporteEstadoCuentaVehiculoDTO>>> getTodosEstadosCuentaPorPlacaEnBody(
-            @RequestBody VehiculoDTO requestDTO) { // Recibe el DTO del body
+            @RequestBody VehiculoDTO requestDTO) {
         try {
-            String placa = requestDTO.getPlaca(); // Obtén la placa del DTO
+            String placa = requestDTO.getPlaca(); 
 
             if (placa == null || placa.trim().isEmpty()) {
                 return ResponseEntity
@@ -102,44 +70,41 @@ public class ReporteController {
         }
     }
 
-    @PostMapping("/cliente-vehiculo/estados-cuenta")
-    public ResponseEntity<ApiResponse<List<ReporteEstadoCuentaVehiculoDTO>>> getTodosEstadosCuentaPorClienteYPlacaEnBody(
-            @RequestBody ClientePlacaRequestDTO requestDTO) {
+    @GetMapping("/cliente-vehiculo/estados-cuenta")
+    public ResponseEntity<ApiResponse<List<ReporteEstadoCuentaVehiculoDTO>>> getMisEstadosCuentaVehiculoActual(
+            @UserGuard JwtUserPayload usuarioAutenticado) {
+
+            
         try {
-            UUID clienteId = requestDTO.getClienteId();
-            String placa = requestDTO.getPlaca();
-
-            if (clienteId == null || placa == null || placa.trim().isEmpty()) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(new ApiResponse<>("error", HttpStatus.BAD_REQUEST.value(),
-                                "Los campos 'clienteId' y 'placa' son requeridos.", null));
-            }
-
-            List<ReporteEstadoCuentaVehiculoDTO> reportes = reporteService.getEstadosCuentaPorClienteYPlaca(clienteId,
-                    placa);
+            UUID clienteId = usuarioAutenticado.getUserId();
+             List<ReporteEstadoCuentaVehiculoDTO> reportes = reporteService.getEstadosCuentaParaVehiculoPrincipalDeCliente(clienteId);
 
             if (reportes.isEmpty()) {
-                return ApiResponseUtil.success("No se encontraron registros de parqueo para el cliente " + clienteId
-                        + " y placa " + placa + ".", new ArrayList<>());
-            }
+                return ApiResponseUtil.success(
+                    String.format("No se encontraron estados de cuenta para sus vehículos activos/principales."),
+                    new ArrayList<>()
+                );
+            }            
             return ApiResponseUtil.success(
-                    "Estados de cuenta para el cliente " + clienteId + " y placa " + placa + " obtenidos exitosamente.",
-                    reportes);
-        } catch (EntityNotFoundException e) {
-            // Esta excepción podría no ser lanzada directamente por
-            // getEstadosCuentaPorClienteYPlaca si solo devuelve lista vacía.
-            // Pero se mantiene por si alguna lógica interna la lanza (ej. si el cliente o
-            // vehículo base no existieran)
+                    String.format("Sus estados de cuenta para el vehículo principal/activo obtenidos exitosamente."),
+                    reportes
+            );
+        } catch (EntityNotFoundException e) { 
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(new ApiResponse<>("error", HttpStatus.NOT_FOUND.value(), e.getMessage(), null));
-        } catch (Exception e) {
-            System.err.println("Error procesando /reporte/cliente-vehiculo/estados-cuenta (POST): " + e.getMessage());
+        } catch (IllegalStateException e) { 
+             return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST) 
+                    .body(new ApiResponse<>("error", HttpStatus.BAD_REQUEST.value(), e.getMessage(), null));
+        } 
+        catch (Exception e) {
+            System.err.println("Error procesando /reporte/mis-estados-cuenta-vehiculo-actual (POST): " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>("error", HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            "Error al generar los reportes: " + e.getMessage(), null));
+                            "Error al generar sus reportes de estado de cuenta: " + e.getMessage(), null));
         }
     }
 }
