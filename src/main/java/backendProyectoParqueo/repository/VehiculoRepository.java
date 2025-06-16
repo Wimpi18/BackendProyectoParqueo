@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.model.Vehiculo;
 
 @Repository
@@ -33,7 +34,7 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Long> {
                 JOIN p.cliente c
                 WHERE c.id = :id
             """)
-    List<Object> obtenerVehiculosPorClienteId(@Param("id") UUID id);
+    List<VehiculoDTO> obtenerVehiculosPorClienteId(@Param("id") UUID id);
 
     Optional<Vehiculo> findByPlaca(String placa);
 
