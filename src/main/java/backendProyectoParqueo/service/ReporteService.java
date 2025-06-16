@@ -20,15 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import backendProyectoParqueo.dto.DetalleMesEstadoCuentaDTO;
 import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
+import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.model.Vehiculo;
-import backendProyectoParqueo.repository.PagoParqueoRepository; // Importar Vehiculo
+import backendProyectoParqueo.repository.PagoParqueoRepository; 
 import backendProyectoParqueo.repository.ParqueoRepository;
 import backendProyectoParqueo.repository.TarifaRepository;
 import backendProyectoParqueo.repository.VehiculoRepository;
-import jakarta.persistence.EntityNotFoundException; // Importar VehiculoRepository
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ReporteService {
@@ -36,17 +37,17 @@ public class ReporteService {
   private final ParqueoRepository parqueoRepository;
   private final PagoParqueoRepository pagoParqueoRepository;
   private final TarifaRepository tarifaRepository;
-  private final VehiculoRepository vehiculoRepository; // Inyectar VehiculoRepository
+  private final VehiculoRepository vehiculoRepository; 
 
   @Autowired
   public ReporteService(ParqueoRepository parqueoRepository,
       PagoParqueoRepository pagoParqueoRepository,
       TarifaRepository tarifaRepository,
-      VehiculoRepository vehiculoRepository) { // Añadir al constructor
+      VehiculoRepository vehiculoRepository) { 
     this.parqueoRepository = parqueoRepository;
     this.pagoParqueoRepository = pagoParqueoRepository;
     this.tarifaRepository = tarifaRepository;
-    this.vehiculoRepository = vehiculoRepository; // Asignar
+    this.vehiculoRepository = vehiculoRepository; 
   }
 
   @Transactional(readOnly = true)
@@ -57,19 +58,10 @@ public class ReporteService {
       throw new EntityNotFoundException(
           "Parqueo activo no encontrado para el cliente " + clienteId + " y placa " + placa);
     }
-
-    // Escoger uno (por ejemplo, el más reciente)
     Parqueo parqueo = parqueos.stream()
         .max(Comparator.comparing(Parqueo::getFechaInicio))
-        .orElseThrow(); // nunca pasa, ya se validó no vacío
+        .orElseThrow();
     return generarReporteParaParqueo(parqueo);
-  }
-
-  @Transactional(readOnly = true)
-  public List<Object> getTodosVehiculosDTOPorCliente(UUID clienteId) {
-    // Asumiendo que vehiculoRepository tiene el método que devuelve
-    // List<VehiculoDTO>
-    return vehiculoRepository.obtenerVehiculosPorClienteId(clienteId);
   }
 
   @Transactional(readOnly = true)
@@ -93,9 +85,6 @@ public class ReporteService {
     List<Parqueo> parqueosDelVehiculo = parqueoRepository.findAllByVehiculoIdWithDetails(vehiculo.getId());
 
     if (parqueosDelVehiculo.isEmpty()) {
-      // Puedes decidir si devolver una lista vacía o lanzar una excepción/mensaje
-      // específico
-      // Por ahora, devolvemos lista vacía, el controller puede interpretarlo.
       return new ArrayList<>();
     }
 
@@ -104,13 +93,33 @@ public class ReporteService {
         .collect(Collectors.toList());
   }
 
+@Transactional(readOnly = true)
+public List<ReporteEstadoCuentaVehiculoDTO> getEstadosCuentaParaVehiculoPrincipalDeCliente(UUID clienteId) {    
+    List<VehiculoDTO> vehiculosActivosDTO = vehiculoRepository.obtenerVehiculosPorClienteId(clienteId);
+
+    if (vehiculosActivosDTO.isEmpty()) {
+        System.out.println("Info: Cliente con ID " + clienteId + " no tiene vehículos en parqueos activos o bloqueados.");
+        return new ArrayList<>();
+    }
+    VehiculoDTO vehiculoSeleccionado = vehiculosActivosDTO.get(0);
+    String placaSeleccionada = vehiculoSeleccionado.getPlaca();
+
+    if (placaSeleccionada == null || placaSeleccionada.trim().isEmpty()) {
+        throw new IllegalStateException("El vehículo seleccionado (ID: " + vehiculoSeleccionado.getId() + 
+                                        ") para el cliente " + clienteId + " no tiene una placa válida.");
+    }
+
+    return getEstadosCuentaPorClienteYPlaca(clienteId, placaSeleccionada);
+}
+
+
+
+
+
   private ReporteEstadoCuentaVehiculoDTO generarReporteParaParqueo(Parqueo parqueo) {
     List<PagoParqueo> pagosDelParqueo = pagoParqueoRepository.findAllByParqueoIdWithTarifa(parqueo.getId());
 
     ReporteEstadoCuentaVehiculoDTO reporte = new ReporteEstadoCuentaVehiculoDTO();
-    // ... (asignaciones iniciales a reporte: placa, tipoCliente, tipoVehiculo,
-    // ultimaActualizacion) ...
-    // REVISAR URGENTE LA LÍNEA A CONTINUACIÓN
     reporte.setPlacaVehiculo(parqueo.getVehiculosAsignados().get(0).getVehiculo().getPlaca());
 
     if (parqueo.getCliente().getTipo() instanceof String) {
@@ -118,7 +127,6 @@ public class ReporteService {
     } else if (parqueo.getCliente().getTipo() instanceof String) {
       reporte.setTipoCliente((String) parqueo.getCliente().getTipo());
     } else if (parqueo.getCliente().getTipo() != null) {
-      // REVISAR URGENTE LA LÍNEA A CONTINUACIÓN
       reporte.setTipoCliente(parqueo.getCliente().getTipo());
     } else {
       reporte.setTipoCliente(null);
@@ -140,7 +148,6 @@ public class ReporteService {
           YearMonth periodoPago = YearMonth.from(mesLocalDate);
           mesesPagadosRegistrados.add(periodoPago);
 
-          // Actualizar el último mes pagado
           if (ultimoMesPagadoRegistrado == null || periodoPago.isAfter(ultimoMesPagadoRegistrado)) {
             ultimoMesPagadoRegistrado = periodoPago;
           }
@@ -162,22 +169,13 @@ public class ReporteService {
 
     if (parqueo.getEstado() == Parqueo.EstadoParqueo.Inactivo) {
       if (ultimoMesPagadoRegistrado != null) {
-        // Si está inactivo y hay pagos, el fin de cálculo es el último mes pagado.
         mesFinCalculo = ultimoMesPagadoRegistrado;
       } else {
-        // Si está inactivo y NO hay pagos, el fin de cálculo es el mes de inicio del
-        // parqueo.
-        // Esto significa que no se calcularán pendientes si se inactiva sin pagos.
         mesFinCalculo = mesInicioParqueo;
       }
-    } else {
-      // Si está Activo o Bloqueado, calcular hasta el mes actual.
+    } else {     
       mesFinCalculo = YearMonth.now();
-    }
-
-    // Asegurarse de que mesFinCalculo no sea anterior a mesInicioParqueo
-    // (podría pasar si se inactiva y el último pago fue antes del mes de inicio,
-    // aunque es ilógico)
+    }   
     if (mesFinCalculo.isBefore(mesInicioParqueo)) {
       mesFinCalculo = mesInicioParqueo;
     }
@@ -193,14 +191,10 @@ public class ReporteService {
           + parqueo.getId());
     }
 
-    YearMonth mesIterador = mesInicioParqueo;
-    // Iterar solo hasta el mes de fin de cálculo determinado
+    YearMonth mesIterador = mesInicioParqueo;    
     while (!mesIterador.isAfter(mesFinCalculo)) {
       if (!mesesPagadosRegistrados.contains(mesIterador)) {
-        BigDecimal montoEsteMesPendiente = BigDecimal.ZERO;
-        // Solo calcular pendiente si hay una tarifa aplicable
-        // y el parqueo no estaba ya inactivo antes de este mesIterador (manejado por
-        // mesFinCalculo)
+        BigDecimal montoEsteMesPendiente = BigDecimal.ZERO;       
         if (tarifaAplicable != null) {
           montoEsteMesPendiente = tarifaAplicable.getMonto();
         }
