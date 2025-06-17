@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.TarifaDTO;
+import backendProyectoParqueo.dto.TarifaCreateDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.service.TarifaService;
@@ -46,8 +47,9 @@ public class TarifaController {
     // Crear una nueva tarifa
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    public ResponseEntity<TarifaDTO> crearTarifa(@RequestBody TarifaDTO dto) {
+    public ResponseEntity<TarifaDTO> crearTarifa(@RequestBody TarifaCreateDTO dto) {
         TarifaDTO tarifa = tarifaService.crearTarifa(dto);
         return ResponseEntity.ok(tarifa);
     }
+
 }

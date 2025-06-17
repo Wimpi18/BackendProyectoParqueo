@@ -1,6 +1,7 @@
 package backendProyectoParqueo.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import backendProyectoParqueo.dto.TarifaDTO;
+import backendProyectoParqueo.dto.TarifaCreateDTO;
 import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.exception.BusinessException;
@@ -32,7 +34,7 @@ public class TarifaService {
         return tarifaRepository.obtenerTarifasVigentesNativo();
     }
 
-    public TarifaDTO crearTarifa(TarifaDTO dto) {
+    public TarifaDTO crearTarifa(TarifaCreateDTO dto) {
         if (dto.getMonto() == null || dto.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El monto debe ser mayor a cero.");
         }
@@ -43,27 +45,32 @@ public class TarifaService {
                 "Docente a tiempo horario");
 
         if (!tiposValidos.contains(dto.getTipoCliente())) {
-            throw new IllegalArgumentException("El tipo de cliente no es válido. Debe ser uno de: " + tiposValidos);
+            throw new IllegalArgumentException("Tipo de cliente inválido: " + dto.getTipoCliente());
         }
 
         UUID adminId = getCurrentUserId();
         Administrador admin = administradorRepository.findById(adminId)
-                .orElseThrow(() -> new NoSuchElementException("Administrador autenticado no encontrado."));
+                .orElseThrow(() -> new NoSuchElementException("Administrador no encontrado."));
 
-        Tarifa tarifaActual = tarifaRepository.obtenerTarifaVigente(dto.getTipoCliente(), dto.getTipoVehiculo());
-        if (tarifaActual != null && tarifaActual.getMonto().compareTo(dto.getMonto()) == 0) {
+        Tarifa existente = tarifaRepository.obtenerTarifaVigente(dto.getTipoCliente(), dto.getTipoVehiculo());
+        if (existente != null && existente.getMonto().compareTo(dto.getMonto()) == 0) {
             throw new TarifaDuplicadaException("Ya existe una tarifa vigente con el mismo monto.");
         }
-        Tarifa tarifa = new Tarifa();
-        tarifa.setAdministrador(admin);
-        tarifa.setTipoVehiculo(dto.getTipoVehiculo());
-        tarifa.setTipoCliente(dto.getTipoCliente());
-        tarifa.setMonto(dto.getMonto());
 
-        Tarifa guardada = tarifaRepository.save(tarifa);
+        Tarifa nuevaTarifa = new Tarifa();
+        nuevaTarifa.setTipoVehiculo(dto.getTipoVehiculo());
+        nuevaTarifa.setTipoCliente(dto.getTipoCliente());
+        nuevaTarifa.setMonto(dto.getMonto());
+        nuevaTarifa.setAdministrador(admin);
+        // Si tienes fechaInicio automática (ejemplo: ahora)
+        nuevaTarifa.setFechaInicio(LocalDateTime.now());
+
+        Tarifa guardada = tarifaRepository.save(nuevaTarifa);
+
+        // Retorna el DTO con los datos ya guardados y asignados
         return new TarifaDTO(
                 guardada.getId(),
-                admin.getId(),
+                guardada.getAdministrador().getId(),
                 guardada.getTipoVehiculo(),
                 guardada.getTipoCliente(),
                 guardada.getMonto(),
