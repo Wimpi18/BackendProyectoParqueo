@@ -6,6 +6,9 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import backendProyectoParqueo.dto.TarifaDTO;
 import backendProyectoParqueo.enums.TipoCliente;
@@ -43,9 +46,9 @@ public class TarifaService {
             throw new IllegalArgumentException("El tipo de cliente no es válido. Debe ser uno de: " + tiposValidos);
         }
 
-        UUID adminId = dto.getIdAdministrador();
+        UUID adminId = getCurrentUserId();
         Administrador admin = administradorRepository.findById(adminId)
-                .orElseThrow(() -> new NoSuchElementException("Administrador no encontrado."));
+                .orElseThrow(() -> new NoSuchElementException("Administrador autenticado no encontrado."));
 
         Tarifa tarifaActual = tarifaRepository.obtenerTarifaVigente(dto.getTipoCliente(), dto.getTipoVehiculo());
         if (tarifaActual != null && tarifaActual.getMonto().compareTo(dto.getMonto()) == 0) {
@@ -86,5 +89,14 @@ public class TarifaService {
     public Tarifa findById(Integer id) {
         return tarifaRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Tarifa no encontrada", "idTarifa"));
+    }
+
+    private UUID getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof Jwt jwt) {
+            String id = jwt.getClaimAsString("userId");
+            return UUID.fromString(id);
+        }
+        throw new IllegalStateException("No se pudo obtener el ID del usuario desde el token.");
     }
 }

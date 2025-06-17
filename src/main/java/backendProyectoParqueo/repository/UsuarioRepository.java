@@ -97,19 +97,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
                             """, nativeQuery = true)
     List<Object[]> obtenerFechasYPagosClientes();
 
-    @Repository
-    public interface AdministradorRepository extends JpaRepository<Administrador, UUID> {
-        boolean existsById(UUID id);
-    }
-
-    @Repository
-    public interface CajeroRepository extends JpaRepository<Cajero, UUID> {
-        boolean existsById(UUID id);
-    }
-
-    @Repository
-    public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
-        Optional<Cliente> findById(UUID id);
-    }
-
 }
