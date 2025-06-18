@@ -70,11 +70,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     @Query(value = """
             SELECT
-              u.id, u.nombre, u.apellido, u.foto, c.tipo, p.estado,
+              u.id, u.nombre, u.apellido,u.ci, u.foto, c.tipo, p.estado,
               CASE WHEN a.id IS NOT NULL THEN 'ADMINISTRADOR' ELSE NULL END AS rol_admin,
               CASE WHEN ca.id IS NOT NULL THEN 'CAJERO' ELSE NULL END AS rol_cajero,
-              CASE WHEN cl.id IS NOT NULL THEN 'CLIENTE' ELSE NULL END AS rol_cliente
-            FROM usuario u
+              CASE WHEN cl.id IS NOT NULL THEN 'CLIENTE' ELSE NULL END AS rol_cliente,
+              a.es_activo,     -- 10
+              ca.es_activo     -- 11
+              FROM usuario u
             LEFT JOIN administrador a ON u.id = a.id
             LEFT JOIN cajero ca ON u.id = ca.id
             LEFT JOIN cliente cl ON u.id = cl.id

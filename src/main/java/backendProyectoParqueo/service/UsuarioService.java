@@ -231,34 +231,55 @@ public class UsuarioService {
                                         UUID id = UUID.fromString(obj[0].toString());
                                         String nombre = (String) obj[1];
                                         String apellido = (String) obj[2];
-                                        byte[] foto = (byte[]) obj[3];
+                                        String ci = (String) obj[3]; // nuevo campo
+                                        byte[] foto = (byte[]) obj[4];
 
                                         List<String> roles = new ArrayList<>();
-                                        if (obj[6] != null)
-                                                roles.add("ADMINISTRADOR");
                                         if (obj[7] != null)
-                                                roles.add("CAJERO");
+                                                roles.add("ADMINISTRADOR");
                                         if (obj[8] != null)
+                                                roles.add("CAJERO");
+                                        if (obj[9] != null)
                                                 roles.add("CLIENTE");
 
-                                        // Asignar tipoCliente solo si tiene rol CLIENTE
-                                        String tipoCliente = roles.contains("CLIENTE") ? (String) obj[4] : null;
+                                        // tipoCliente solo si es CLIENTE
+                                        String tipoCliente = roles.contains("CLIENTE") ? (String) obj[5] : null;
 
-                                        // Asignar estado parqueo (si no es nulo y es válido)
+                                        // estadoParqueo solo para CLIENTE
                                         EstadoParqueo estadoParqueo = null;
-                                        if (obj[5] != null) {
+                                        if (roles.contains("CLIENTE") && obj[6] != null) {
                                                 try {
-                                                        estadoParqueo = EstadoParqueo.valueOf(obj[5].toString());
+                                                        estadoParqueo = EstadoParqueo.valueOf(obj[6].toString());
                                                 } catch (IllegalArgumentException e) {
-                                                        System.out.println("Estado inválido: " + obj[5]);
+                                                        System.out.println("Estado inválido en cliente: " + obj[6]);
                                                 }
                                         }
-                                        Integer cantidadMesesDeuda = null;
-                                        if (roles.contains("CLIENTE")) {
-                                                cantidadMesesDeuda = deudaClientes.get(id);
+
+                                        // estaActivo solo para ADMINISTRADOR o CAJERO
+                                        String estaActivo = null;
+                                        if (roles.contains("ADMINISTRADOR") && obj[10] != null) {
+                                                estaActivo = Boolean.parseBoolean(obj[10].toString()) ? "Activo"
+                                                                : "Inactivo";
+                                        } else if (roles.contains("CAJERO") && obj[11] != null) {
+                                                estaActivo = Boolean.parseBoolean(obj[11].toString()) ? "Activo"
+                                                                : "Inactivo";
                                         }
-                                        return new AllUsuarioDTO(id, nombre, apellido, foto, roles, tipoCliente,
-                                                        estadoParqueo, cantidadMesesDeuda);
+
+                                        // cantidadMesesDeuda solo para CLIENTE
+                                        Integer cantidadMesesDeuda = roles.contains("CLIENTE") ? deudaClientes.get(id)
+                                                        : null;
+
+                                        return new AllUsuarioDTO(
+                                                        id,
+                                                        nombre,
+                                                        apellido,
+                                                        ci, // nuevo
+                                                        foto,
+                                                        roles,
+                                                        tipoCliente,
+                                                        estadoParqueo,
+                                                        estaActivo, // nuevo
+                                                        cantidadMesesDeuda);
                                 })
                                 .filter(dto -> dto.getCantidadMesesDeuda() == null || dto.getCantidadMesesDeuda() > 0)
                                 .toList();
