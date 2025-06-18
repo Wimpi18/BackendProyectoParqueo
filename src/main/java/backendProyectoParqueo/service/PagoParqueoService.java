@@ -59,16 +59,20 @@ public class PagoParqueoService {
 
         // Validar que todos los meses sean posteriores o iguales a la fecha de pago
         // mínima
+        LocalDate nuevaFechaPagoCorrespondiente = fechaPagoCorrespondiente.withDayOfMonth(1);
         List<LocalDate> mesesInvalidos = Arrays.stream(dto.getMeses())
-                .filter(mes -> mes.isBefore(fechaPagoCorrespondiente))
+                .filter(mes -> mes.isBefore(nuevaFechaPagoCorrespondiente))
                 .toList();
+        
+        System.out.println(nuevaFechaPagoCorrespondiente);
+        System.out.println(mesesInvalidos.toString());
 
         if (!mesesInvalidos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Alguno(s) de los meses ya han sido pagados. Meses inválidos: " + mesesInvalidos);
         }
 
-        if (!dto.getMeses()[0].equals(fechaPagoCorrespondiente)) {
+        if (!dto.getMeses()[0].equals(nuevaFechaPagoCorrespondiente)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "El primer mes a pagar no es el correspondiente. Mes inválido: " + dto.getMeses()[0].toString());
         }
