@@ -21,6 +21,7 @@ public class UsuarioDTO {
 
     @NotBlank(message = "El campo de la cédula de identidad es obligatorio")
     @Size(min = 4, max = 15, message = "La cédula debe tener entre 4 y 15 caracteres")
+    @Pattern(regexp = "^[0-9]+$", message = "La cédula debe contener solo números")
     private String ci;
 
     @NotBlank(message = "El campo del nombre es obligatorio")
