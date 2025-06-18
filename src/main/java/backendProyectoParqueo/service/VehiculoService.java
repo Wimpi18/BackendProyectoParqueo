@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.model.Vehiculo;
 import backendProyectoParqueo.repository.VehiculoEnParqueoRepository;
 import backendProyectoParqueo.repository.VehiculoRepository;
@@ -37,8 +38,8 @@ public class VehiculoService {
         return result;
     }
 
-    public List<Object> obtenerVehiculosPorClienteId(UUID id) {
-        List<Object> result = vehiculoRepository.obtenerVehiculosPorClienteId(id);
+    public List<VehiculoDTO> obtenerVehiculosPorClienteId(UUID id) {
+        List<VehiculoDTO> result = vehiculoRepository.obtenerVehiculosPorClienteId(id);
         if (result.isEmpty())
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,

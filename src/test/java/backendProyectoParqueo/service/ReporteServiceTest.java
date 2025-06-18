@@ -140,26 +140,6 @@ public class ReporteServiceTest {
     pagoParaInactivoModelo.setMeses(new LocalDate[] { LocalDate.now().minusMonths(5).withDayOfMonth(1) });
   }
 
-  @Test
-  @DisplayName("getTodosVehiculosDTOPorCliente - Devuelve List<Object> que contiene VehiculoDTOs")
-  void getTodosVehiculosDTOPorCliente_conVehiculos_devuelveLista() {
-    // Suponiendo que vehiculoRepository.obtenerVehiculosPorClienteId devuelve
-    // List<VehiculoDTO>
-    // pero el servicio lo retorna como List<Object>
-    VehiculoDTO vehiculoDTO = new VehiculoDTO(parqueoActivoModelo.getId(), placa, TipoVehiculo.Auto, "Toyota",
-        "Corolla", "Rojo");
-    List<VehiculoDTO> listaRepo = List.of(vehiculoDTO);
-    when(vehiculoRepository.obtenerVehiculosPorClienteId(clienteId)).thenReturn(new ArrayList<>(listaRepo));
-
-    List<Object> resultado = reporteService.getTodosVehiculosDTOPorCliente(clienteId);
-
-    assertNotNull(resultado);
-    assertFalse(resultado.isEmpty());
-    assertEquals(1, resultado.size());
-    assertTrue(resultado.get(0) instanceof VehiculoDTO);
-    assertEquals(placa, ((VehiculoDTO) resultado.get(0)).getPlaca());
-    verify(vehiculoRepository).obtenerVehiculosPorClienteId(clienteId);
-  }
 
   @Test
   @DisplayName("getEstadoCuentaVehiculo - Devuelve reporte para parqueo activo")

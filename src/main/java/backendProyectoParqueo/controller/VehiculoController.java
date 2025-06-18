@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backendProyectoParqueo.dto.ApiResponse;
 import backendProyectoParqueo.dto.ClienteDTO;
+import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.model.Vehiculo;
 import backendProyectoParqueo.service.VehiculoService;
 import backendProyectoParqueo.util.ApiResponseUtil;
@@ -39,7 +40,7 @@ public class VehiculoController {
     }
 
     @GetMapping("/reporte")
-    public ResponseEntity<ApiResponse<List<Object>>> listarVehiculos(@RequestBody ClienteDTO request) {
+    public ResponseEntity<ApiResponse<List<VehiculoDTO>>> listarVehiculos(@RequestBody ClienteDTO request) {
         return ApiResponseUtil.success("Todos los vehículos pertenecientes al cliente",
                 vehiculoService.obtenerVehiculosPorClienteId(request.getId()));
     }

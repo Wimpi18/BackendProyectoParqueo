@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
 
 import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.dto.ApiResponse;
@@ -72,9 +73,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/vista")
-    @PreAuthorize("hasRole('" + RoleEnum.Const.ADMINISTRADOR + "')")
-    public List<AllUsuarioDTO> obtenerVistaUsuarios() {
-        return usuarioService.obtenerUsuariosVista();
+    public ResponseEntity<List<AllUsuarioDTO>> obtenerUsuariosVista() {
+        List<AllUsuarioDTO> usuarios = usuarioService.obtenerUsuariosVista();
+        return ResponseEntity.ok(usuarios);
     }
 
 }

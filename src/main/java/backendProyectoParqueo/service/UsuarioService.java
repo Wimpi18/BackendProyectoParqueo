@@ -1,5 +1,7 @@
 package backendProyectoParqueo.service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.sql.Timestamp;
+import java.sql.Date;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,8 +26,12 @@ import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Parqueo;
+import backendProyectoParqueo.model.Parqueo.EstadoParqueo;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
+import backendProyectoParqueo.repository.AdministradorRepository;
+import backendProyectoParqueo.repository.CajeroRepository;
+import backendProyectoParqueo.repository.ClienteRepository;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_ACCESS_TOKEN;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_REFRESH_TOKEN;
 import backendProyectoParqueo.security.JwtManager;
@@ -153,17 +163,104 @@ public class UsuarioService {
                 return createSignedUserWithRefreshToken(usuario);
         }
 
+        public Map<UUID, Integer> calcularMesesDeudaClientes() {
+                List<Object[]> datos = usuarioRepository.obtenerFechasYPagosClientes();
+                Map<UUID, Integer> deudaPorCliente = new HashMap<>();
+
+                for (Object[] fila : datos) {
+                        UUID idCliente = (UUID) fila[0];
+                        LocalDate fechaInicio = ((Date) fila[1]).toLocalDate();
+
+                        // Puede venir null si nunca pagó
+                        Date[] mesesPagadosRaw = (Date[]) fila[2];
+                        List<LocalDate> mesesPagados = new ArrayList<>();
+                        if (mesesPagadosRaw != null) {
+                                for (Date d : mesesPagadosRaw) {
+                                        if (d != null) {
+                                                mesesPagados.add(d.toLocalDate().withDayOfMonth(1));
+
+                                        }
+                                }
+                        }
+
+                        // Calcular meses de deuda
+                        int cantidadDeuda = calcularCantidadMesesDeuda(fechaInicio, mesesPagados);
+                        if (cantidadDeuda > 0) {
+                                deudaPorCliente.put(idCliente, cantidadDeuda);
+                        }
+                }
+
+                return deudaPorCliente;
+        }
+
+        private int calcularCantidadMesesDeuda(LocalDate fechaInicio, List<LocalDate> mesesPagados) {
+                LocalDate hoy = LocalDate.now();
+
+                if (hoy.isBefore(fechaInicio.plusMonths(1))) {
+                        return 0;
+                }
+
+                int mesesTranscurridos = (int) ChronoUnit.MONTHS.between(fechaInicio, hoy);
+
+                // Crear lista de meses esperados (cada uno es la fechaInicio + n meses)
+                List<LocalDate> mesesEsperados = new ArrayList<>();
+                for (int i = 0; i < mesesTranscurridos; i++) {
+                        mesesEsperados.add(fechaInicio.plusMonths(i).withDayOfMonth(1)); // normalizamos día 1
+                }
+
+                Set<LocalDate> pagadosNormalizados = mesesPagados.stream()
+                                .map(m -> m.withDayOfMonth(1))
+                                .collect(Collectors.toSet());
+
+                int deuda = 0;
+                for (LocalDate mes : mesesEsperados) {
+                        if (!pagadosNormalizados.contains(mes)) {
+                                deuda++;
+                        }
+                }
+
+                return deuda;
+        }
+
         public List<AllUsuarioDTO> obtenerUsuariosVista() {
-                List<Object[]> resultados = usuarioRepository.obtenerUsuarioClienteParqueoRaw();
+                List<Object[]> resultados = usuarioRepository.obtenerUsuariosConRolesRaw();
+                Map<UUID, Integer> deudaClientes = calcularMesesDeudaClientes();
 
                 return resultados.stream()
-                                .map(obj -> new AllUsuarioDTO(
-                                                UUID.fromString(obj[0].toString()),
-                                                (String) obj[1],
-                                                (String) obj[2],
-                                                (byte[]) obj[3],
-                                                (String) obj[4],
-                                                Parqueo.EstadoParqueo.valueOf((String) obj[5])))
+                                .map(obj -> {
+                                        UUID id = UUID.fromString(obj[0].toString());
+                                        String nombre = (String) obj[1];
+                                        String apellido = (String) obj[2];
+                                        byte[] foto = (byte[]) obj[3];
+
+                                        List<String> roles = new ArrayList<>();
+                                        if (obj[6] != null)
+                                                roles.add("ADMINISTRADOR");
+                                        if (obj[7] != null)
+                                                roles.add("CAJERO");
+                                        if (obj[8] != null)
+                                                roles.add("CLIENTE");
+
+                                        // Asignar tipoCliente solo si tiene rol CLIENTE
+                                        String tipoCliente = roles.contains("CLIENTE") ? (String) obj[4] : null;
+
+                                        // Asignar estado parqueo (si no es nulo y es válido)
+                                        EstadoParqueo estadoParqueo = null;
+                                        if (obj[5] != null) {
+                                                try {
+                                                        estadoParqueo = EstadoParqueo.valueOf(obj[5].toString());
+                                                } catch (IllegalArgumentException e) {
+                                                        System.out.println("Estado inválido: " + obj[5]);
+                                                }
+                                        }
+                                        Integer cantidadMesesDeuda = null;
+                                        if (roles.contains("CLIENTE")) {
+                                                cantidadMesesDeuda = deudaClientes.get(id);
+                                        }
+                                        return new AllUsuarioDTO(id, nombre, apellido, foto, roles, tipoCliente,
+                                                        estadoParqueo, cantidadMesesDeuda);
+                                })
+                                .filter(dto -> dto.getCantidadMesesDeuda() == null || dto.getCantidadMesesDeuda() > 0)
                                 .toList();
         }
 
