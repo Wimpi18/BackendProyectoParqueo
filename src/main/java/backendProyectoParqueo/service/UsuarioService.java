@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import backendProyectoParqueo.adapter.UsuarioEstadoAdapter;
 import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.dto.SignedInUser;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
@@ -27,7 +28,7 @@ import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Parqueo;
-import backendProyectoParqueo.model.Parqueo.EstadoParqueo;
+import backendProyectoParqueo.enums.EstadoParqueo;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
 import backendProyectoParqueo.repository.AdministradorRepository;
@@ -232,7 +233,7 @@ public class UsuarioService {
                                         UUID id = UUID.fromString(obj[0].toString());
                                         String nombre = (String) obj[1];
                                         String apellido = (String) obj[2];
-                                        String ci = (String) obj[3]; // nuevo campo
+                                        String ci = (String) obj[3];
                                         byte[] foto = (byte[]) obj[4];
 
                                         List<String> roles = new ArrayList<>();
@@ -243,30 +244,28 @@ public class UsuarioService {
                                         if (obj[9] != null)
                                                 roles.add("CLIENTE");
 
-                                        // tipoCliente solo si es CLIENTE
                                         String tipoCliente = roles.contains("CLIENTE") ? (String) obj[5] : null;
 
-                                        // estadoParqueo solo para CLIENTE
                                         EstadoParqueo estadoParqueo = null;
-                                        if (roles.contains("CLIENTE") && obj[6] != null) {
+                                        if (obj[6] != null && roles.contains("CLIENTE")) {
                                                 try {
                                                         estadoParqueo = EstadoParqueo.valueOf(obj[6].toString());
                                                 } catch (IllegalArgumentException e) {
-                                                        System.out.println("Estado inválido en cliente: " + obj[6]);
+                                                        System.out.println("EstadoParqueo inválido: " + obj[6]);
                                                 }
                                         }
 
-                                        // estaActivo solo para ADMINISTRADOR o CAJERO
-                                        String estaActivo = null;
+                                        Boolean estaActivo = null;
                                         if (roles.contains("ADMINISTRADOR") && obj[10] != null) {
-                                                estaActivo = Boolean.parseBoolean(obj[10].toString()) ? "Activo"
-                                                                : "Inactivo";
+                                                estaActivo = Boolean.parseBoolean(obj[10].toString());
                                         } else if (roles.contains("CAJERO") && obj[11] != null) {
-                                                estaActivo = Boolean.parseBoolean(obj[11].toString()) ? "Activo"
-                                                                : "Inactivo";
+                                                estaActivo = Boolean.parseBoolean(obj[11].toString());
                                         }
 
-                                        // cantidadMesesDeuda solo para CLIENTE
+                                        // Usamos el adapter para unificar el estado
+                                        String estado = UsuarioEstadoAdapter.adaptarEstadoSalida(roles, estadoParqueo,
+                                                        estaActivo);
+
                                         Integer cantidadMesesDeuda = roles.contains("CLIENTE") ? deudaClientes.get(id)
                                                         : null;
 
@@ -274,12 +273,11 @@ public class UsuarioService {
                                                         id,
                                                         nombre,
                                                         apellido,
-                                                        ci, // nuevo
+                                                        ci,
                                                         foto,
                                                         roles,
                                                         tipoCliente,
-                                                        estadoParqueo,
-                                                        estaActivo, // nuevo
+                                                        estado,
                                                         cantidadMesesDeuda);
                                 })
                                 .filter(dto -> dto.getCantidadMesesDeuda() == null || dto.getCantidadMesesDeuda() > 0)
