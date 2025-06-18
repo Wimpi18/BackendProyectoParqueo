@@ -92,12 +92,11 @@ public class UsuarioService {
 
                 // Obtener la lista o lanzar excepción si no hay
                 List<Object[]> resultList = optionalResult.orElseThrow(
-                                () -> new UsernameNotFoundException(
-                                                String.format("No se encontró al usuario %s.", uname)));
+                                () -> new UsernameNotFoundException("Credenciales inválidas"));
 
                 // Verificar que la lista no esté vacía
                 if (resultList.isEmpty()) {
-                        throw new UsernameNotFoundException(String.format("No se encontró al usuario %s.", uname));
+                        throw new UsernameNotFoundException("Credenciales inválidas");
                 }
 
                 // Obtener la primera fila (el usuario)

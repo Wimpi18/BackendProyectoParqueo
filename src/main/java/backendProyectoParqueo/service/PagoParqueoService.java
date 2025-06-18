@@ -59,9 +59,8 @@ public class PagoParqueoService {
 
         // Validar que todos los meses sean posteriores o iguales a la fecha de pago
         // mínima
-        LocalDate nuevaFechaPagoCorrespondiente = fechaPagoCorrespondiente.withDayOfMonth(1);
         List<LocalDate> mesesInvalidos = Arrays.stream(dto.getMeses())
-                .filter(mes -> mes.isBefore(nuevaFechaPagoCorrespondiente))
+                .filter(mes -> mes.isBefore(fechaPagoCorrespondiente))
                 .toList();
 
         if (!mesesInvalidos.isEmpty()) {
@@ -69,7 +68,7 @@ public class PagoParqueoService {
                     "Alguno(s) de los meses ya han sido pagados. Meses inválidos: " + mesesInvalidos);
         }
 
-        if (!dto.getMeses()[0].equals(nuevaFechaPagoCorrespondiente)) {
+        if (!dto.getMeses()[0].equals(fechaPagoCorrespondiente)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "El primer mes a pagar no es el correspondiente. Mes inválido: " + dto.getMeses()[0].toString());
         }
@@ -79,7 +78,8 @@ public class PagoParqueoService {
         pagoParqueoEntity.setParqueo(cliente.getParqueo());
         pagoParqueoEntity.setCajero(cajero);
 
-        return pagoParqueoRepository.save(pagoParqueoEntity);
+        pagoParqueoRepository.save(pagoParqueoEntity);
+        return pagoParqueoEntity;
     }
 
     public Object getFechaCorrespondienteDePagoParqueo(UUID clienteId) {
@@ -90,9 +90,9 @@ public class PagoParqueoService {
             LocalDate ultimoMesPagado = row[1] != null ? LocalDate.parse(row[1].toString()) : null;
 
             if (ultimoMesPagado == null || fechaInicio.isAfter(ultimoMesPagado)) {
-                return fechaInicio;
+                return fechaInicio.withDayOfMonth(1);
             } else {
-                return ultimoMesPagado.plusMonths(1);
+                return ultimoMesPagado.plusMonths(1).withDayOfMonth(1);
             }
         }
 
