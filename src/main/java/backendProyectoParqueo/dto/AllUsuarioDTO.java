@@ -23,10 +23,12 @@ public class AllUsuarioDTO {
     private UUID id;
     private String nombre;
     private String apellido;
+    private String ci; // <-- nuevo campo
     private byte[] foto;
 
     private List<String> roles; // Ej: ["Cliente", "Cajero"]
     private String tipoCliente; // solo si rol incluye "Cliente"
-    private EstadoParqueo estadoParqueo;
-    private Integer cantidadMesesDeuda;
+    private EstadoParqueo estadoParqueo; // solo aplica si es CLIENTE
+    private String estaActivo; // <-- nuevo campo para admins y cajeros
+    private Integer cantidadMesesDeuda; // solo aplica si es CLIENTE
 }
