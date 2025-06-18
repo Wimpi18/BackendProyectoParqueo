@@ -28,7 +28,6 @@ public class AllUsuarioDTO {
 
     private List<String> roles; // Ej: ["Cliente", "Cajero"]
     private String tipoCliente; // solo si rol incluye "Cliente"
-    private EstadoParqueo estadoParqueo; // solo aplica si es CLIENTE
-    private String estaActivo; // <-- nuevo campo para admins y cajeros
+    private String estado; // <-- nuevo campo para admins y cajeros
     private Integer cantidadMesesDeuda; // solo aplica si es CLIENTE
 }
