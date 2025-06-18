@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import backendProyectoParqueo.dto.SignInReq;
 import backendProyectoParqueo.dto.SignedInUser;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.security.Constants;
+import backendProyectoParqueo.service.LoginAttemptService;
 import backendProyectoParqueo.service.UsuarioService;
 import backendProyectoParqueo.util.ApiResponseUtil;
 import jakarta.validation.Valid;
@@ -34,9 +36,15 @@ public class AuthController {
 
     private final UsuarioService usuarioService;
     private final PasswordEncoder passwordEncoder;
+    private final LoginAttemptService loginAttemptService;
 
     @PostMapping("/signIn")
     public ResponseEntity<SignedInUser> signIn(@RequestBody @Valid SignInReq signInReq) {
+
+        if (loginAttemptService.estaBloqueado(signInReq.getUsername())) {
+            throw new LockedException("Cuenta bloqueada temporalmente. Intenta nuevamente más tarde.");
+        }
+
         Usuario usuario = usuarioService.findUserByUsername(signInReq.getUsername());
 
         if (passwordEncoder.matches(signInReq.getPassword(),
@@ -53,6 +61,8 @@ public class AuthController {
                     .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                     .body(signedInUser);
         }
+
+        loginAttemptService.loginFallido(signInReq.getUsername());
         throw new InsufficientAuthenticationException("Credenciales inválidas.");
     }
 

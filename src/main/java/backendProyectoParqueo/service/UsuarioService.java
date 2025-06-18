@@ -23,7 +23,6 @@ import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.dto.SignedInUser;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
-import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Parqueo;
