@@ -1,5 +1,6 @@
 package backendProyectoParqueo.service;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -8,11 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.sql.Timestamp;
-import java.sql.Date;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -25,13 +24,9 @@ import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.enums.TipoVehiculo;
-import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Parqueo.EstadoParqueo;
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
-import backendProyectoParqueo.repository.AdministradorRepository;
-import backendProyectoParqueo.repository.CajeroRepository;
-import backendProyectoParqueo.repository.ClienteRepository;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_ACCESS_TOKEN;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_REFRESH_TOKEN;
 import backendProyectoParqueo.security.JwtManager;

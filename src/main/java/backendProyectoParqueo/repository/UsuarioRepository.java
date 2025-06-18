@@ -7,11 +7,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
-import backendProyectoParqueo.model.Administrador;
-import backendProyectoParqueo.model.Cajero;
-import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
@@ -52,20 +48,35 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     List<Object[]> obtenerDetallesUsuarioPorId(@Param("usuarioId") UUID usuarioId);
 
     @Query(value = """
-                SELECT u.id, u.ci, u.nombre, u.apellido, u.correo,
-                       u.nro_celular, u.password, u.username, u.foto,
-                       ARRAY_REMOVE(ARRAY[
-                           CASE WHEN c.id IS NOT NULL THEN 'ROLE_CLIENTE' ELSE NULL END,
-                           CASE WHEN a.id IS NOT NULL THEN 'ROLE_ADMINISTRADOR' ELSE NULL END,
-                           CASE WHEN j.id IS NOT NULL THEN 'ROLE_CAJERO' ELSE NULL END
-                       ], NULL) AS roles
-                FROM usuario u
-                LEFT JOIN cliente c ON c.id = u.id
-                LEFT JOIN administrador a ON a.id = u.id
-                LEFT JOIN cajero j ON j.id = u.id
-                WHERE u.username = :username
-                LIMIT 1;
-            """, nativeQuery = true)
+            SELECT u.id, u.ci, u.nombre, u.apellido, u.correo,
+                   u.nro_celular, u.password, u.username, u.foto,
+                   ARRAY_REMOVE(ARRAY[
+                       CASE
+                           WHEN c.id IS NOT NULL AND p.id IS NOT NULL THEN 'ROLE_CLIENTE'
+                           ELSE NULL
+                       END,
+                       CASE
+                           WHEN a.id IS NOT NULL THEN 'ROLE_ADMINISTRADOR'
+                           ELSE NULL
+                       END,
+                       CASE
+                           WHEN j.id IS NOT NULL THEN 'ROLE_CAJERO'
+                           ELSE NULL
+                       END
+                   ], NULL) AS roles
+            FROM usuario u
+            LEFT JOIN cliente c ON c.id = u.id
+            LEFT JOIN parqueo p ON p.id_cliente = c.id AND p.estado != 'Inactivo'
+            LEFT JOIN administrador a ON a.id = u.id AND a.es_activo = TRUE
+            LEFT JOIN cajero j ON j.id = u.id AND j.es_activo = TRUE
+            WHERE u.username = 'allRoles'
+              AND (
+                (c.id IS NOT NULL AND p.id IS NOT NULL) OR
+                a.id IS NOT NULL OR
+                j.id IS NOT NULL
+            )
+            LIMIT 1;
+                        """, nativeQuery = true)
     Optional<List<Object[]>> findRawUsuarioConRolesByUsername(@Param("username") String username);
 
     @Query(value = """

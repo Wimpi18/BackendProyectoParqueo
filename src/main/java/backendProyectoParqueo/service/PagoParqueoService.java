@@ -42,7 +42,7 @@ public class PagoParqueoService {
 
         Cliente cliente = clienteService.findById(dto.getIdCliente());
         Tarifa tarifa = tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(),
-                cliente.getParqueos().getTipo());
+                cliente.getParqueo().getTipo());
 
         Cajero cajero = null;
         if (dto.getIdCajero() != null)
@@ -63,9 +63,6 @@ public class PagoParqueoService {
         List<LocalDate> mesesInvalidos = Arrays.stream(dto.getMeses())
                 .filter(mes -> mes.isBefore(nuevaFechaPagoCorrespondiente))
                 .toList();
-        
-        System.out.println(nuevaFechaPagoCorrespondiente);
-        System.out.println(mesesInvalidos.toString());
 
         if (!mesesInvalidos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -77,9 +74,9 @@ public class PagoParqueoService {
                     "El primer mes a pagar no es el correspondiente. Mes inválido: " + dto.getMeses()[0].toString());
         }
 
-        pagoParqueoEntity.setNroEspacioPagado(cliente.getParqueos().getNroEspacio());
+        pagoParqueoEntity.setNroEspacioPagado(cliente.getParqueo().getNroEspacio());
         pagoParqueoEntity.setTarifa(tarifa);
-        pagoParqueoEntity.setParqueo(cliente.getParqueos());
+        pagoParqueoEntity.setParqueo(cliente.getParqueo());
         pagoParqueoEntity.setCajero(cajero);
 
         return pagoParqueoRepository.save(pagoParqueoEntity);
