@@ -22,8 +22,8 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
-    public List<ClienteDTO> findAllClientesNoInactivos() {
-        return clienteRepository.findAllClientesNoInactivos();
+    public List<ClienteDTO> findAllClientesNoInactivos(UUID id) {
+        return clienteRepository.findAllClientesNoInactivos(id);
     }
 
     public Cliente save(@RequestBody Cliente cliente) {

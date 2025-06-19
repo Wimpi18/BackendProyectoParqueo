@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import backendProyectoParqueo.dto.ClienteDTO;
@@ -18,7 +19,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
                 FROM Cliente c
                 JOIN Usuario u ON u.id = c.id
                 JOIN Parqueo p ON p.cliente.id = c.id
-                WHERE p.estado != 'Inactivo'
+                WHERE p.estado != 'Inactivo' AND c.id != :id
             """)
-    List<ClienteDTO> findAllClientesNoInactivos();
+    List<ClienteDTO> findAllClientesNoInactivos(@Param(value = "id") UUID id);
 }
