@@ -1,6 +1,7 @@
 package backendProyectoParqueo.service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import backendProyectoParqueo.dto.ClienteDTO;
 import backendProyectoParqueo.dto.ParqueoDTO;
 import backendProyectoParqueo.dto.RegistroRequestDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
+import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Usuario;
@@ -42,7 +44,6 @@ public class RegistroClienteService {
         }
 
         Short espacioAsignado = validarYObtenerEspacioAsignado(request.getParqueo(), clienteDTO.getTipo());
-
         Usuario usuario = registroUsuarioService.crearUsuario(
                 clienteDTO.getCi(),
                 clienteDTO.getNombre(),
@@ -58,8 +59,24 @@ public class RegistroClienteService {
         cliente.setTipo(clienteDTO.getTipo());
         cliente = clienteRepo.save(cliente);
 
+        Parqueo parqueo = new Parqueo();
+        parqueo.setCliente(cliente);
+        parqueo.setEstado(Parqueo.EstadoParqueo.Activo);
+        parqueo.setFechaInicio(LocalDate.now());
+        parqueo.setNroEspacio(espacioAsignado);
+
+        // Se considera que los espacios 110, 111, 112 y 113 son para moto, si quiere
+        // ser escalable es necesario crear otra tabla, estas lineas de codigo van en
+        // relación a parqueoService en la función obtenerEspaciosDisponibles()
+        List<Short> espacios = Arrays.asList((short) 110, (short) 111, (short) 112, (short) 113);
+        if (espacios.contains(request.getParqueo().getNroEspacio()))
+            parqueo.setTipo(TipoVehiculo.Moto);
+        else
+            parqueo.setTipo(TipoVehiculo.Auto);
+        parqueo = parqueoRepo.save(parqueo);
+
         for (VehiculoDTO v : vehiculos) {
-            registrarVehiculoYParqueo(v, cliente, espacioAsignado);
+            registrarVehiculoYParqueo(v, parqueo);
         }
     }
 
@@ -83,7 +100,7 @@ public class RegistroClienteService {
         return ocupados.contains(nroEspacio) ? null : nroEspacio;
     }
 
-    private void registrarVehiculoYParqueo(VehiculoDTO dto, Cliente cliente, Short espacioAsignado) {
+    private void registrarVehiculoYParqueo(VehiculoDTO dto, Parqueo parqueo) {
         if (vehiculoRepo.existsByPlaca(dto.getPlaca())) {
             throw new IllegalArgumentException("Placa ya registrada: " + dto.getPlaca());
         }
@@ -97,14 +114,6 @@ public class RegistroClienteService {
         vehiculo.setFotoDelantera(dto.getFotoDelantera());
         vehiculo.setFotoTrasera(dto.getFotoTrasera());
         vehiculo = vehiculoRepo.save(vehiculo);
-
-        Parqueo parqueo = new Parqueo();
-        parqueo.setCliente(cliente);
-        parqueo.setEstado(Parqueo.EstadoParqueo.Activo);
-        parqueo.setFechaInicio(LocalDate.now());
-        parqueo.setNroEspacio(espacioAsignado);
-        parqueo.setTipo(dto.getTipo());
-        parqueo = parqueoRepo.save(parqueo);
 
         VehiculoEnParqueo relacion = new VehiculoEnParqueo();
         relacion.setParqueo(parqueo);

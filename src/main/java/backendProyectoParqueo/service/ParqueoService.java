@@ -39,6 +39,9 @@ public class ParqueoService {
     public List<Short> obtenerEspaciosDisponibles() {
         List<Short> ocupados = parqueoRepository.findEspaciosOcupados();
 
+        // Esto es un hardcode, no es escalable más se puede emplear una tabla auxiliar
+        // para ir creando espacios de parqueo con su respectivo tipo, por el momento
+        // los espacios de "moto" son pocos y consideramos que son el 110, 111, 112, 113
         return IntStream.rangeClosed(1, 113)
                 .mapToObj(i -> (short) i)
                 .filter(i -> !ocupados.contains(i))
