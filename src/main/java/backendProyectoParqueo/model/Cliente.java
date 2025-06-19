@@ -7,17 +7,22 @@ import org.hibernate.annotations.Check;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "cliente")
 // Revisar que el TipoCliente.java contenga los mismo valores en sus enums
 @Check(constraints = "tipo IN ('Administrativo', 'Docente a dedicación exclusiva', 'Docente a tiempo horario')")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Cliente {
 
     @Id
@@ -38,47 +43,8 @@ public class Cliente {
     @Column(name = "tipo", nullable = false)
     private String tipo;
 
-    public Cliente() {
-    }
-
     public Cliente(String entidad, String tipo) {
         this.entidad = entidad;
         this.tipo = tipo;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getEntidad() {
-        return entidad;
-    }
-
-    public void setEntidad(String entidad) {
-        this.entidad = entidad;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public Parqueo getParqueos() {
-        return parqueo;
     }
 }

@@ -1,5 +1,8 @@
 package backendProyectoParqueo.service;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import backendProyectoParqueo.dto.RegistroUsuarioAdminRequestDTO;
@@ -11,6 +14,8 @@ import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.AdministradorRepository;
 import backendProyectoParqueo.repository.CajeroRepository;
 import backendProyectoParqueo.repository.UsuarioRepository;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,9 +33,15 @@ public class RegistroAdminService {
         Usuario usuario = usuarioRepository.findByCi(dto.getCi()).orElse(null);
 
         if (usuario == null) {
-            if (dto.getNombre() == null || dto.getApellido() == null || dto.getCorreo() == null ||
-                    dto.getPassword() == null || dto.getNroCelular() == null || dto.getFoto() == null) {
-                throw new IllegalArgumentException("Faltan campos obligatorios para crear un nuevo usuario.");
+            Set<ConstraintViolation<UsuarioDTO>> violations = Validation.buildDefaultValidatorFactory()
+                    .getValidator()
+                    .validate(dto);
+
+            if (!violations.isEmpty()) {
+                String errores = violations.stream()
+                        .map(ConstraintViolation::getMessage)
+                        .collect(Collectors.joining("; "));
+                throw new IllegalArgumentException("Errores de validación: " + errores);
             }
 
             usuario = registroUsuarioService.crearUsuario(

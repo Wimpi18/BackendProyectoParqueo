@@ -42,7 +42,7 @@ public class PagoParqueoService {
 
         Cliente cliente = clienteService.findById(dto.getIdCliente());
         Tarifa tarifa = tarifaService.findTarifaByTipoClienteYVehiculo(cliente.getTipo(),
-                cliente.getParqueos().getTipo());
+                cliente.getParqueo().getTipo());
 
         Cajero cajero = null;
         if (dto.getIdCajero() != null)
@@ -73,12 +73,13 @@ public class PagoParqueoService {
                     "El primer mes a pagar no es el correspondiente. Mes inválido: " + dto.getMeses()[0].toString());
         }
 
-        pagoParqueoEntity.setNroEspacioPagado(cliente.getParqueos().getNroEspacio());
+        pagoParqueoEntity.setNroEspacioPagado(cliente.getParqueo().getNroEspacio());
         pagoParqueoEntity.setTarifa(tarifa);
-        pagoParqueoEntity.setParqueo(cliente.getParqueos());
+        pagoParqueoEntity.setParqueo(cliente.getParqueo());
         pagoParqueoEntity.setCajero(cajero);
 
-        return pagoParqueoRepository.save(pagoParqueoEntity);
+        pagoParqueoRepository.save(pagoParqueoEntity);
+        return pagoParqueoEntity;
     }
 
     public Object getFechaCorrespondienteDePagoParqueo(UUID clienteId) {
@@ -89,9 +90,9 @@ public class PagoParqueoService {
             LocalDate ultimoMesPagado = row[1] != null ? LocalDate.parse(row[1].toString()) : null;
 
             if (ultimoMesPagado == null || fechaInicio.isAfter(ultimoMesPagado)) {
-                return fechaInicio;
+                return fechaInicio.withDayOfMonth(1);
             } else {
-                return ultimoMesPagado.plusMonths(1);
+                return ultimoMesPagado.plusMonths(1).withDayOfMonth(1);
             }
         }
 
