@@ -93,6 +93,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
             LEFT JOIN cliente cl ON u.id = cl.id
             LEFT JOIN cliente c ON u.id = c.id
             LEFT JOIN parqueo p ON c.id = p.id_cliente
+            ORDER BY u.ctid DESC;
             """, nativeQuery = true)
     List<Object[]> obtenerUsuariosConRolesRaw();
 
