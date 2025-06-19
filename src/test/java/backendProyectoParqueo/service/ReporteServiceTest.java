@@ -6,14 +6,12 @@ import java.time.LocalDate; // Para usar .getLabel()
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,12 +23,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import backendProyectoParqueo.dto.ReporteEstadoCuentaVehiculoDTO;
-import backendProyectoParqueo.dto.VehiculoDTO;
 import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Cliente;

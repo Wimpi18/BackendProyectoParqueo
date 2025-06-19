@@ -23,11 +23,9 @@ import backendProyectoParqueo.dto.AllUsuarioDTO;
 import backendProyectoParqueo.dto.SignedInUser;
 import backendProyectoParqueo.dto.UsuarioDetalleDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
+import backendProyectoParqueo.enums.EstadoParqueo;
 import backendProyectoParqueo.enums.RoleEnum;
 import backendProyectoParqueo.enums.TipoVehiculo;
-import backendProyectoParqueo.model.Parqueo;
-import backendProyectoParqueo.enums.EstadoParqueo;
-
 import backendProyectoParqueo.model.Usuario;
 import backendProyectoParqueo.repository.UsuarioRepository;
 import static backendProyectoParqueo.security.Constants.EXPIRATION_TIME_ACCESS_TOKEN;
@@ -252,9 +250,9 @@ public class UsuarioService {
 
                                         Boolean estaActivo = null;
                                         if (roles.contains("ADMINISTRADOR") && obj[10] != null) {
-                                                estaActivo = Boolean.parseBoolean(obj[10].toString());
+                                                estaActivo = Boolean.valueOf(obj[10].toString());
                                         } else if (roles.contains("CAJERO") && obj[11] != null) {
-                                                estaActivo = Boolean.parseBoolean(obj[11].toString());
+                                                estaActivo = Boolean.valueOf(obj[11].toString());
                                         }
 
                                         // Usamos el adapter para unificar el estado

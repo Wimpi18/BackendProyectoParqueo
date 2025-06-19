@@ -1,8 +1,7 @@
 package backendProyectoParqueo.controller;
 
 import java.util.ArrayList;
-import java.util.Collections; // Para simular el request body
-import java.util.List;
+import java.util.List; // Para simular el request body
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.BDDMockito.given;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -84,8 +82,6 @@ public class ReporteControllerTest {
                 // ... poblar otros campos
         }
 
-        
-
         @Test
         @DisplayName("POST /reporte/cliente/vehiculo - Cliente sin ID en body devuelve 400") // CORREGIDO DisplayName
         void getTodosVehiculosPorCliente_sinIdCliente_devuelve400() throws Exception {
@@ -105,8 +101,6 @@ public class ReporteControllerTest {
                                                                                                             // es
                                                                                                             // correcto
         }
-
-      
 
         @Test
         @DisplayName("POST /reporte/vehiculo/estados-cuenta - Devuelve lista de reportes y status 200")

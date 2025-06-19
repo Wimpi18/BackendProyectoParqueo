@@ -1,20 +1,13 @@
 package backendProyectoParqueo.dto;
 
-import java.util.UUID;
 import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 
-import backendProyectoParqueo.enums.RoleEnum;
-import backendProyectoParqueo.model.Parqueo.EstadoParqueo;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @JsonInclude(Include.NON_NULL)
 @Data
