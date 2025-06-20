@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import backendProyectoParqueo.dto.HistorialTarifaDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.service.HistorialTarifaService;
+import backendProyectoParqueo.dto.HistorialDTO;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -23,7 +25,7 @@ public class HistorialTarifaController {
     private final HistorialTarifaService historialTarifaService;
 
     @GetMapping
-    public List<HistorialTarifaDTO> obtenerHistorialTarifas() {
+    public List<HistorialDTO> obtenerHistorialTarifas() {
         return historialTarifaService.obtenerHistorialTarifas();
     }
 
