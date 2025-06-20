@@ -10,6 +10,7 @@ import backendProyectoParqueo.dto.ClienteDTO;
 import backendProyectoParqueo.dto.ParqueoDTO;
 import backendProyectoParqueo.dto.RegistroRequestDTO;
 import backendProyectoParqueo.dto.VehiculoDTO;
+import backendProyectoParqueo.enums.TipoCliente;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Cliente;
 import backendProyectoParqueo.model.Parqueo;
@@ -68,11 +69,17 @@ public class RegistroClienteService {
         // Se considera que los espacios 110, 111, 112 y 113 son para moto, si quiere
         // ser escalable es necesario crear otra tabla, estas lineas de codigo van en
         // relación a parqueoService en la función obtenerEspaciosDisponibles()
-        List<Short> espacios = Arrays.asList((short) 110, (short) 111, (short) 112, (short) 113);
-        if (espacios.contains(request.getParqueo().getNroEspacio()))
-            parqueo.setTipo(TipoVehiculo.Moto);
-        else
+        // Esto se realizará siempre que el cliente no sea de tipo Cliente a tiempo
+        // horario
+        if (!clienteDTO.getTipo().trim().equals(TipoCliente.DOCENTE_TIEMPO_HORARIO.getLabel())) {
+            List<Short> espacios = Arrays.asList((short) 110, (short) 111, (short) 112, (short) 113);
+            if (espacios.contains(request.getParqueo().getNroEspacio()))
+                parqueo.setTipo(TipoVehiculo.Moto);
+            else
+                parqueo.setTipo(TipoVehiculo.Auto);
+        } else
             parqueo.setTipo(TipoVehiculo.Auto);
+
         parqueo = parqueoRepo.save(parqueo);
 
         for (VehiculoDTO v : vehiculos) {
@@ -84,15 +91,13 @@ public class RegistroClienteService {
         if (tipoCliente == null)
             return null;
 
-        String tipo = tipoCliente.trim().toLowerCase();
-        boolean requiereEspacio = tipo.equals("administrativo") || tipo.equals("docente a dedicación exclusiva");
-
-        if (!requiereEspacio)
+        // Esto implica que el docente a tiempo horario se registra sin necesidad de
+        // número de parqueo
+        if (tipoCliente.trim().equals(TipoCliente.DOCENTE_TIEMPO_HORARIO.getLabel()))
             return null;
 
-        if (parqueoDTO == null || parqueoDTO.getNroEspacio() == null) {
+        if (parqueoDTO == null || parqueoDTO.getNroEspacio() == null)
             throw new IllegalArgumentException("Debe proporcionar un número de espacio.");
-        }
 
         Short nroEspacio = parqueoDTO.getNroEspacio();
         List<Short> ocupados = parqueoRepo.findEspaciosOcupados();
