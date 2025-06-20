@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
+import backendProyectoParqueo.dto.HistorialDTO;
 import backendProyectoParqueo.dto.HistorialTarifaDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.repository.HistorialRepository;
@@ -17,7 +17,7 @@ public class HistorialTarifaService {
 
     private final HistorialRepository historialRepository;
 
-    public List<HistorialTarifaDTO> obtenerHistorialTarifas() {
+    public List<HistorialDTO> obtenerHistorialTarifas() {
         return historialRepository.obtenerHistorialTarifas();
     }
 
