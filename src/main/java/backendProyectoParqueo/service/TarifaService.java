@@ -2,6 +2,8 @@ package backendProyectoParqueo.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -63,7 +65,9 @@ public class TarifaService {
         nuevaTarifa.setMonto(dto.getMonto());
         nuevaTarifa.setAdministrador(admin);
         // Si tienes fechaInicio automática (ejemplo: ahora)
-        nuevaTarifa.setFechaInicio(LocalDateTime.now());
+        ZoneId zonaBolivia = ZoneId.of("America/La_Paz");
+        ZonedDateTime fechaHoraBolivia = ZonedDateTime.now(zonaBolivia);
+        nuevaTarifa.setFechaInicio(fechaHoraBolivia.toLocalDateTime());
 
         Tarifa guardada = tarifaRepository.save(nuevaTarifa);
 
