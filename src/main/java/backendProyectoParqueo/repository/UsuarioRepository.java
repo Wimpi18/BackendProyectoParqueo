@@ -69,7 +69,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
             LEFT JOIN parqueo p ON p.id_cliente = c.id AND p.estado != 'Inactivo'
             LEFT JOIN administrador a ON a.id = u.id AND a.es_activo = TRUE
             LEFT JOIN cajero j ON j.id = u.id AND j.es_activo = TRUE
-            WHERE u.username = 'allRoles'
+            WHERE u.username = :username
               AND (
                 (c.id IS NOT NULL AND p.id IS NOT NULL) OR
                 a.id IS NOT NULL OR
