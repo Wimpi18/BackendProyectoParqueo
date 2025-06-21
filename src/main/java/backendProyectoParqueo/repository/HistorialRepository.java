@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import backendProyectoParqueo.dto.HistorialTarifaDTO;
 import backendProyectoParqueo.dto.HistorialDTO;
+import backendProyectoParqueo.dto.HistorialDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.repository.custom.HistorialRepositoryCustom;
@@ -27,7 +28,8 @@ public interface HistorialRepository extends JpaRepository<Tarifa, Integer>, His
         List<HistorialDTO> obtenerHistorialTarifas();
 
         @Override
-        List<HistorialTarifaDTO> filtrarHistorialTarifas(
+        List<HistorialDTO> filtrarHistorialTarifas(
+                        Integer id,
                         TipoVehiculo tipoVehiculo,
                         String tipoCliente,
                         String nombreUsuario,
