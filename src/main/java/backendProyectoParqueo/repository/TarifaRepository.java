@@ -43,6 +43,7 @@ public interface TarifaRepository extends JpaRepository<Tarifa, Integer> {
                   AND t2.tipoCliente = t.tipoCliente
                   AND t2.fechaInicio <= CURRENT_TIMESTAMP
                   )
+                  ORDER BY t.id DESC
             """)
   List<TarifaDTO> obtenerTarifasVigentesNativo();
 
