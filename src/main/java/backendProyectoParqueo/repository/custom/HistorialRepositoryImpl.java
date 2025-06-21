@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import backendProyectoParqueo.dto.HistorialTarifaDTO;
+import backendProyectoParqueo.dto.HistorialDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -18,7 +18,8 @@ public class HistorialRepositoryImpl implements HistorialRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public List<HistorialTarifaDTO> filtrarHistorialTarifas(
+    public List<HistorialDTO> filtrarHistorialTarifas(
+            Integer id,
             TipoVehiculo tipoVehiculo,
             String tipoCliente,
             String nombreUsuario,
@@ -28,7 +29,8 @@ public class HistorialRepositoryImpl implements HistorialRepositoryCustom {
             BigDecimal montoMaximo) {
 
         StringBuilder jpql = new StringBuilder("""
-                    SELECT new backendProyectoParqueo.dto.HistorialTarifaDTO(
+                    SELECT new backendProyectoParqueo.dto.HistorialDTO(
+                        t.id,
                         t.tipoVehiculo,
                         t.tipoCliente,
                         t.monto,
@@ -67,7 +69,7 @@ public class HistorialRepositoryImpl implements HistorialRepositoryCustom {
         jpql.append(" ORDER BY t.fechaInicio DESC");
 
         // Crear consulta
-        var query = entityManager.createQuery(jpql.toString(), HistorialTarifaDTO.class);
+        var query = entityManager.createQuery(jpql.toString(), HistorialDTO.class);
 
         // Asignar parámetros
         if (tipoVehiculo != null) {
