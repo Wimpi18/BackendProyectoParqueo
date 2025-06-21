@@ -1,4 +1,3 @@
-// src/main/java/backendProyectoParqueo/service/ReporteService.java
 package backendProyectoParqueo.service;
 
 import java.math.BigDecimal;
@@ -25,7 +24,7 @@ import backendProyectoParqueo.model.PagoParqueo;
 import backendProyectoParqueo.model.Parqueo;
 import backendProyectoParqueo.model.Tarifa;
 import backendProyectoParqueo.model.Vehiculo;
-import backendProyectoParqueo.repository.PagoParqueoRepository; 
+import backendProyectoParqueo.repository.PagoParqueoRepository;
 import backendProyectoParqueo.repository.ParqueoRepository;
 import backendProyectoParqueo.repository.TarifaRepository;
 import backendProyectoParqueo.repository.VehiculoRepository;
@@ -37,17 +36,19 @@ public class ReporteService {
   private final ParqueoRepository parqueoRepository;
   private final PagoParqueoRepository pagoParqueoRepository;
   private final TarifaRepository tarifaRepository;
-  private final VehiculoRepository vehiculoRepository; 
+  private final VehiculoRepository vehiculoRepository;
+
+  private static final DateTimeFormatter PERIODO_FORMATTER = DateTimeFormatter.ofPattern("MM/yyyy");
 
   @Autowired
   public ReporteService(ParqueoRepository parqueoRepository,
       PagoParqueoRepository pagoParqueoRepository,
       TarifaRepository tarifaRepository,
-      VehiculoRepository vehiculoRepository) { 
+      VehiculoRepository vehiculoRepository) {
     this.parqueoRepository = parqueoRepository;
     this.pagoParqueoRepository = pagoParqueoRepository;
     this.tarifaRepository = tarifaRepository;
-    this.vehiculoRepository = vehiculoRepository; 
+    this.vehiculoRepository = vehiculoRepository;
   }
 
   @Transactional(readOnly = true)
@@ -60,7 +61,7 @@ public class ReporteService {
     }
     Parqueo parqueo = parqueos.stream()
         .max(Comparator.comparing(Parqueo::getFechaInicio))
-        .orElseThrow();
+        .orElseThrow(() -> new EntityNotFoundException("No se pudo determinar el parqueo más reciente para " + clienteId + " y placa " + placa));
     return generarReporteParaParqueo(parqueo);
   }
 
@@ -93,122 +94,135 @@ public class ReporteService {
         .collect(Collectors.toList());
   }
 
-@Transactional(readOnly = true)
-public List<ReporteEstadoCuentaVehiculoDTO> getEstadosCuentaParaVehiculoPrincipalDeCliente(UUID clienteId) {    
+  @Transactional(readOnly = true)
+  public List<ReporteEstadoCuentaVehiculoDTO> getEstadosCuentaParaVehiculoPrincipalDeCliente(UUID clienteId) {
     List<VehiculoDTO> vehiculosActivosDTO = vehiculoRepository.obtenerVehiculosPorClienteId(clienteId);
 
     if (vehiculosActivosDTO.isEmpty()) {
-        System.out.println("Info: Cliente con ID " + clienteId + " no tiene vehículos en parqueos activos o bloqueados.");
-        return new ArrayList<>();
+      return new ArrayList<>();
     }
     VehiculoDTO vehiculoSeleccionado = vehiculosActivosDTO.get(0);
     String placaSeleccionada = vehiculoSeleccionado.getPlaca();
 
     if (placaSeleccionada == null || placaSeleccionada.trim().isEmpty()) {
-        throw new IllegalStateException("El vehículo seleccionado (ID: " + vehiculoSeleccionado.getId() + 
-                                        ") para el cliente " + clienteId + " no tiene una placa válida.");
+      return new ArrayList<>();
     }
-
     return getEstadosCuentaPorClienteYPlaca(clienteId, placaSeleccionada);
-}
-
-
-
+  }
 
 
   private ReporteEstadoCuentaVehiculoDTO generarReporteParaParqueo(Parqueo parqueo) {
-    List<PagoParqueo> pagosDelParqueo = pagoParqueoRepository.findAllByParqueoIdWithTarifa(parqueo.getId());
-
     ReporteEstadoCuentaVehiculoDTO reporte = new ReporteEstadoCuentaVehiculoDTO();
+
+    if (parqueo.getVehiculosAsignados() == null || parqueo.getVehiculosAsignados().isEmpty() ||
+        parqueo.getVehiculosAsignados().get(0).getVehiculo() == null) {
+        reporte.setPlacaVehiculo("ERROR_VEHICULO_NO_ASIGNADO");
+        reporte.setTipoVehiculo(parqueo.getTipo()); 
+        reporte.setTipoCliente(parqueo.getCliente() != null ? parqueo.getCliente().getTipo() : "Desconocido");
+        reporte.setUltimaActualizacion(LocalDateTime.now());
+        reporte.setDetallesMes(new ArrayList<>());
+        reporte.setSaldoTotalPendiente(BigDecimal.ZERO);
+        return reporte;
+    }
     reporte.setPlacaVehiculo(parqueo.getVehiculosAsignados().get(0).getVehiculo().getPlaca());
 
-    if (parqueo.getCliente().getTipo() instanceof String) {
-      reporte.setTipoCliente(parqueo.getCliente().getTipo());
-    } else if (parqueo.getCliente().getTipo() instanceof String) {
-      reporte.setTipoCliente((String) parqueo.getCliente().getTipo());
-    } else if (parqueo.getCliente().getTipo() != null) {
-      reporte.setTipoCliente(parqueo.getCliente().getTipo());
+    if (parqueo.getCliente() != null && parqueo.getCliente().getTipo() != null) {
+        reporte.setTipoCliente(parqueo.getCliente().getTipo());
     } else {
-      reporte.setTipoCliente(null);
+        reporte.setTipoCliente("Cliente Desconocido");
     }
+
+    
     reporte.setTipoVehiculo(parqueo.getTipo());
     reporte.setUltimaActualizacion(LocalDateTime.now());
+    Tarifa tarifaAplicable = null;
+
+    if (reporte.getTipoCliente() != null && !reporte.getTipoCliente().contains("Desconocido") &&
+        reporte.getTipoVehiculo() != null) { 
+            tarifaAplicable = tarifaRepository.obtenerTarifaVigente(
+                reporte.getTipoCliente(),
+                reporte.getTipoVehiculo()
+            );
+    }
+
+    BigDecimal montoMensualSegunTarifa = BigDecimal.ZERO;
+    if (tarifaAplicable != null) {
+      montoMensualSegunTarifa = tarifaAplicable.getMonto();
+    } else {
+        if (parqueo.getEstado() != Parqueo.EstadoParqueo.Inactivo &&
+            (reporte.getTipoCliente() != null && !reporte.getTipoCliente().contains("Desconocido")) &&
+            (reporte.getTipoVehiculo() != null) ) {
+        }
+    }
 
     List<DetalleMesEstadoCuentaDTO> detallesMes = new ArrayList<>();
     Set<YearMonth> mesesPagadosRegistrados = new HashSet<>();
-    DateTimeFormatter periodoFormatter = DateTimeFormatter.ofPattern("MM/yyyy");
-    YearMonth ultimoMesPagadoRegistrado = null; // Para rastrear el último mes pagado
+    YearMonth ultimoMesPagadoRegistrado = null;
+
+    List<PagoParqueo> pagosDelParqueo = pagoParqueoRepository.findAllByParqueoIdWithTarifa(parqueo.getId());
 
     for (PagoParqueo pago : pagosDelParqueo) {
       if (pago.getMeses() != null && pago.getMeses().length > 0) {
-        BigDecimal montoPorMesEnEstePago = pago.getMontoPagado();
-
         for (LocalDate mesSqlDate : pago.getMeses()) {
-          LocalDate mesLocalDate = mesSqlDate;
-          YearMonth periodoPago = YearMonth.from(mesLocalDate);
+          YearMonth periodoPago = YearMonth.from(mesSqlDate);
           mesesPagadosRegistrados.add(periodoPago);
 
           if (ultimoMesPagadoRegistrado == null || periodoPago.isAfter(ultimoMesPagadoRegistrado)) {
             ultimoMesPagadoRegistrado = periodoPago;
           }
-
           detallesMes.add(new DetalleMesEstadoCuentaDTO(
-              periodoPago.format(periodoFormatter),
+              periodoPago.format(PERIODO_FORMATTER),
               "Pagado",
-              montoPorMesEnEstePago,
+              montoMensualSegunTarifa,
               pago.getFechaHoraPago() != null ? pago.getFechaHoraPago().toLocalDateTime() : null));
         }
       }
     }
 
+
     BigDecimal saldoTotalPendiente = BigDecimal.ZERO;
     LocalDate fechaInicioParqueo = parqueo.getFechaInicio();
-    YearMonth mesInicioParqueo = YearMonth.from(fechaInicioParqueo);
+    if (fechaInicioParqueo == null) {
+        reporte.setDetallesMes(detallesMes);
+        reporte.setSaldoTotalPendiente(BigDecimal.ZERO);
+        return reporte;
+    }
+    YearMonth mesInicioParqueoReal = YearMonth.from(fechaInicioParqueo);
+    YearMonth mesDeInicioParaPendientesCalculado;
+    if (ultimoMesPagadoRegistrado != null) {
+        mesDeInicioParaPendientesCalculado = ultimoMesPagadoRegistrado.plusMonths(1);
+    } else {
+        mesDeInicioParaPendientesCalculado = mesInicioParqueoReal;
+    }
 
-    YearMonth mesFinCalculo; // Declarar aquí
 
+    YearMonth mesDeInicioParaPendientes = mesDeInicioParaPendientesCalculado;
+    YearMonth mesFinCalculoGeneral;
     if (parqueo.getEstado() == Parqueo.EstadoParqueo.Inactivo) {
-      if (ultimoMesPagadoRegistrado != null) {
-        mesFinCalculo = ultimoMesPagadoRegistrado;
-      } else {
-        mesFinCalculo = mesInicioParqueo;
-      }
-    } else {     
-      mesFinCalculo = YearMonth.now();
-    }   
-    if (mesFinCalculo.isBefore(mesInicioParqueo)) {
-      mesFinCalculo = mesInicioParqueo;
+      mesFinCalculoGeneral = (ultimoMesPagadoRegistrado != null) ? ultimoMesPagadoRegistrado : mesInicioParqueoReal;
+    } else {
+      mesFinCalculoGeneral = YearMonth.now();
+    }
+    
+
+    if (mesFinCalculoGeneral.isBefore(mesInicioParqueoReal)) {
+      mesFinCalculoGeneral = mesInicioParqueoReal;
     }
 
-    Tarifa tarifaAplicable = tarifaRepository.obtenerTarifaVigente(
-        parqueo.getCliente().getTipo(),
-        parqueo.getTipo());
-
-    if (tarifaAplicable == null && parqueo.getEstado() != Parqueo.EstadoParqueo.Inactivo) {
-      System.err.println("Advertencia: No se encontró tarifa vigente para cliente tipo " +
-          parqueo.getCliente().getTipo() + " y vehículo tipo " +
-          parqueo.getTipo() + ". Los montos pendientes pueden no ser precisos para el parqueo ID: "
-          + parqueo.getId());
+    YearMonth mesIteradorPendientes = mesDeInicioParaPendientes;
+    while (!mesIteradorPendientes.isAfter(mesFinCalculoGeneral)) {
+        if (!mesesPagadosRegistrados.contains(mesIteradorPendientes)) {
+            detallesMes.add(new DetalleMesEstadoCuentaDTO(
+                mesIteradorPendientes.format(PERIODO_FORMATTER),
+                "Pendiente",
+                montoMensualSegunTarifa,
+                null));
+            saldoTotalPendiente = saldoTotalPendiente.add(montoMensualSegunTarifa);
+        } 
+        mesIteradorPendientes = mesIteradorPendientes.plusMonths(1);
     }
 
-    YearMonth mesIterador = mesInicioParqueo;    
-    while (!mesIterador.isAfter(mesFinCalculo)) {
-      if (!mesesPagadosRegistrados.contains(mesIterador)) {
-        BigDecimal montoEsteMesPendiente = BigDecimal.ZERO;       
-        if (tarifaAplicable != null) {
-          montoEsteMesPendiente = tarifaAplicable.getMonto();
-        }
-        detallesMes.add(new DetalleMesEstadoCuentaDTO(
-            mesIterador.format(periodoFormatter),
-            "Pendiente",
-            montoEsteMesPendiente,
-            null));
-        saldoTotalPendiente = saldoTotalPendiente.add(montoEsteMesPendiente);
-      }
-      mesIterador = mesIterador.plusMonths(1);
-    }
-
-    detallesMes.sort(Comparator.comparing(detalle -> YearMonth.parse(detalle.getPeriodo(), periodoFormatter)));
+    detallesMes.sort(Comparator.comparing(detalle -> YearMonth.parse(detalle.getPeriodo(), PERIODO_FORMATTER)));
     reporte.setDetallesMes(detallesMes);
     reporte.setSaldoTotalPendiente(saldoTotalPendiente);
 
