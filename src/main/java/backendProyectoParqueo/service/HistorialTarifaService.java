@@ -9,6 +9,7 @@ import backendProyectoParqueo.dto.HistorialDTO;
 import backendProyectoParqueo.dto.HistorialTarifaDTO;
 import backendProyectoParqueo.enums.TipoVehiculo;
 import backendProyectoParqueo.repository.HistorialRepository;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,7 +22,8 @@ public class HistorialTarifaService {
         return historialRepository.obtenerHistorialTarifas();
     }
 
-    public List<HistorialTarifaDTO> obtenerHistorialTarifasFiltrado(
+    public List<HistorialDTO> obtenerHistorialTarifasFiltrado(
+            Integer id,
             TipoVehiculo tipoVehiculo,
             String tipoCliente,
             String nombreUsuario,
@@ -30,6 +32,7 @@ public class HistorialTarifaService {
             BigDecimal montoMin,
             BigDecimal montoMax) {
         return historialRepository.filtrarHistorialTarifas(
+                id,
                 tipoVehiculo,
                 tipoCliente,
                 nombreUsuario,

@@ -31,7 +31,8 @@ public class HistorialTarifaController {
 
     // filtro
     @GetMapping("/filtrar")
-    public List<HistorialTarifaDTO> obtenerHistorialTarifasFiltrado(
+    public List<HistorialDTO> obtenerHistorialTarifasFiltrado(
+            @RequestParam(required = false) Integer id,
             @RequestParam(required = false) TipoVehiculo tipoVehiculo,
             @RequestParam(required = false) String tipoCliente,
             @RequestParam(required = false) String nombreUsuario,
@@ -40,6 +41,7 @@ public class HistorialTarifaController {
             @RequestParam(required = false) BigDecimal montoMin,
             @RequestParam(required = false) BigDecimal montoMax) {
         return historialTarifaService.obtenerHistorialTarifasFiltrado(
+                id,
                 tipoVehiculo,
                 tipoCliente,
                 nombreUsuario,
